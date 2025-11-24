@@ -61,6 +61,7 @@
 
         /* --- GRAPH STYLES --- */
         #graph-canvas { background-color: #1e293b; border-radius: 12px; border: 2px solid #475569; cursor: crosshair; display: block; margin: 0 auto; }
+        #spider-canvas { background-color: #1e293b; border-radius: 12px; border: 2px solid #475569; cursor: crosshair; display: block; margin: 0 auto; }
     </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
@@ -79,6 +80,7 @@
                         <button onclick="switchTab('bulbs')" id="tab-bulbs" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide">4 Switches</button>
                         <button onclick="switchTab('cat')" id="tab-cat" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide">5 Boxes</button>
                         <button onclick="switchTab('river')" id="tab-river" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide text-emerald-400">5 People</button>
+                        <button onclick="switchTab('spider')" id="tab-spider" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide text-rose-400">Spider</button>
                         <button onclick="switchTab('graph')" id="tab-graph" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide text-purple-400">13 Streets</button>
                         <button onclick="switchTab('balls')" id="tab-balls" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide">12 Balls</button>
                         <button onclick="switchTab('horses')" id="tab-horses" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide text-pink-400">25 Horses</button>
@@ -100,6 +102,7 @@
                 <button onclick="switchTab('bulbs')" class="tab-btn px-3 py-2 text-xs font-bold">4</button>
                 <button onclick="switchTab('cat')" class="tab-btn px-3 py-2 text-xs font-bold">5</button>
                 <button onclick="switchTab('river')" class="tab-btn px-3 py-2 text-xs font-bold text-emerald-400">5p</button>
+                <button onclick="switchTab('spider')" class="tab-btn px-3 py-2 text-xs font-bold text-rose-400">Spider</button>
                 <button onclick="switchTab('graph')" class="tab-btn px-3 py-2 text-xs font-bold text-purple-400">13s</button>
                 <button onclick="switchTab('balls')" class="tab-btn px-3 py-2 text-xs font-bold">12</button>
                 <button onclick="switchTab('horses')" class="tab-btn px-3 py-2 text-xs font-bold text-pink-400">25</button>
@@ -211,7 +214,30 @@
                 </div>
             </div>
 
-            <!-- 5. DELIVERY (GRAPH) -->
+            <!-- 5. SPIDER (WEB) -->
+            <div id="game-spider" class="game-section hidden">
+                <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
+                    <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
+                        <div>
+                            <h2 class="text-3xl font-bold text-white">The Spider and the Fly</h2>
+                            <p class="text-slate-300 mt-2 leading-relaxed max-w-2xl">You are the <strong>Spider Queen</strong> (Blue). A delicious <strong>Pink Prey</strong> has landed on your web. <br><strong>Rules:</strong><br>&bull; You move <strong>1 step</strong>.<br>&bull; The Prey moves <strong>1 step</strong> to escape you.<br>&bull; You have <strong>15 moves</strong> to corner and catch the prey.<br>Can you trap it before it tires out?</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="spiderInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button>
+                            <button onclick="openModal('modal-spider')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
+                        </div>
+                    </div>
+                    <div class="flex justify-center mb-6 relative">
+                        <canvas id="spider-canvas" width="650" height="550"></canvas>
+                    </div>
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
+                        <p id="spider-status" class="text-slate-300 font-mono text-lg">Your Turn. Click a connected node.</p>
+                        <div class="text-right"><p class="text-xs text-slate-500 uppercase tracking-wide">Moves Left</p><p id="spider-moves" class="text-3xl font-black text-indigo-400">15</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. DELIVERY (GRAPH) -->
             <div id="game-graph" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
@@ -238,7 +264,7 @@
                 </div>
             </div>
 
-            <!-- 6. 12 BALLS -->
+            <!-- 7. 12 BALLS -->
             <div id="game-balls" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
@@ -297,7 +323,7 @@
         </div>
     </main>
 
-    <!-- LOGIN MODAL -->
+    <!-- MODALS & SETTINGS -->
     <div id="modal-login" class="modal" onclick="closeModal('modal-login')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h3 class="text-2xl font-bold text-white mb-4">Employee Login</h3>
@@ -315,19 +341,19 @@
     <div id="modal-horses" class="modal" onclick="closeModal('modal-horses')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: 25 Horses</h3><p class="text-slate-300">Don't try to find who IS fast. Find who IS NOT.<br>1. Race all groups (5 races).<br>2. Race the winners (Race 6).<br>3. The winner of Race 6 is the fastest overall.<br>4. Look at the grid. If a horse lost to someone who lost to someone else... can they be Top 3?</p><button onclick="closeModal('modal-horses')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
     <div id="modal-river" class="modal" onclick="closeModal('modal-river')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: River Crossing</h3><p class="text-slate-300">Don't make the fastest person (1s) do all the work. If 1 takes 12 across, they waste 12s. You need to move the two slowest people (8s and 12s) <strong>together</strong> so their time overlaps. But how do you get the boat back?</p><button onclick="closeModal('modal-river')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
     <div id="modal-graph" class="modal" onclick="closeModal('modal-graph')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Delivery</h3><p class="text-slate-300">Count the number of lines connected to each node (The Degree). In Graph Theory, to traverse every line exactly once, you must start at a node with an <strong>ODD</strong> number of connections.</p><button onclick="closeModal('modal-graph')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+    <div id="modal-spider" class="modal" onclick="closeModal('modal-spider')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: The Spider</h3><p class="text-slate-300">The web is a 21-node grid (4 rings + centre). The fly tries to maximize distance from you. You can't just chase it. You must corner it against the edge or the centre. Look for "dead ends" in the movement logic.</p><button onclick="closeModal('modal-spider')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
 
     <script>
         // --- SYSTEM: UTILS & DATA ---
         let currentUser = localStorage.getItem('logic_user') || null;
-        // Constant API URL
         const apiUrl = "https://script.google.com/macros/s/AKfycbxlaaj_TLDH0LyWWm1BAVQ9vdlL8fPo1AvBQu3a707Z2WNnZnkdaMKJPzZk5VwN6rQ/exec";
         let timerInterval = null;
         let startTime = 0;
-        let timerVisible = false; // Default Hidden
+        let timerVisible = false; 
 
         document.addEventListener('DOMContentLoaded', () => {
             updateAuthUI();
-            jugInit(); bulbInit(); catInit(); riverInit(); graphInit(); ballsInit(); horseInit();
+            jugInit(); bulbInit(); catInit(); riverInit(); spiderInit(); graphInit(); ballsInit(); horseInit();
             switchTab('jugs'); // Default
         });
 
@@ -337,7 +363,6 @@
             const m = Math.floor(diff / 60).toString().padStart(2, '0');
             const s = (diff % 60).toString().padStart(2, '0');
             const el = document.getElementById('global-timer');
-            
             if(el) {
                 if(timerVisible) {
                     el.innerText = `${m}:${s}`;
@@ -351,22 +376,9 @@
             }
         }
         
-        function toggleTimer() {
-            timerVisible = !timerVisible;
-            updateTimerDisplay();
-        }
-        
-        function startTimer() {
-            startTime = Date.now();
-            if(timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(updateTimerDisplay, 1000);
-            updateTimerDisplay();
-        }
-        
-        function stopTimer() {
-            if(timerInterval) clearInterval(timerInterval);
-            return Math.floor((Date.now() - startTime) / 1000);
-        }
+        function toggleTimer() { timerVisible = !timerVisible; updateTimerDisplay(); }
+        function startTimer() { startTime = Date.now(); if(timerInterval) clearInterval(timerInterval); timerInterval = setInterval(updateTimerDisplay, 1000); updateTimerDisplay(); }
+        function stopTimer() { if(timerInterval) clearInterval(timerInterval); return Math.floor((Date.now() - startTime) / 1000); }
 
         function updateAuthUI() {
             const statusEl = document.getElementById('user-status');
@@ -378,26 +390,17 @@
                 statusEl.className = "text-sm font-bold text-slate-400 border-l border-slate-700 pl-4 cursor-pointer hover:text-white";
             }
         }
-        function handleLogin() {
-            const id = document.getElementById('login-id').value;
-            if(id) { currentUser = id; localStorage.setItem('logic_user', id); updateAuthUI(); closeModal('modal-login'); }
-        }
+        function handleLogin() { const id = document.getElementById('login-id').value; if(id) { currentUser = id; localStorage.setItem('logic_user', id); updateAuthUI(); closeModal('modal-login'); } }
         function handleLogout() { currentUser = null; localStorage.removeItem('logic_user'); updateAuthUI(); closeModal('modal-login'); }
         
         function sendData(puzzle, result, metric, optimal) {
-            const duration = stopTimer(); // Capture duration
+            const duration = stopTimer();
             if(!currentUser || !apiUrl) return;
             const data = { user: currentUser, puzzle: puzzle, result: result, metric: metric, optimal: optimal, duration_seconds: duration };
             fetch(apiUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } })
             .then(() => console.log("Data Sent")).catch(e => console.error("Log Error", e));
         }
-        function switchTab(id){ 
-            document.querySelectorAll('.game-section').forEach(e=>e.classList.add('hidden')); 
-            document.getElementById(`game-${id}`).classList.remove('hidden'); 
-            document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active')); 
-            document.getElementById(`tab-${id}`).classList.add('active');
-            startTimer();
-        }
+        function switchTab(id){ document.querySelectorAll('.game-section').forEach(e=>e.classList.add('hidden')); document.getElementById(`game-${id}`).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active')); document.getElementById(`tab-${id}`).classList.add('active'); startTimer(); }
         function openModal(id){document.getElementById(id).style.display='flex'} function closeModal(id){document.getElementById(id).style.display='none'}
         function playSound(f,t='sine'){const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator();const g=c.createGain();o.connect(g);g.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.1);o.start();o.stop(c.currentTime+0.1)}
 
@@ -415,7 +418,7 @@
         function bulbRenderSwitches(){const c=document.getElementById('bulb-switches-ui');c.innerHTML='';bulbNames.forEach(id=>{const s=bulbState.switches[id];const bg=s.on?"bg-emerald-900/50 border-emerald-500":"bg-slate-900 border-slate-700";const txt=s.on?"text-emerald-400":"text-slate-500";c.innerHTML+=`<div class="${bg} p-4 rounded-xl border flex flex-col items-center transition-colors duration-200"><span class="text-3xl font-bold text-slate-300 mb-2">${id}</span><button onclick="bulbToggle('${id}')" class="w-full py-2 rounded-lg font-bold text-white ${s.on?'bg-emerald-600':'bg-slate-600'}">${s.on?'ON':'OFF'}</button></div>`})}function bulbEnterRoom(){bulbState.entered=true;document.getElementById('bulb-phase-1').classList.add('hidden');document.getElementById('bulb-phase-2').classList.remove('hidden');const r=document.getElementById('bulb-results');const g=document.getElementById('bulb-guesses');r.innerHTML='';g.innerHTML='';[1,2,3,4].forEach(n=>{const sid=bulbState.map[n];const s=bulbState.switches[sid];let cls="bulb-off",txt="OFF",tCls="heat-low",tTxt="COLD";if(s.on){cls="bulb-on";txt="ON"}if(s.heat>=15){tCls="heat-high";tTxt="HOT"}else if(s.heat>0){tCls="heat-med";tTxt="WARM"}r.innerHTML+=`<div class="bg-slate-800 p-4 rounded-xl border border-slate-600 flex flex-col items-center ${cls} ${tCls} transition-all"><span class="text-xl font-bold mb-2">Bulb ${n}</span><span class="text-2xl font-black mb-1">${txt}</span><span class="text-xs font-bold opacity-75">${tTxt}</span></div>`;g.innerHTML+=`<div class="flex items-center justify-between bg-slate-800 p-2 rounded border border-slate-600"><span class="font-bold text-slate-400 mr-2">B${n}:</span><select id="bulb-guess-${n}" class="bg-slate-900 text-white p-1 rounded w-full"><option value="">?</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>`})}function bulbCheck(){let c=0;[1,2,3,4].forEach(n=>{if(document.getElementById(`bulb-guess-${n}`).value===bulbState.map[n])c++});const m=document.getElementById('bulb-final-msg');if(c===4){m.className="text-emerald-400 mt-4 text-center font-bold text-xl";m.innerText="VICTORY!";sendData('4 Switches', 'Win', '-', true);}else{m.className="text-rose-400 mt-4 text-center font-bold";m.innerText=`Incorrect. ${c}/4 right.`;sendData('4 Switches', 'Fail', c+'/4', false);}}
 
         /* --- GAME 3: CAT --- */
-        const catState={day:1,pos:new Set([1,2,3,4,5]),history:[],over:false};function catInit(){catState.day=1;catState.pos=new Set([1,2,3,4,5]);catState.history=[new Set([1,2,3,4,5])];catState.over=false;document.getElementById('cat-logs').innerHTML='';catRender();startTimer();}function catRender(){document.getElementById('cat-day-display').innerText=`Day ${catState.day}`;document.getElementById('cat-possibilities').innerText=`${catState.pos.size} Spots`;const c=document.getElementById('cat-boxes');c.innerHTML='';for(let i=1;i<=5;i++){const b=document.createElement('button');b.className=`box-btn h-24 bg-slate-800 rounded-xl border-2 border-slate-600 flex items-center justify-center text-3xl font-black text-slate-600 group hover:border-indigo-500 hover:text-indigo-400 quantum-active`;b.innerText=i;b.onclick=()=>catCheck(i);if(catState.over)b.disabled=true;c.appendChild(b)}}function catCheck(id){if(catState.over)return;let caught=false;if(catState.pos.has(id)){if(catState.pos.size===1)caught=true;else catState.pos.delete(id)}const l=document.getElementById('cat-logs');const e=document.createElement('div');e.className=`p-3 mb-2 border-l-4 rounded bg-slate-800 ${caught?'border-emerald-500':'border-rose-500'}`;e.innerHTML=`<div class="flex justify-between text-sm text-slate-300"><span>Day ${catState.day}</span><span class="${caught?'text-emerald-400':'text-rose-400'} font-bold">${caught?'CAUGHT':'MISSED'}</span></div><div class="text-xs text-slate-500">Checked Box ${id}.</div>`;l.prepend(e);if(caught){catState.over=true;document.getElementById('cat-boxes').children[id-1].classList.add('bg-emerald-900','border-emerald-500','text-emerald-400');playSound(600);catRevealPath(id);sendData('5 Boxes', 'Win', `Day ${catState.day}`, true);}else{playSound(150,'sawtooth');const next=new Set();catState.pos.forEach(p=>{if(p>1)next.add(p-1);if(p<5)next.add(p+1)});catState.pos=next;catState.history.push(new Set(next));catState.day++;catRender()}}function catGiveUp(){if(catState.over)return;catState.over=true;const arr=Array.from(catState.pos);const final=arr.length?arr[Math.floor(Math.random()*arr.length)]:1;catRevealPath(final);document.getElementById('cat-boxes').children[final-1].classList.add('bg-amber-900','border-amber-500','text-amber-400');sendData('5 Boxes', 'GiveUp', `Day ${catState.day}`, false);}function catRevealPath(end){let p=[end],c=end;for(let d=catState.history.length-2;d>=0;d--){const prev=catState.history[d];const cands=[];if(prev.has(c-1))cands.push(c-1);if(prev.has(c+1))cands.push(c+1);c=cands[Math.floor(Math.random()*cands.length)];p.unshift(c)}const d=document.createElement('div');d.className="mt-4 p-3 bg-slate-700 rounded border border-slate-600";d.innerHTML=`<div class="text-xs text-indigo-300 font-bold uppercase mb-2">Quantum Path</div><div class="flex flex-wrap gap-2 text-sm font-mono text-white">${p.join(' → ')}</div>`;document.getElementById('cat-logs').prepend(d)}
+        const catState={day:1,pos:new Set([1,2,3,4,5]),history:[],over:false};function catInit(){catState.day=1;catState.pos=new Set([1,2,3,4,5]);catState.history=[new Set([1,2,3,4,5])];catState.over=false;document.getElementById('cat-logs').innerHTML='';catRender();startTimer();}function catRender(){document.getElementById('cat-day-display').innerText=`Day ${catState.day}`;document.getElementById('cat-possibilities').innerText=`${catState.pos.size} Spots`;const c=document.getElementById('cat-boxes');c.innerHTML='';for(let i=1;i<=5;i++){const b=document.createElement('button');b.className=`box-btn h-24 bg-slate-800 rounded-xl border-2 border-slate-600 flex items-center justify-center text-3xl font-black text-slate-600 group hover:border-indigo-500 hover:text-indigo-400 quantum-active`;b.innerText=i;b.onclick=()=>catCheck(i);if(catState.over)b.disabled=true;c.appendChild(b)}}function catCheck(id){if(catState.over)return;let caught=false;if(catState.pos.has(id)){if(catState.pos.size===1)caught=true;else catState.pos.delete(id)}const l=document.getElementById('cat-logs');const e=document.createElement('div');e.className=`p-3 mb-2 border-l-4 rounded bg-slate-800 ${caught?'border-emerald-500':'border-rose-500'}`;e.innerHTML=`<div class="flex justify-between text-sm text-slate-300"><span>Day ${catState.day}</span><span class="${caught?'text-emerald-400':'text-rose-400'} font-bold">${caught?'CAUGHT':'MISSED'}</span></div><div class="text-xs text-slate-500">Checked Box ${id}.</div>`;l.prepend(e);if(caught){catState.over=true;document.getElementById('cat-boxes').children[id-1].classList.add('bg-emerald-900','border-emerald-500','text-emerald-400');playSound(600);catRevealPath(id);sendData('5 Boxes', 'Win', `Day ${catState.day}`, catState.day <= 6);}else{playSound(150,'sawtooth');const next=new Set();catState.pos.forEach(p=>{if(p>1)next.add(p-1);if(p<5)next.add(p+1)});catState.pos=next;catState.history.push(new Set(next));catState.day++;catRender()}}function catGiveUp(){if(catState.over)return;catState.over=true;const arr=Array.from(catState.pos);const final=arr.length?arr[Math.floor(Math.random()*arr.length)]:1;catRevealPath(final);document.getElementById('cat-boxes').children[final-1].classList.add('bg-amber-900','border-amber-500','text-amber-400');sendData('5 Boxes', 'GiveUp', `Day ${catState.day}`, false);}function catRevealPath(end){let p=[end],c=end;for(let d=catState.history.length-2;d>=0;d--){const prev=catState.history[d];const cands=[];if(prev.has(c-1))cands.push(c-1);if(prev.has(c+1))cands.push(c+1);c=cands[Math.floor(Math.random()*cands.length)];p.unshift(c)}const d=document.createElement('div');d.className="mt-4 p-3 bg-slate-700 rounded border border-slate-600";d.innerHTML=`<div class="text-xs text-indigo-300 font-bold uppercase mb-2">Quantum Path</div><div class="flex flex-wrap gap-2 text-sm font-mono text-white">${p.join(' → ')}</div>`;document.getElementById('cat-logs').prepend(d)}
 
         /* --- GAME 4: RIVER --- */
         let riverState = { left:[1,3,6,8,12], right:[], boat:[], side:'left', time:0, solved:false, fail:false };
@@ -426,7 +429,165 @@
         function riverCheck(){ if(riverState.right.length === 5 && riverState.boat.length === 0) { if(riverState.time <= 30) { riverState.solved = true; const msg = document.getElementById('river-status'); msg.innerText = `VICTORY! Solved in ${riverState.time}s (Optimal is 29s).`; msg.className = "text-emerald-400 font-bold text-xl animate-bounce"; playSound(600); sendData('River', 'Win', riverState.time, riverState.time<=29); } } }
         function riverGiveUp() { riverState.fail = true; const sol = document.getElementById('river-solution'); sol.classList.remove('hidden'); sol.innerHTML = `<strong class="text-amber-400 block mb-2">Optimal Solution (29s):</strong> 1. 1 & 3 cross (3s) &rarr; 1 returns (1s) [4s]<br> 2. 8 & 12 cross (12s) &rarr; 3 returns (3s) [19s]<br> 3. 1 & 6 cross (6s) &rarr; 1 returns (1s) [26s]<br> 4. 1 & 3 cross (3s) [Total: 29s]`; playSound(150,'sawtooth'); sendData('River', 'GiveUp', '-', false); }
 
-        /* --- GAME 5: GRAPH DELIVERY (UPDATED: THE ROYAL CRYSTAL) --- */
+        /* --- GAME 5: SPIDER (CORRECTED TOPOLOGY: 21 NODES) --- */
+        let spiderState = { player: 12, spider: 4, moves: 15, over: false }; 
+        
+        // 21 Nodes: 0 (Center), 1-4 (Ray 0), 5-8 (Ray 1), 9-12 (Ray 2), 13-16 (Ray 3), 17-20 (Ray 4)
+        // 5 Rays (x,y,z,m,n) -> Indices 0, 1, 2, 3, 4
+        // 4 Rings -> Indices 0, 1, 2, 3 (Node IDs are RingIndex + 1 + RayIndex*4)
+        
+        function getSpiderNeighbors(id) {
+            const n = [];
+            if (id === 0) { return [1, 5, 9, 13, 17]; }
+            const val = id - 1;
+            const ray = Math.floor(val / 4);
+            const ring = val % 4; 
+            if (ring > 0) n.push(id - 1); else n.push(0);
+            if (ring < 3) n.push(id + 1);
+            if (ray > 0) n.push(id - 4);
+            if (ray < 4) n.push(id + 4);
+            return n;
+        }
+
+        function getSpiderNodePos(id) {
+            const cx = 600; const cy = 275; 
+            if (id === 0) return { x: cx, y: cy };
+            const val = id - 1;
+            const ray = Math.floor(val / 4);
+            const ring = val % 4; 
+            const dist = 100 + (ring * 110);
+            const minAng = -Math.PI / 5;
+            const maxAng = Math.PI / 5;
+            const angle = minAng + (ray * ((maxAng - minAng) / 4));
+            return { x: cx - (dist * Math.cos(angle)), y: cy + (dist * Math.sin(angle)) };
+        }
+
+        function spiderInit() {
+            // Spider Queen (Player - Blue): Ray z (2), Outer (Ring 3) -> ID 12
+            // Prey (AI - Pink): Ray x (0), Outer (Ring 3) -> ID 4
+            spiderState = { player: 12, spider: 4, moves: 15, over: false }; 
+            document.getElementById('spider-status').innerText = "Your Turn. Click a connected node.";
+            document.getElementById('spider-status').className = "text-slate-300 font-mono text-lg";
+            document.getElementById('spider-moves').innerText = "15";
+            spiderRender();
+            startTimer();
+        }
+
+        function spiderClick(e) {
+            if (spiderState.over) return;
+            const rect = document.getElementById('spider-canvas').getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            let clicked = -1;
+            if(Math.sqrt((x-600)**2 + (y-275)**2) < 20) clicked = 0;
+            else {
+                for (let i = 1; i <= 20; i++) {
+                    const pos = getSpiderNodePos(i);
+                    const dist = Math.sqrt((x - pos.x)**2 + (y - pos.y)**2);
+                    if (dist < 20) clicked = i;
+                }
+            }
+
+            if (clicked !== -1) {
+                const neighbors = getSpiderNeighbors(spiderState.player);
+                if (neighbors.includes(clicked)) {
+                    spiderState.player = clicked;
+                    playSound(200);
+                    if (spiderState.player === spiderState.spider) { spiderWin(); } else {
+                        spiderState.moves--;
+                        document.getElementById('spider-moves').innerText = spiderState.moves;
+                        if (spiderState.moves === 0) { spiderFail(); } else { setTimeout(spiderMoveAI, 300); }
+                    }
+                    spiderRender();
+                }
+            }
+        }
+
+        function spiderMoveAI() {
+            if (spiderState.over) return;
+            const neighbors = getSpiderNeighbors(spiderState.spider);
+            let bestMove = -1;
+            let maxDist = -1;
+
+            // Fleeing Logic: Maximize distance to Player
+            neighbors.forEach(n => {
+                const getC = (id) => { if(id===0) return {r:-1, c:-1}; return {r:Math.floor((id-1)/4), c:(id-1)%4}; };
+                const p = getC(spiderState.player);
+                const curr = getC(n);
+                let dist = 0;
+                if(curr.r === -1) dist = p.c + 1;
+                else if (p.r === -1) dist = curr.c + 1;
+                else {
+                    const direct = Math.abs(p.r - curr.r) + Math.abs(p.c - curr.c);
+                    const viaCenter = (p.c + 1) + (curr.c + 1);
+                    dist = Math.min(direct, viaCenter);
+                }
+                
+                if (dist > maxDist) { // FLEE
+                    maxDist = dist;
+                    bestMove = n;
+                }
+            });
+            
+            spiderState.spider = bestMove;
+            playSound(100, 'triangle');
+            if (spiderState.player === spiderState.spider) { spiderWin(); }
+            spiderRender();
+        }
+
+        function spiderWin() {
+            spiderState.over = true;
+            document.getElementById('spider-status').innerText = "CAUGHT! You cornered the fly.";
+            document.getElementById('spider-status').className = "text-emerald-400 font-bold text-xl";
+            playSound(600);
+            sendData('Spider', 'Win', `${15-spiderState.moves} moves`, (15-spiderState.moves) <= 10);
+        }
+
+        function spiderFail() {
+            spiderState.over = true;
+            document.getElementById('spider-status').innerText = "GAME OVER! The fly escaped.";
+            document.getElementById('spider-status').className = "text-rose-400 font-bold";
+            playSound(150, 'sawtooth');
+            sendData('Spider', 'Fail', '-', false);
+        }
+
+        function spiderRender() {
+            const cvs = document.getElementById('spider-canvas');
+            const ctx = cvs.getContext('2d');
+            ctx.clearRect(0, 0, cvs.width, cvs.height);
+            ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+            // Rays
+            for (let r = 0; r < 5; r++) {
+                ctx.beginPath();
+                const start = getSpiderNodePos(0); const end = getSpiderNodePos(r * 4 + 3 + 1);
+                ctx.moveTo(start.x, start.y); ctx.lineTo(end.x, end.y); ctx.stroke();
+            }
+            // Rings
+            for (let c = 0; c < 4; c++) {
+                ctx.beginPath();
+                for (let r = 0; r < 5; r++) {
+                    const p = getSpiderNodePos(r * 4 + c + 1);
+                    if (r === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+            // Nodes
+            const center = getSpiderNodePos(0);
+            ctx.beginPath(); ctx.arc(center.x, center.y, 8, 0, 2 * Math.PI); ctx.fillStyle = '#e2e8f0'; ctx.fill();
+            for (let i = 1; i <= 20; i++) { const p = getSpiderNodePos(i); ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 2 * Math.PI); ctx.fillStyle = '#94a3b8'; ctx.fill(); }
+            
+            // Player (Blue - Spider Queen) - ID 12
+            const pp = getSpiderNodePos(spiderState.player);
+            ctx.beginPath(); ctx.arc(pp.x, pp.y, 12, 0, 2*Math.PI); ctx.fillStyle = '#3b82f6'; ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth=2; ctx.stroke();
+
+            // Prey (Pink - Fly) - ID 4
+            const sp = getSpiderNodePos(spiderState.spider);
+            ctx.beginPath(); ctx.arc(sp.x, sp.y, 12, 0, 2*Math.PI); ctx.fillStyle = '#f472b6'; ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth=2; ctx.stroke();
+        }
+        document.getElementById('spider-canvas').addEventListener('mousedown', spiderClick);
+
+        /* --- GAME 6: GRAPH DELIVERY (UPDATED: THE ROYAL CRYSTAL) --- */
         let graphState={nodes:{},edges:[],current:null,visitedEdges:new Set(),over:false,path:[]};
         function graphInit(){
             // "The Royal Crystal" (8 Nodes, 13 Edges)
@@ -587,7 +748,7 @@
         // --- START ---
         document.addEventListener('DOMContentLoaded', () => {
             updateAuthUI();
-            jugInit(); bulbInit(); catInit(); riverInit(); graphInit(); ballsInit(); horseInit();
+            jugInit(); bulbInit(); catInit(); riverInit(); spiderInit(); graphInit(); ballsInit(); horseInit();
             switchTab('jugs'); // Default
         });
     </script>

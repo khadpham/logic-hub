@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dan's Logic Puzzle Hub</title>
+    <title>Dan's Logic Training Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -16,7 +16,7 @@
         .tab-btn:hover { opacity: 0.8; background-color: rgba(255,255,255,0.05); }
         .tab-btn.active { opacity: 1; border-bottom: 4px solid #6366f1; background-color: rgba(99, 102, 241, 0.1); color: #fff; }
 
-        /* --- PUZZLE STYLES --- */
+        /* --- STYLES --- */
         .jug-container { position: relative; width: 100px; background: #334155; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border: 4px solid #94a3b8; border-top: none; margin: 0 auto; overflow: hidden; transition: all 0.3s; cursor: pointer; }
         .jug-water { position: absolute; bottom: 0; left: 0; width: 100%; background-color: #3b82f6; transition: height 0.5s ease-in-out; opacity: 0.8; }
         .jug-selected { border-color: #fbbf24; box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
@@ -84,7 +84,15 @@
                         <button onclick="switchTab('balls')" id="tab-balls" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide">12 Balls</button>
                         <button onclick="switchTab('horses')" id="tab-horses" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide text-pink-400">25 Horses</button>
                     </nav>
-                    <div id="user-status" class="text-sm font-bold text-slate-400 border-l border-slate-700 pl-4 cursor-pointer hover:text-white" onclick="openModal('modal-login')">Guest Mode</div>
+                    
+                    <!-- TIMER & LOGIN -->
+                    <div class="flex items-center space-x-3">
+                        <!-- Timer Toggle: Hidden by default, reveals on click -->
+                        <div id="global-timer" onclick="toggleTimer()" class="cursor-pointer text-slate-500 font-mono font-bold text-sm bg-slate-800 px-3 py-1 rounded border border-slate-600 hover:text-white hover:border-slate-500 transition-all select-none" title="Click to show/hide time">
+                            ⏱️ Time
+                        </div>
+                        <div id="user-status" class="text-sm font-bold text-slate-400 border-l border-slate-700 pl-4 cursor-pointer hover:text-white" onclick="openModal('modal-login')">Guest Mode</div>
+                    </div>
                 </div>
             </div>
             <!-- Mobile Nav -->
@@ -187,6 +195,7 @@
                             <button onclick="openModal('modal-river')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
                         </div>
                     </div>
+
                     <div id="river-game-area" class="bg-slate-900 p-6 rounded-xl border border-slate-700 mb-6 relative">
                         <div class="river-container relative">
                             <div id="river-bank-left" class="bank left-0"></div>
@@ -321,11 +330,52 @@
         // --- SYSTEM: UTILS & DATA ---
         let currentUser = localStorage.getItem('logic_user') || null;
         let apiUrl = localStorage.getItem('logic_api_url') || "";
-        
+        let timerInterval = null;
+        let startTime = 0;
+        let timerVisible = false; // Default Hidden
+
         document.addEventListener('DOMContentLoaded', () => {
             updateAuthUI();
             jugInit(); bulbInit(); catInit(); riverInit(); graphInit(); ballsInit(); horseInit();
+            switchTab('jugs'); // Default
         });
+
+        function updateTimerDisplay() {
+            const now = Date.now();
+            const diff = Math.floor((now - startTime) / 1000);
+            const m = Math.floor(diff / 60).toString().padStart(2, '0');
+            const s = (diff % 60).toString().padStart(2, '0');
+            const el = document.getElementById('global-timer');
+            
+            if(el) {
+                if(timerVisible) {
+                    el.innerText = `${m}:${s}`;
+                    el.classList.remove('text-slate-500', 'w-24');
+                    el.classList.add('text-emerald-400', 'w-24');
+                } else {
+                    el.innerText = "⏱️ Time";
+                    el.classList.add('text-slate-500', 'w-24');
+                    el.classList.remove('text-emerald-400');
+                }
+            }
+        }
+        
+        function toggleTimer() {
+            timerVisible = !timerVisible;
+            updateTimerDisplay();
+        }
+        
+        function startTimer() {
+            startTime = Date.now();
+            if(timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimerDisplay, 1000);
+            updateTimerDisplay();
+        }
+        
+        function stopTimer() {
+            if(timerInterval) clearInterval(timerInterval);
+            return Math.floor((Date.now() - startTime) / 1000);
+        }
 
         function updateAuthUI() {
             const statusEl = document.getElementById('user-status');
@@ -333,7 +383,7 @@
                 statusEl.innerText = `User: ${currentUser}`;
                 statusEl.className = "text-sm font-bold text-emerald-400 border-l border-slate-700 pl-4 cursor-pointer hover:text-white";
             } else {
-                statusEl.innerText = "Guest Mode (Login)";
+                statusEl.innerText = "Login";
                 statusEl.className = "text-sm font-bold text-slate-400 border-l border-slate-700 pl-4 cursor-pointer hover:text-white";
             }
             document.getElementById('api-url').value = apiUrl;
@@ -348,91 +398,41 @@
             apiUrl = url; localStorage.setItem('logic_api_url', url); closeModal('modal-settings'); alert("Settings Saved!");
         }
         function sendData(puzzle, result, metric, optimal) {
+            const duration = stopTimer(); // Capture duration
             if(!currentUser || !apiUrl) return;
-            const data = { user: currentUser, puzzle: puzzle, result: result, metric: metric, optimal: optimal };
+            const data = { user: currentUser, puzzle: puzzle, result: result, metric: metric, optimal: optimal, duration_seconds: duration };
             fetch(apiUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } })
             .then(() => console.log("Data Sent")).catch(e => console.error("Log Error", e));
         }
-        function switchTab(id){ document.querySelectorAll('.game-section').forEach(e=>e.classList.add('hidden')); document.getElementById(`game-${id}`).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active')); document.getElementById(`tab-${id}`).classList.add('active'); }
+        function switchTab(id){ 
+            document.querySelectorAll('.game-section').forEach(e=>e.classList.add('hidden')); 
+            document.getElementById(`game-${id}`).classList.remove('hidden'); 
+            document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active')); 
+            document.getElementById(`tab-${id}`).classList.add('active');
+            startTimer();
+        }
         function openModal(id){document.getElementById(id).style.display='flex'} function closeModal(id){document.getElementById(id).style.display='none'}
         function playSound(f,t='sine'){const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator();const g=c.createGain();o.connect(g);g.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.1);o.start();o.stop(c.currentTime+0.1)}
 
         /* --- GAME 1: 3 JUGS --- */
         let jugState = { jugs:[8,0,0], caps:[8,5,3], selected:null, solved:false, moves:0 };
-        function jugInit(){
-            jugState.jugs=[8,0,0]; jugState.selected=null; jugState.solved=false; jugState.moves=0;
-            document.getElementById('jug-status').innerText = "Select a jug to pour from.";
-            document.getElementById('jug-status').className = "text-slate-300 font-mono text-lg";
-            document.getElementById('jug-moves').innerText = "0";
-            jugRender();
-        }
-        function jugClick(idx){
-            if(jugState.solved) return;
-            if(jugState.selected === null) {
-                if(jugState.jugs[idx] > 0) {
-                    jugState.selected = idx;
-                    document.getElementById('jug-status').innerText = `Selected Jug ${jugState.caps[idx]}L. Click another to pour.`;
-                } else {
-                    document.getElementById('jug-status').innerText = "Cannot select empty jug.";
-                }
-            } else {
-                if(jugState.selected === idx) {
-                    jugState.selected = null; 
-                    document.getElementById('jug-status').innerText = "Deselected.";
-                } else {
-                    jugPour(jugState.selected, idx);
-                    jugState.selected = null;
-                }
-            }
-            jugRender();
-        }
-        function jugPour(from, to){
-            const amount = Math.min(jugState.jugs[from], jugState.caps[to] - jugState.jugs[to]);
-            if(amount > 0) {
-                jugState.jugs[from] -= amount;
-                jugState.jugs[to] += amount;
-                jugState.moves++;
-                document.getElementById('jug-moves').innerText = jugState.moves;
-                playSound(400,'sine');
-                document.getElementById('jug-status').innerText = `Poured ${amount}L.`;
-                jugCheck();
-            } else {
-                document.getElementById('jug-status').innerText = "Cannot pour (Source empty or Dest full).";
-            }
-        }
-        function jugRender(){
-            jugState.jugs.forEach((vol, i) => {
-                const el = document.getElementById(`water-${i}`);
-                const pct = (vol / jugState.caps[i]) * 100;
-                el.style.height = `${pct}%`;
-                document.getElementById(`label-${i}`).innerText = `${vol} / ${jugState.caps[i]}L`;
-                const container = document.getElementById(`jug-${i}`);
-                if(jugState.selected === i) container.classList.add('jug-selected');
-                else container.classList.remove('jug-selected');
-            });
-        }
-        function jugCheck(){
-            if(jugState.jugs.includes(4)){
-                jugState.solved = true;
-                const msg = jugState.moves === 6 ? "PERFECT! 6 Moves (Optimised)." : `SUCCESS! Solved in ${jugState.moves} moves.`;
-                document.getElementById('jug-status').innerText = msg;
-                document.getElementById('jug-status').className = "text-emerald-400 font-bold text-xl animate-bounce";
-                playSound(600);
-                sendData('3 Jugs', 'Win', jugState.moves, jugState.moves===6);
-            }
-        }
+        function jugInit(){ jugState.jugs=[8,0,0]; jugState.selected=null; jugState.solved=false; jugState.moves=0; document.getElementById('jug-status').innerText="Select a jug to pour from."; document.getElementById('jug-status').className="text-slate-300 font-mono text-lg"; document.getElementById('jug-moves').innerText="0"; jugRender(); startTimer(); }
+        function jugClick(idx){ if(jugState.solved)return; if(jugState.selected===null){ if(jugState.jugs[idx]>0){ jugState.selected=idx; document.getElementById('jug-status').innerText=`Selected Jug ${jugState.caps[idx]}L. Click another to pour.`; } else document.getElementById('jug-status').innerText="Cannot select empty jug."; } else { if(jugState.selected===idx){ jugState.selected=null; document.getElementById('jug-status').innerText="Deselected."; } else { jugPour(jugState.selected, idx); jugState.selected=null; } } jugRender(); }
+        function jugPour(f,t){ const amt=Math.min(jugState.jugs[f], jugState.caps[t]-jugState.jugs[t]); if(amt>0){ jugState.jugs[f]-=amt; jugState.jugs[t]+=amt; jugState.moves++; document.getElementById('jug-moves').innerText=jugState.moves; playSound(400,'sine'); document.getElementById('jug-status').innerText=`Poured ${amt}L.`; jugCheck(); } else document.getElementById('jug-status').innerText="Cannot pour (Source empty or Dest full)."; }
+        function jugRender(){ jugState.jugs.forEach((v,i)=>{ const el=document.getElementById(`water-${i}`); el.style.height=`${(v/jugState.caps[i])*100}%`; document.getElementById(`label-${i}`).innerText=`${v} / ${jugState.caps[i]}L`; const c=document.getElementById(`jug-${i}`); if(jugState.selected===i)c.classList.add('jug-selected'); else c.classList.remove('jug-selected'); }); }
+        function jugCheck(){ if(jugState.jugs.includes(4)){ jugState.solved=true; const msg=jugState.moves===6?"PERFECT! 6 Moves (Optimised).":`SUCCESS! Solved in ${jugState.moves} moves.`; document.getElementById('jug-status').innerText=msg; document.getElementById('jug-status').className="text-emerald-400 font-bold text-xl animate-bounce"; playSound(600); sendData('3 Jugs', 'Win', jugState.moves, jugState.moves===6); } }
 
         /* --- GAME 2: BULBS --- */
-        let bulbState={map:{},switches:{},over:false,entered:false,time:0};const bulbNames=['A','B','C','D'];function bulbInit(){bulbState.map={1:null,2:null,3:null,4:null};let s=['A','B','C','D'].sort(()=>Math.random()-0.5);[1,2,3,4].forEach((n,i)=>bulbState.map[n]=s[i]);bulbState.switches={A:{on:false,heat:0},B:{on:false,heat:0},C:{on:false,heat:0},D:{on:false,heat:0}};bulbState.over=false;bulbState.entered=false;bulbState.time=0;document.getElementById('bulb-phase-1').classList.remove('hidden');document.getElementById('bulb-phase-2').classList.add('hidden');document.getElementById('bulb-final-msg').innerText="";document.getElementById('bulb-timer').innerText="00m";bulbRenderSwitches()}function bulbToggle(id){const s=bulbState.switches[id];s.on=!s.on;bulbRenderSwitches();playSound(300,'square')}
+        let bulbState={map:{},switches:{},over:false,entered:false,time:0};const bulbNames=['A','B','C','D'];function bulbInit(){bulbState.map={1:null,2:null,3:null,4:null};let s=['A','B','C','D'].sort(()=>Math.random()-0.5);[1,2,3,4].forEach((n,i)=>bulbState.map[n]=s[i]);bulbState.switches={A:{on:false,heat:0},B:{on:false,heat:0},C:{on:false,heat:0},D:{on:false,heat:0}};bulbState.over=false;bulbState.entered=false;bulbState.time=0;document.getElementById('bulb-phase-1').classList.remove('hidden');document.getElementById('bulb-phase-2').classList.add('hidden');document.getElementById('bulb-final-msg').innerText="";document.getElementById('bulb-timer').innerText="00m";bulbRenderSwitches();startTimer();}function bulbToggle(id){const s=bulbState.switches[id];s.on=!s.on;bulbRenderSwitches();playSound(300,'square')}
         function bulbWait(){bulbState.time+=10;document.getElementById('bulb-timer').innerText=bulbState.time+"m";bulbNames.forEach(id=>{if(bulbState.switches[id].on)bulbState.switches[id].heat+=10});playSound(200,'sine');const el=document.getElementById('bulb-switches-ui');el.style.opacity=0.5;setTimeout(()=>el.style.opacity=1,200)}
         function bulbRenderSwitches(){const c=document.getElementById('bulb-switches-ui');c.innerHTML='';bulbNames.forEach(id=>{const s=bulbState.switches[id];const bg=s.on?"bg-emerald-900/50 border-emerald-500":"bg-slate-900 border-slate-700";const txt=s.on?"text-emerald-400":"text-slate-500";c.innerHTML+=`<div class="${bg} p-4 rounded-xl border flex flex-col items-center transition-colors duration-200"><span class="text-3xl font-bold text-slate-300 mb-2">${id}</span><button onclick="bulbToggle('${id}')" class="w-full py-2 rounded-lg font-bold text-white ${s.on?'bg-emerald-600':'bg-slate-600'}">${s.on?'ON':'OFF'}</button></div>`})}function bulbEnterRoom(){bulbState.entered=true;document.getElementById('bulb-phase-1').classList.add('hidden');document.getElementById('bulb-phase-2').classList.remove('hidden');const r=document.getElementById('bulb-results');const g=document.getElementById('bulb-guesses');r.innerHTML='';g.innerHTML='';[1,2,3,4].forEach(n=>{const sid=bulbState.map[n];const s=bulbState.switches[sid];let cls="bulb-off",txt="OFF",tCls="heat-low",tTxt="COLD";if(s.on){cls="bulb-on";txt="ON"}if(s.heat>=15){tCls="heat-high";tTxt="HOT"}else if(s.heat>0){tCls="heat-med";tTxt="WARM"}r.innerHTML+=`<div class="bg-slate-800 p-4 rounded-xl border border-slate-600 flex flex-col items-center ${cls} ${tCls} transition-all"><span class="text-xl font-bold mb-2">Bulb ${n}</span><span class="text-2xl font-black mb-1">${txt}</span><span class="text-xs font-bold opacity-75">${tTxt}</span></div>`;g.innerHTML+=`<div class="flex items-center justify-between bg-slate-800 p-2 rounded border border-slate-600"><span class="font-bold text-slate-400 mr-2">B${n}:</span><select id="bulb-guess-${n}" class="bg-slate-900 text-white p-1 rounded w-full"><option value="">?</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>`})}function bulbCheck(){let c=0;[1,2,3,4].forEach(n=>{if(document.getElementById(`bulb-guess-${n}`).value===bulbState.map[n])c++});const m=document.getElementById('bulb-final-msg');if(c===4){m.className="text-emerald-400 mt-4 text-center font-bold text-xl";m.innerText="VICTORY!";sendData('4 Switches', 'Win', '-', true);}else{m.className="text-rose-400 mt-4 text-center font-bold";m.innerText=`Incorrect. ${c}/4 right.`;sendData('4 Switches', 'Fail', c+'/4', false);}}
 
         /* --- GAME 3: CAT --- */
-        const catState={day:1,pos:new Set([1,2,3,4,5]),history:[],over:false};function catInit(){catState.day=1;catState.pos=new Set([1,2,3,4,5]);catState.history=[new Set([1,2,3,4,5])];catState.over=false;document.getElementById('cat-logs').innerHTML='';catRender()}function catRender(){document.getElementById('cat-day-display').innerText=`Day ${catState.day}`;document.getElementById('cat-possibilities').innerText=`${catState.pos.size} Spots`;const c=document.getElementById('cat-boxes');c.innerHTML='';for(let i=1;i<=5;i++){const b=document.createElement('button');b.className=`box-btn h-24 bg-slate-800 rounded-xl border-2 border-slate-600 flex items-center justify-center text-3xl font-black text-slate-600 group hover:border-indigo-500 hover:text-indigo-400 quantum-active`;b.innerText=i;b.onclick=()=>catCheck(i);if(catState.over)b.disabled=true;c.appendChild(b)}}function catCheck(id){if(catState.over)return;let caught=false;if(catState.pos.has(id)){if(catState.pos.size===1)caught=true;else catState.pos.delete(id)}const l=document.getElementById('cat-logs');const e=document.createElement('div');e.className=`p-3 mb-2 border-l-4 rounded bg-slate-800 ${caught?'border-emerald-500':'border-rose-500'}`;e.innerHTML=`<div class="flex justify-between text-sm text-slate-300"><span>Day ${catState.day}</span><span class="${caught?'text-emerald-400':'text-rose-400'} font-bold">${caught?'CAUGHT':'MISSED'}</span></div><div class="text-xs text-slate-500">Checked Box ${id}.</div>`;l.prepend(e);if(caught){catState.over=true;document.getElementById('cat-boxes').children[id-1].classList.add('bg-emerald-900','border-emerald-500','text-emerald-400');playSound(600);catRevealPath(id);sendData('5 Boxes', 'Win', `Day ${catState.day}`, true);}else{playSound(150,'sawtooth');const next=new Set();catState.pos.forEach(p=>{if(p>1)next.add(p-1);if(p<5)next.add(p+1)});catState.pos=next;catState.history.push(new Set(next));catState.day++;catRender()}}function catGiveUp(){if(catState.over)return;catState.over=true;const arr=Array.from(catState.pos);const final=arr.length?arr[Math.floor(Math.random()*arr.length)]:1;catRevealPath(final);document.getElementById('cat-boxes').children[final-1].classList.add('bg-amber-900','border-amber-500','text-amber-400');sendData('5 Boxes', 'GiveUp', `Day ${catState.day}`, false);}function catRevealPath(end){let p=[end],c=end;for(let d=catState.history.length-2;d>=0;d--){const prev=catState.history[d];const cands=[];if(prev.has(c-1))cands.push(c-1);if(prev.has(c+1))cands.push(c+1);c=cands[Math.floor(Math.random()*cands.length)];p.unshift(c)}const d=document.createElement('div');d.className="mt-4 p-3 bg-slate-700 rounded border border-slate-600";d.innerHTML=`<div class="text-xs text-indigo-300 font-bold uppercase mb-2">Quantum Path</div><div class="flex flex-wrap gap-2 text-sm font-mono text-white">${p.join(' → ')}</div>`;document.getElementById('cat-logs').prepend(d)}
+        const catState={day:1,pos:new Set([1,2,3,4,5]),history:[],over:false};function catInit(){catState.day=1;catState.pos=new Set([1,2,3,4,5]);catState.history=[new Set([1,2,3,4,5])];catState.over=false;document.getElementById('cat-logs').innerHTML='';catRender();startTimer();}function catRender(){document.getElementById('cat-day-display').innerText=`Day ${catState.day}`;document.getElementById('cat-possibilities').innerText=`${catState.pos.size} Spots`;const c=document.getElementById('cat-boxes');c.innerHTML='';for(let i=1;i<=5;i++){const b=document.createElement('button');b.className=`box-btn h-24 bg-slate-800 rounded-xl border-2 border-slate-600 flex items-center justify-center text-3xl font-black text-slate-600 group hover:border-indigo-500 hover:text-indigo-400 quantum-active`;b.innerText=i;b.onclick=()=>catCheck(i);if(catState.over)b.disabled=true;c.appendChild(b)}}function catCheck(id){if(catState.over)return;let caught=false;if(catState.pos.has(id)){if(catState.pos.size===1)caught=true;else catState.pos.delete(id)}const l=document.getElementById('cat-logs');const e=document.createElement('div');e.className=`p-3 mb-2 border-l-4 rounded bg-slate-800 ${caught?'border-emerald-500':'border-rose-500'}`;e.innerHTML=`<div class="flex justify-between text-sm text-slate-300"><span>Day ${catState.day}</span><span class="${caught?'text-emerald-400':'text-rose-400'} font-bold">${caught?'CAUGHT':'MISSED'}</span></div><div class="text-xs text-slate-500">Checked Box ${id}.</div>`;l.prepend(e);if(caught){catState.over=true;document.getElementById('cat-boxes').children[id-1].classList.add('bg-emerald-900','border-emerald-500','text-emerald-400');playSound(600);catRevealPath(id);sendData('5 Boxes', 'Win', `Day ${catState.day}`, true);}else{playSound(150,'sawtooth');const next=new Set();catState.pos.forEach(p=>{if(p>1)next.add(p-1);if(p<5)next.add(p+1)});catState.pos=next;catState.history.push(new Set(next));catState.day++;catRender()}}function catGiveUp(){if(catState.over)return;catState.over=true;const arr=Array.from(catState.pos);const final=arr.length?arr[Math.floor(Math.random()*arr.length)]:1;catRevealPath(final);document.getElementById('cat-boxes').children[final-1].classList.add('bg-amber-900','border-amber-500','text-amber-400');sendData('5 Boxes', 'GiveUp', `Day ${catState.day}`, false);}function catRevealPath(end){let p=[end],c=end;for(let d=catState.history.length-2;d>=0;d--){const prev=catState.history[d];const cands=[];if(prev.has(c-1))cands.push(c-1);if(prev.has(c+1))cands.push(c+1);c=cands[Math.floor(Math.random()*cands.length)];p.unshift(c)}const d=document.createElement('div');d.className="mt-4 p-3 bg-slate-700 rounded border border-slate-600";d.innerHTML=`<div class="text-xs text-indigo-300 font-bold uppercase mb-2">Quantum Path</div><div class="flex flex-wrap gap-2 text-sm font-mono text-white">${p.join(' → ')}</div>`;document.getElementById('cat-logs').prepend(d)}
 
         /* --- GAME 4: RIVER --- */
         let riverState = { left:[1,3,6,8,12], right:[], boat:[], side:'left', time:0, solved:false, fail:false };
-        function riverInit(){ riverState = { left:[1,3,6,8,12], right:[], boat:[], side:'left', time:0, solved:false, fail:false }; document.getElementById('river-time').innerText = "0s"; document.getElementById('river-status').innerText = "Load 1 or 2 people onto the boat."; document.getElementById('river-status').className = "text-slate-300 font-mono text-lg"; document.getElementById('river-game-area').classList.remove('shake-fail'); document.getElementById('river-solution').classList.add('hidden'); riverRender(); }
+        function riverInit(){ riverState = { left:[1,3,6,8,12], right:[], boat:[], side:'left', time:0, solved:false, fail:false }; document.getElementById('river-time').innerText = "0s"; document.getElementById('river-status').innerText = "Load 1 or 2 people onto the boat."; document.getElementById('river-status').className = "text-slate-300 font-mono text-lg"; document.getElementById('river-game-area').classList.remove('shake-fail'); document.getElementById('river-solution').classList.add('hidden'); riverRender(); startTimer(); }
         function riverClick(val, loc) { if(riverState.solved || riverState.fail) return; if(loc === 'boat') { const idx = riverState.boat.indexOf(val); if(idx>-1) { riverState.boat.splice(idx,1); riverState[riverState.side].push(val); playSound(200); } } else { if(loc !== riverState.side) return alert("Boat is on the other side!"); if(riverState.boat.length >= 2) return alert("Boat full!"); const idx = riverState[loc].indexOf(val); if(idx>-1) { riverState[loc].splice(idx,1); riverState.boat.push(val); playSound(200); } } riverRender(); riverCheck(); }
         function riverGo(){ if(riverState.solved || riverState.fail) return; if(riverState.boat.length === 0) return alert("Boat is empty!"); const tripTime = Math.max(...riverState.boat); riverState.time += tripTime; riverState.side = riverState.side === 'left' ? 'right' : 'left'; document.getElementById('river-time').innerText = riverState.time + "s"; if(riverState.time > 30) { riverState.fail = true; document.getElementById('river-status').innerText = "GAME OVER! Too Slow (>30s). Resetting..."; document.getElementById('river-status').className = "text-rose-500 font-bold text-xl"; document.getElementById('river-game-area').classList.add('shake-fail'); playSound(100, 'sawtooth'); sendData('River', 'Fail', riverState.time, false); setTimeout(riverInit, 2500); } else { playSound(100,'triangle'); riverCheck(); } riverRender(); }
         function riverRender(){ const l=document.getElementById('river-bank-left'); const r=document.getElementById('river-bank-right'); const b=document.getElementById('river-boat'); const draw = (arr, el, loc) => { el.innerHTML = arr.sort((a,b)=>a-b).map(p => `<div onclick="riverClick(${p}, '${loc}')" class="person"><span class="text-2xl">👤</span><span class="person-time">${p}s</span></div>`).join(''); }; draw(riverState.left, l, 'left'); draw(riverState.right, r, 'right'); draw(riverState.boat, b, 'boat'); b.style.left = riverState.side === 'left' ? '35%' : 'calc(100% - 35% - 140px)'; }
@@ -477,6 +477,7 @@
             document.getElementById('graph-left').innerText = "13";
             document.getElementById('graph-solution').classList.add('hidden');
             graphRender();
+            startTimer();
         }
         function graphClick(e) {
             const rect = document.getElementById('graph-canvas').getBoundingClientRect();
@@ -493,7 +494,7 @@
                 if(graphState.current === null) {
                     graphState.current = clickedNode; graphState.path.push(clickedNode); playSound(200);
                 } 
-                // UNDO: Clicking the previou node
+                // UNDO: Clicking the previous node
                 else if (graphState.path.length > 1 && clickedNode === graphState.path[graphState.path.length - 2]) {
                     const u = Math.min(graphState.current, clickedNode);
                     const v = Math.max(graphState.current, clickedNode);
@@ -553,18 +554,18 @@
             sendData('Delivery', 'GiveUp', '-', false);
             const sol = document.getElementById('graph-solution');
             sol.classList.remove('hidden');
-            sol.innerHTML = `<strong class="text-amber-400">Valid Path:</strong> 6 -> 4 -> 5 -> 7 -> 6 -> 8 -> 7 -> 5 -> 3 -> 4 -> 2 -> 5 -> 2 -> 1 -> 3`;
+            sol.innerHTML = `<strong class="text-amber-400">Valid Path:</strong> 6 -> 4 -> 2 -> 1 -> 3 -> 5 -> 7 -> 6 -> 8 -> 7 -> 4 -> 5 -> 2 -> 3 -> 4 (Fail? Try again starting at 6/7)`; 
             graphRender();
         }
         document.getElementById('graph-canvas').addEventListener('mousedown', graphClick);
 
         /* --- GAME 6: BALLS --- */
         // (Preserved Logic)
-        const ballsState={available:[],left:[],right:[],limit:3,cf:null,weighing:false,over:false};function ballsInit(){ballsState.available=Array.from({length:12},(_,i)=>({id:i+1}));ballsState.left=[];ballsState.right=[];ballsState.limit=3;ballsState.weighing=false;ballsState.over=false;ballsState.cf={id:Math.floor(Math.random()*12)+1,status:Math.random()>0.5?'Heavy':'Light'};document.getElementById('balls-logs').innerHTML='';document.getElementById('balls-result-box').className="scale-result bg-slate-700 text-center p-3 rounded-lg font-bold text-slate-200 mb-4 border border-slate-600";document.getElementById('balls-result-box').innerText="Place equal balls to weigh.";document.getElementById('balls-guess-id').innerHTML='<option value="">Ball #</option>'+Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join('');document.getElementById('balls-guess-status').value="";ballsRender()}function ballsMove(id){if(ballsState.weighing||ballsState.over)return;let p=ballsState.available,l=ballsState.left,r=ballsState.right;let idx=p.findIndex(b=>b.id===id);if(idx>-1){l.push(p.splice(idx,1)[0]);playSound(200);ballsRender();return}idx=l.findIndex(b=>b.id===id);if(idx>-1){r.push(l.splice(idx,1)[0]);playSound(200);ballsRender();return}idx=r.findIndex(b=>b.id===id);if(idx>-1){p.push(r.splice(idx,1)[0]);playSound(200);ballsRender();return}}function ballsRender(){const d=(arr,el)=>{el.innerHTML=arr.sort((a,b)=>a.id-b.id).map(b=>`<div class="ball" onclick="ballsMove(${b.id})">${b.id}</div>`).join('')};d(ballsState.available,document.getElementById('balls-pool'));d(ballsState.left,document.getElementById('balls-pan-left'));d(ballsState.right,document.getElementById('balls-pan-right'));document.getElementById('balls-left-count').innerText=ballsState.left.length;document.getElementById('balls-right-count').innerText=ballsState.right.length;document.getElementById('balls-weighs-left').innerText=`Left: ${ballsState.limit}`;document.getElementById('balls-btn-weigh').disabled=ballsState.limit===0||ballsState.left.length!==ballsState.right.length||ballsState.left.length===0||ballsState.weighing||ballsState.over}function ballsWeigh(){if(ballsState.limit<=0)return;ballsState.weighing=true;ballsState.limit--;ballsRender();const b=document.getElementById('balls-result-box');b.className="scale-result bg-indigo-900 text-indigo-200 p-3 rounded-lg font-bold border border-indigo-500";b.innerText="Weighing...";let li=ballsState.left.map(x=>x.id),ri=ballsState.right.map(x=>x.id);let res="Balanced",cls="";if(li.includes(ballsState.cf.id))res=ballsState.cf.status==="Heavy"?"Left Heavy":"Right Heavy";else if(ri.includes(ballsState.cf.id))res=ballsState.cf.status==="Heavy"?"Right Heavy":"Left Heavy";if(res.includes("Left"))cls="left-heavy bg-rose-900/50 text-rose-200 border-rose-500";else if(res.includes("Right"))cls="right-heavy bg-rose-900/50 text-rose-200 border-rose-500";else cls="bg-emerald-900/50 text-emerald-200 border-emerald-500";setTimeout(()=>{b.className=`scale-result p-3 rounded-lg font-bold border-2 ${cls}`;b.innerText=res.toUpperCase();playSound(res==="Balanced"?400:200,res==="Balanced"?'sine':'sawtooth');ballsLog(li,ri,res)},800);setTimeout(()=>{ballsState.available.push(...ballsState.left,...ballsState.right);ballsState.left=[];ballsState.right=[];ballsState.weighing=false;ballsRender();b.className="scale-result bg-slate-700 text-center p-3 rounded-lg font-bold text-slate-200 mb-4 border border-slate-600";b.innerText="Place equal balls to weigh."},3500)}function ballsLog(l,r,res){const d=document.createElement('div');d.className="p-3 mb-2 rounded bg-slate-800 border-l-4 "+(res.includes("Balanced")?"border-emerald-500":"border-rose-500");d.innerHTML=`<div class="flex justify-between font-bold text-xs text-slate-400"><span>Weighing ${3-ballsState.limit}</span><span>${res}</span></div><div class="text-sm text-slate-200 mt-1">L:[${l}] vs R:[${r}]</div>`;document.getElementById('balls-logs').prepend(d)}function ballsCheck(){const i=parseInt(document.getElementById('balls-guess-id').value);const s=document.getElementById('balls-guess-status').value;if(!i||!s)return alert("Pick Ball & Status");ballsState.over=true;ballsRender();const w=(i===ballsState.cf.id&&s===ballsState.cf.status);const b=document.getElementById('balls-result-box');b.className=w?"scale-result bg-emerald-600 text-white p-4 rounded-xl font-bold text-xl":"scale-result bg-red-600 text-white p-4 rounded-xl font-bold text-xl";b.innerHTML=w?"VICTORY!":"WRONG.";playSound(w?600:100,w?'sine':'sawtooth');sendData('12 Balls', w?'Win':'Fail', '-', true);}
+        const ballsState={available:[],left:[],right:[],limit:3,cf:null,weighing:false,over:false};function ballsInit(){ballsState.available=Array.from({length:12},(_,i)=>({id:i+1}));ballsState.left=[];ballsState.right=[];ballsState.limit=3;ballsState.weighing=false;ballsState.over=false;ballsState.cf={id:Math.floor(Math.random()*12)+1,status:Math.random()>0.5?'Heavy':'Light'};document.getElementById('balls-logs').innerHTML='';document.getElementById('balls-result-box').className="scale-result bg-slate-700 text-center p-3 rounded-lg font-bold text-slate-200 mb-4 border border-slate-600";document.getElementById('balls-result-box').innerText="Place equal balls to weigh.";document.getElementById('balls-guess-id').innerHTML='<option value="">Ball #</option>'+Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join('');document.getElementById('balls-guess-status').value="";ballsRender();startTimer();}function ballsMove(id){if(ballsState.weighing||ballsState.over)return;let p=ballsState.available,l=ballsState.left,r=ballsState.right;let idx=p.findIndex(b=>b.id===id);if(idx>-1){l.push(p.splice(idx,1)[0]);playSound(200);ballsRender();return}idx=l.findIndex(b=>b.id===id);if(idx>-1){r.push(l.splice(idx,1)[0]);playSound(200);ballsRender();return}idx=r.findIndex(b=>b.id===id);if(idx>-1){p.push(r.splice(idx,1)[0]);playSound(200);ballsRender();return}}function ballsRender(){const d=(arr,el)=>{el.innerHTML=arr.sort((a,b)=>a.id-b.id).map(b=>`<div class="ball" onclick="ballsMove(${b.id})">${b.id}</div>`).join('')};d(ballsState.available,document.getElementById('balls-pool'));d(ballsState.left,document.getElementById('balls-pan-left'));d(ballsState.right,document.getElementById('balls-pan-right'));document.getElementById('balls-left-count').innerText=ballsState.left.length;document.getElementById('balls-right-count').innerText=ballsState.right.length;document.getElementById('balls-weighs-left').innerText=`Left: ${ballsState.limit}`;document.getElementById('balls-btn-weigh').disabled=ballsState.limit===0||ballsState.left.length!==ballsState.right.length||ballsState.left.length===0||ballsState.weighing||ballsState.over}function ballsWeigh(){if(ballsState.limit<=0)return;ballsState.weighing=true;ballsState.limit--;ballsRender();const b=document.getElementById('balls-result-box');b.className="scale-result bg-indigo-900 text-indigo-200 p-3 rounded-lg font-bold border border-indigo-500";b.innerText="Weighing...";let li=ballsState.left.map(x=>x.id),ri=ballsState.right.map(x=>x.id);let res="Balanced",cls="";if(li.includes(ballsState.cf.id))res=ballsState.cf.status==="Heavy"?"Left Heavy":"Right Heavy";else if(ri.includes(ballsState.cf.id))res=ballsState.cf.status==="Heavy"?"Right Heavy":"Left Heavy";if(res.includes("Left"))cls="left-heavy bg-rose-900/50 text-rose-200 border-rose-500";else if(res.includes("Right"))cls="right-heavy bg-rose-900/50 text-rose-200 border-rose-500";else cls="bg-emerald-900/50 text-emerald-200 border-emerald-500";setTimeout(()=>{b.className=`scale-result p-3 rounded-lg font-bold border-2 ${cls}`;b.innerText=res.toUpperCase();playSound(res==="Balanced"?400:200,res==="Balanced"?'sine':'sawtooth');ballsLog(li,ri,res)},800);setTimeout(()=>{ballsState.available.push(...ballsState.left,...ballsState.right);ballsState.left=[];ballsState.right=[];ballsState.weighing=false;ballsRender();b.className="scale-result bg-slate-700 text-center p-3 rounded-lg font-bold text-slate-200 mb-4 border border-slate-600";b.innerText="Place equal balls to weigh."},3500)}function ballsLog(l,r,res){const d=document.createElement('div');d.className="p-3 mb-2 rounded bg-slate-800 border-l-4 "+(res.includes("Balanced")?"border-emerald-500":"border-rose-500");d.innerHTML=`<div class="flex justify-between font-bold text-xs text-slate-400"><span>Weighing ${3-ballsState.limit}</span><span>${res}</span></div><div class="text-sm text-slate-200 mt-1">L:[${l}] vs R:[${r}]</div>`;document.getElementById('balls-logs').prepend(d)}function ballsCheck(){const i=parseInt(document.getElementById('balls-guess-id').value);const s=document.getElementById('balls-guess-status').value;if(!i||!s)return alert("Pick Ball & Status");ballsState.over=true;ballsRender();const w=(i===ballsState.cf.id&&s===ballsState.cf.status);const b=document.getElementById('balls-result-box');b.className=w?"scale-result bg-emerald-600 text-white p-4 rounded-xl font-bold text-xl":"scale-result bg-red-600 text-white p-4 rounded-xl font-bold text-xl";b.innerHTML=w?"VICTORY!":"WRONG.";playSound(w?600:100,w?'sine':'sawtooth');sendData('12 Balls', w?'Win':'Fail', '-', true);}
         function ballsGiveUp(){ballsState.over=true;ballsRender();const b=document.getElementById('balls-result-box');b.className="scale-result bg-slate-600 text-white p-4 rounded-xl font-bold";b.innerHTML=`Gave Up. Counterfeit: Ball ${ballsState.cf.id} (${ballsState.cf.status})`;sendData('12 Balls', 'GiveUp', '-', false);}
 
         /* --- GAME 7: HORSES (CLICK MOVE) --- */
-        let horseState={pool:[],track:[],races:0,speeds:{}};function horseInit(){horseState.pool=Array.from({length:25},(_,i)=>i+1);horseState.track=[];horseState.races=0;const s=Array.from({length:25},(_,i)=>i+1);for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]]}horseState.speeds={};for(let i=1;i<=25;i++)horseState.speeds[i]=s[i-1];document.getElementById('horse-logs').innerHTML='<p class="text-slate-600 italic text-center mt-10">No races yet.</p>';document.getElementById('horse-race-count').innerText='Races: 0';document.getElementById('horse-final-msg').innerText='';['h-pred-1','h-pred-2','h-pred-3'].forEach(id=>document.getElementById(id).value='');horseRenderGridStructure();horseRender()}function horseRenderGridStructure(){const g=document.getElementById('horse-grid');g.innerHTML='';['A','B','C','D','E'].forEach(row=>{let html=`<div class="grid grid-cols-6 gap-1"><div class="flex items-center justify-center font-bold text-slate-500 text-xs">${row}</div>`;for(let i=0;i<5;i++)html+=`<div id="grid-${row}-${i}" class="grid-slot" ondrop="horseDrop(event, 'grid-${row}-${i}')" ondragover="allowDrop(event)"></div>`;html+='</div>';g.innerHTML+=html})}function allowDrop(ev){ev.preventDefault()}function horseDrag(ev,id){ev.dataTransfer.setData("text",id)}function horseDrop(ev,targetId){ev.preventDefault();const id=parseInt(ev.dataTransfer.getData("text"));if(!id)return;const poolIdx=horseState.pool.indexOf(id);if(poolIdx>-1)horseState.pool.splice(poolIdx,1);const trackIdx=horseState.track.indexOf(id);if(trackIdx>-1)horseState.track.splice(trackIdx,1);document.querySelectorAll('.horse-in-grid').forEach(el=>{if(parseInt(el.innerText)===id)el.remove()});if(targetId==='pool')horseState.pool.push(id);else if(targetId==='track'){if(horseState.track.length<5)horseState.track.push(id);else horseState.pool.push(id)}else if(targetId.startsWith('grid-')){const slot=document.getElementById(targetId);if(slot.children.length>0)horseState.pool.push(parseInt(slot.children[0].innerText));horseRender();const hDiv=document.createElement('div');hDiv.className="horse horse-in-grid";hDiv.draggable=true;hDiv.innerText=id;hDiv.ondragstart=(e)=>horseDrag(e,id);hDiv.onclick=()=>horseReturnFromGrid(id);slot.innerHTML='';slot.appendChild(hDiv);return}horseRender()}
+        let horseState={pool:[],track:[],races:0,speeds:{}};function horseInit(){horseState.pool=Array.from({length:25},(_,i)=>i+1);horseState.track=[];horseState.races=0;const s=Array.from({length:25},(_,i)=>i+1);for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]]}horseState.speeds={};for(let i=1;i<=25;i++)horseState.speeds[i]=s[i-1];document.getElementById('horse-logs').innerHTML='<p class="text-slate-600 italic text-center mt-10">No races yet.</p>';document.getElementById('horse-race-count').innerText='Races: 0';document.getElementById('horse-final-msg').innerText='';['h-pred-1','h-pred-2','h-pred-3'].forEach(id=>document.getElementById(id).value='');horseRenderGridStructure();horseRender();startTimer();}function horseRenderGridStructure(){const g=document.getElementById('horse-grid');g.innerHTML='';['A','B','C','D','E'].forEach(row=>{let html=`<div class="grid grid-cols-6 gap-1"><div class="flex items-center justify-center font-bold text-slate-500 text-xs">${row}</div>`;for(let i=0;i<5;i++)html+=`<div id="grid-${row}-${i}" class="grid-slot" ondrop="horseDrop(event, 'grid-${row}-${i}')" ondragover="allowDrop(event)"></div>`;html+='</div>';g.innerHTML+=html})}function allowDrop(ev){ev.preventDefault()}function horseDrag(ev,id){ev.dataTransfer.setData("text",id)}function horseDrop(ev,targetId){ev.preventDefault();const id=parseInt(ev.dataTransfer.getData("text"));if(!id)return;const poolIdx=horseState.pool.indexOf(id);if(poolIdx>-1)horseState.pool.splice(poolIdx,1);const trackIdx=horseState.track.indexOf(id);if(trackIdx>-1)horseState.track.splice(trackIdx,1);document.querySelectorAll('.horse-in-grid').forEach(el=>{if(parseInt(el.innerText)===id)el.remove()});if(targetId==='pool')horseState.pool.push(id);else if(targetId==='track'){if(horseState.track.length<5)horseState.track.push(id);else horseState.pool.push(id)}else if(targetId.startsWith('grid-')){const slot=document.getElementById(targetId);if(slot.children.length>0)horseState.pool.push(parseInt(slot.children[0].innerText));horseRender();const hDiv=document.createElement('div');hDiv.className="horse horse-in-grid";hDiv.draggable=true;hDiv.innerText=id;hDiv.ondragstart=(e)=>horseDrag(e,id);hDiv.onclick=()=>horseReturnFromGrid(id);slot.innerHTML='';slot.appendChild(hDiv);return}horseRender()}
         
         function horseReturnFromGrid(id) {
             document.querySelectorAll('.horse-in-grid').forEach(el => { if (parseInt(el.innerText) === id) el.remove(); });
@@ -600,6 +601,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateAuthUI();
             jugInit(); bulbInit(); catInit(); riverInit(); graphInit(); ballsInit(); horseInit();
+            switchTab('jugs'); // Default
         });
     </script>
 </body>

@@ -92,7 +92,6 @@
                     
                     <!-- TIMER & LOGIN -->
                     <div class="flex items-center space-x-3">
-                        <!-- Timer Toggle: Hidden by default, reveals on click -->
                         <div id="global-timer" onclick="toggleTimer()" class="cursor-pointer text-slate-500 font-mono font-bold text-sm bg-slate-800 px-3 py-1 rounded border border-slate-600 hover:text-white hover:border-slate-500 transition-all select-none" title="Click to show/hide time">
                             ⏱️ Time
                         </div>
@@ -158,10 +157,7 @@
                             <div class="flex justify-between items-center mb-6"><div class="text-slate-400 font-mono text-sm uppercase">Timer: <span id="bulb-timer" class="text-2xl text-white font-bold ml-2">00m</span></div><button onclick="bulbWait()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg border border-slate-500 flex items-center transition transform hover:scale-105"><span>⏱️ Wait 10 Minutes</span></button></div>
                             <div class="grid grid-cols-4 gap-8" id="bulb-switches-ui"></div>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <p id="bulb-status" class="text-slate-400 font-bold text-sm ml-4">Configure switches before entering.</p>
-                            <button onclick="bulbEnterRoom()" class="w-1/2 py-4 bg-red-600 hover:bg-red-500 text-white font-bold text-xl rounded-xl shadow-lg transition">ENTER ROOM (Irreversible)</button>
-                        </div>
+                        <button onclick="bulbEnterRoom()" class="w-full py-4 bg-red-600 hover:bg-red-500 text-white font-bold text-xl rounded-xl shadow-lg transition">ENTER ROOM (Irreversible)</button>
                     </div>
                     <div id="bulb-phase-2" class="hidden">
                         <h3 class="text-2xl font-bold text-emerald-400 mb-4 text-center">🚪 Inside the Room</h3>
@@ -284,7 +280,7 @@
                     <div class="bg-slate-900/50 rounded-xl p-6 mb-6 relative">
                         <div class="flex justify-center space-x-8 mb-4"><div class="w-1/2"><p class="text-center text-xs text-slate-500 font-bold mb-1">LEFT (<span id="balls-left-count">0</span>)</p><div id="balls-pan-left" class="pan"></div></div><div class="w-1/2"><p class="text-center text-xs text-slate-500 font-bold mb-1">RIGHT (<span id="balls-right-count">0</span>)</p><div id="balls-pan-right" class="pan"></div></div></div>
                         <div id="balls-result-box" class="scale-result bg-slate-700 text-center p-3 rounded-lg font-bold text-slate-200 mb-4 border border-slate-600"></div>
-                        <div class="flex justify-center space-x-4"><button id="balls-btn-weigh" onclick="ballsWeigh()" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition shadow-lg">WEIGH</button><button onclick="ballsGiveUp()" class="px-6 py-3 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-xl">Give Up</button></div>
+                        <div class="flex justify-center space-x-4"><button id="balls-btn-weigh" onclick="ballsWeigh()" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition shadow-lg">WEIGH</button></div>
                         <p id="balls-weighs-left" class="absolute top-4 right-4 text-xl font-bold text-indigo-400">Left: 3</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -325,7 +321,6 @@
                             <div class="p-4 bg-indigo-900/30 border border-indigo-700 rounded-xl">
                                 <div class="flex space-x-2 mb-2"><input type="number" id="h-pred-1" placeholder="#1" class="bg-slate-900 border border-slate-600 rounded p-2 w-full text-white text-center"><input type="number" id="h-pred-2" placeholder="#2" class="bg-slate-900 border border-slate-600 rounded p-2 w-full text-white text-center"><input type="number" id="h-pred-3" placeholder="#3" class="bg-slate-900 border border-slate-600 rounded p-2 w-full text-white text-center"></div>
                                 <button onclick="horseCheck()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg mb-2">Submit Top 3</button>
-                                <button onclick="horseGiveUp()" class="w-full py-2 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-lg">Give Up & Show Answer</button>
                                 <p id="horse-final-msg" class="text-center mt-2 font-bold text-sm"></p>
                             </div>
                         </div>
@@ -353,21 +348,22 @@
 
     <!-- HINTS -->
     <div id="modal-jugs" class="modal" onclick="closeModal('modal-jugs')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: 3 Jugs</h3><p class="text-slate-300">Focus on creating a 1-Litre difference. Can you get exactly 1L in a jug? If you have 5L and pour into a 3L jug, what is left?</p><button onclick="closeModal('modal-jugs')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
-    <div id="modal-bulbs" class="modal" onclick="closeModal('modal-bulbs')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Quad-Bulb</h3><p class="text-slate-300">You need 4 states for 4 bulbs. State 1: ON. State 2: OFF. State 3: ...? <br>Use the "Wait" button. Heat accumulates. A bulb that was ON for 20 mins is hotter than one ON for 2 mins. Create 4 distinct heat signatures (Hot, Warm, Cold, Lit).</p><button onclick="closeModal('modal-bulbs')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
-    <div id="modal-cat" class="modal" onclick="closeModal('modal-cat')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Quantum Cat</h3><p class="text-slate-300">The board is a checkerboard (Black/White). The cat MUST swap colours every move. If you assume it started on White (Even), you can sweep those. If you miss, it must have started on Black (Odd)... but after 3 days, its colour has flipped. It's effectively on White relative to the board now.</p><button onclick="closeModal('modal-cat')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
-    <div id="modal-balls" class="modal" onclick="closeModal('modal-balls')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: 12 Balls</h3><p class="text-slate-300">Start 4 vs 4. If balanced, the issue is in the unweighed 4. If unbalanced, you have 8 suspects. Mix them up in weighing 2 to isolate the change.</p><button onclick="closeModal('modal-balls')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
-    <div id="modal-horses" class="modal" onclick="closeModal('modal-horses')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: 25 Horses</h3><p class="text-slate-300">Don't try to find who IS fast. Find who IS NOT.<br>1. Race all groups (5 races).<br>2. Race the winners (Race 6).<br>3. The winner of Race 6 is the fastest overall.<br>4. Look at the grid. If a horse lost to someone who lost to someone else... can they be Top 3?</p><button onclick="closeModal('modal-horses')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
-    <div id="modal-river" class="modal" onclick="closeModal('modal-river')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: River Crossing</h3><p class="text-slate-300">Don't make the fastest person (1s) do all the work. If 1 takes 12 across, they waste 12s. You need to move the two slowest people (8s and 12s) <strong>together</strong> so their time overlaps. But how do you get the boat back?</p><button onclick="closeModal('modal-river')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
-    <div id="modal-graph" class="modal" onclick="closeModal('modal-graph')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Delivery</h3><p class="text-slate-300">Count the number of lines connected to each node (The Degree). In Graph Theory, to traverse every line exactly once, you must start at a node with an <strong>ODD</strong> number of connections.</p><button onclick="closeModal('modal-graph')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
-    <div id="modal-spider" class="modal" onclick="closeModal('modal-spider')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: The Spider</h3><p class="text-slate-300">The web is a 21-node grid (4 rings + centre). The fly tries to maximize distance from you. You can't just chase it. You must corner it against the edge or the centre. Look for "dead ends" in the movement logic.</p><button onclick="closeModal('modal-spider')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+    <div id="modal-bulbs" class="modal" onclick="closeModal('modal-bulbs')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Quad-Bulb</h3><p class="text-slate-300">You need to identify 4 specific bulbs, but you only have 2 visual states (ON/OFF). What physical property changes over time?</p><button onclick="closeModal('modal-bulbs')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+    <div id="modal-cat" class="modal" onclick="closeModal('modal-cat')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Quantum Cat</h3><p class="text-slate-300">The cat alternates between Odd and Even boxes every night. How can you use this 'Parity' to trap it?</p><button onclick="closeModal('modal-cat')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+    <div id="modal-balls" class="modal" onclick="closeModal('modal-balls')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: 12 Balls</h3><p class="text-slate-300">Start with a 4 vs 4 weighing. Think about how to split the remaining suspects to maximize information gain in the second step.</p><button onclick="closeModal('modal-balls')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+    <div id="modal-horses" class="modal" onclick="closeModal('modal-horses')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: 25 Horses</h3><p class="text-slate-300">Start by racing 5 groups. Once you have the winners, think about which horses are strictly eliminated and which still have a chance.</p><button onclick="closeModal('modal-horses')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+    <div id="modal-river" class="modal" onclick="closeModal('modal-river')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: River Crossing</h3><p class="text-slate-300">Strategy: The two slowest people (8s and 12s) are the bottleneck. They must cross together to save time.</p><button onclick="closeModal('modal-river')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+    <div id="modal-graph" class="modal" onclick="closeModal('modal-graph')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Delivery</h3><p class="text-slate-300">Count the lines connected to each dot. An Eulerian path is the only possible approach.</p><button onclick="closeModal('modal-graph')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+    <div id="modal-spider" class="modal" onclick="closeModal('modal-spider')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: The Spider</h3><p class="text-slate-300">Think about how to trap a target in a grid. Reduce their available moves by occupying key intersections.</p><button onclick="closeModal('modal-spider')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
 
     <script>
         // --- SYSTEM: UTILS & DATA ---
         let currentUser = localStorage.getItem('logic_user') || null;
+        // Constant API URL
         const apiUrl = "https://script.google.com/macros/s/AKfycbxlaaj_TLDH0LyWWm1BAVQ9vdlL8fPo1AvBQu3a707Z2WNnZnkdaMKJPzZk5VwN6rQ/exec";
         let timerInterval = null;
         let startTime = 0;
-        let timerVisible = false; 
+        let timerVisible = false; // Default Hidden
 
         document.addEventListener('DOMContentLoaded', () => {
             updateAuthUI();
@@ -492,14 +488,17 @@
         }
         function riverRender(){ const l=document.getElementById('river-bank-left'); const r=document.getElementById('river-bank-right'); const b=document.getElementById('river-boat'); const draw = (arr, el, loc) => { el.innerHTML = arr.sort((a,b)=>a-b).map(p => `<div onclick="riverClick(${p}, '${loc}')" class="person"><span class="text-2xl">👤</span><span class="person-time">${p}s</span></div>`).join(''); }; draw(riverState.left, l, 'left'); draw(riverState.right, r, 'right'); draw(riverState.boat, b, 'boat'); b.style.left = riverState.side === 'left' ? '35%' : 'calc(100% - 35% - 140px)'; }
         function riverCheck(){ if(riverState.right.length === 5 && riverState.boat.length === 0) { if(riverState.time <= 30) { riverState.solved = true; const msg = document.getElementById('river-status'); msg.innerText = `VICTORY! Solved in ${riverState.time}s (Optimal is 29s).`; msg.className = "text-emerald-400 font-bold text-xl animate-bounce"; playSound(600); sendData('River', 'Win', riverState.time, riverState.time<=29); } } }
-        function riverGiveUp() { riverState.fail = true; const sol = document.getElementById('river-solution'); sol.classList.remove('hidden'); sol.innerHTML = `<strong class="text-amber-400 block mb-2">Optimal Solution (29s):</strong> 1. 1 & 3 cross (3s) &rarr; 1 returns (1s) [4s]<br> 2. 8 & 12 cross (12s) &rarr; 3 returns (3s) [19s]<br> 3. 1 & 6 cross (6s) &rarr; 1 returns (1s) [26s]<br> 4. 1 & 3 cross (3s) [Total: 29s]`; playSound(150,'sawtooth'); sendData('River', 'GiveUp', '-', false); }
+        function riverGiveUp() { 
+            riverState.fail = true; 
+            const sol = document.getElementById('river-solution'); 
+            sol.classList.remove('hidden'); 
+            sol.innerHTML = `<strong class="text-amber-400 block mb-2">Strategy:</strong> The two slowest people (8s and 12s) are the bottleneck. They must cross <strong>together</strong> to save time.`; 
+            playSound(150,'sawtooth'); 
+            sendData('River', 'GiveUp', '-', false); 
+        }
 
         /* --- GAME 5: SPIDER (CORRECTED TOPOLOGY: 21 NODES) --- */
         let spiderState = { player: 12, spider: 4, moves: 15, over: false }; 
-        
-        // 21 Nodes: 0 (Center), 1-4 (Ray 0), 5-8 (Ray 1), 9-12 (Ray 2), 13-16 (Ray 3), 17-20 (Ray 4)
-        // 5 Rays (x,y,z,m,n) -> Indices 0, 1, 2, 3, 4
-        // 4 Rings -> Indices 0, 1, 2, 3 (Node IDs are RingIndex + 1 + RayIndex*4)
         
         function getSpiderNeighbors(id) {
             const n = [];
@@ -528,8 +527,6 @@
         }
 
         function spiderInit() {
-            // Player (Blue - Charlotte): Ray z (2), Outer (Ring 3) -> ID 12
-            // Prey (Pink - Shelob): Ray x (0), Outer (Ring 3) -> ID 4
             spiderState = { player: 12, spider: 4, moves: 15, over: false }; 
             document.getElementById('spider-status').innerText = "Your Turn. Click a connected node.";
             document.getElementById('spider-status').className = "text-slate-300 font-mono text-lg";
@@ -761,13 +758,13 @@
         function graphGiveUp() {
             if(graphState.over) return;
             graphState.over = true;
-            document.getElementById('graph-status').innerText = "GAVE UP. Valid Starts: Nodes 6 or 7 (Odd Degree).";
+            document.getElementById('graph-status').innerText = "GAVE UP. Look closely at the node connections.";
             document.getElementById('graph-status').className = "text-rose-400 font-bold";
             playSound(150, 'sawtooth');
             sendData('Delivery', 'GiveUp', '-', false);
             const sol = document.getElementById('graph-solution');
             sol.classList.remove('hidden');
-            sol.innerHTML = `<strong class="text-amber-400">Valid Path:</strong> 6 -> 4 -> 2 -> 1 -> 3 -> 5 -> 7 -> 6 -> 8 -> 7 -> 4 -> 5 -> 2 -> 3 -> 4 (Fail? Try again starting at 6/7)`; 
+            sol.innerHTML = `<strong class="text-amber-400">Hint:</strong> Count the lines connected to each dot. An Eulerian path is the only possible approach.`; 
             graphRender();
         }
         document.getElementById('graph-canvas').addEventListener('mousedown', graphClick);

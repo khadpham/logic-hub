@@ -508,32 +508,29 @@
 
        // Data Logic
         function sendData(game, result, details, optimal) {
-            // Calculate duration based on the global startTime
-            // We use the global 'startTime' variable set by startTimer()
+            // Calculate duration
             const currentDuration = Math.floor((Date.now() - startTime) / 1000);
 
-            console.log(`Sending: ${game} | ${result} | Metric: ${details} | Time: ${currentDuration}s`);
+            console.log(`Sending Data: Game=${game}, Metric=${details}, Time=${currentDuration}s`);
             
             const payload = {
                 user: currentUser || "Guest",
-                game: game,       // This maps to Puzzle_Name
-                result: result,   // This maps to Result
-                details: details, // This maps to Metric
-                optimal: optimal, // This maps to Is_Optimal
-                duration: currentDuration // This maps to Duration_Sec
+                game: game,                // MATCHES 'var puzzle = data.game'
+                result: result,
+                metric: details,           // MATCHES 'var metric = data.metric'
+                optimal: optimal,
+                duration: currentDuration  // MATCHES 'var duration = data.duration'
             };
 
             fetch(apiUrl, {
                 method: "POST",
-                mode: "no-cors", // Important for Google Scripts
-                headers: {
-                    "Content-Type": "text/plain;charset=utf-8"
-                },
+                mode: "no-cors", 
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify(payload)
             }).then(() => {
-                console.log("Data sent to Sheet.");
+                console.log("Sent to Sheet.");
             }).catch(err => {
-                console.error("Failed to send data:", err);
+                console.error("Failed:", err);
             });
         }
         // --- PROGRESSION SYSTEM ---
@@ -1238,5 +1235,3 @@
     </script>
 </body>
 </html>
-
-

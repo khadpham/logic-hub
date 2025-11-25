@@ -559,6 +559,7 @@
         function toggleTimer() { timerVisible = !timerVisible; updateTimerDisplay(); }
 
         // --- GAME LOGIC STARTS HERE ---
+		
 		/* --- GAME 1: 3 JUGS (Visible -> Immediate Reset) --- */
         let jugState = { jugs:[8,0,0], caps:[8,5,3], selected:null, solved:false, moves:0 };
         function jugInit(){ jugState.jugs=[8,0,0]; jugState.selected=null; jugState.solved=false; jugState.moves=0; document.getElementById('jug-status').innerText="Select a jug to pour from."; document.getElementById('jug-status').className="text-slate-300 font-mono text-lg"; document.getElementById('jug-moves').innerText="0"; jugRender(); }
@@ -572,30 +573,30 @@
             sendData('3 Jugs', 'GiveUp', '-', false); 
         }
 
-        /* --- GAME 2: BULBS (Hidden -> 4s Delay + FORCED VISUAL RESET) --- */
+        /* --- GAME 2: BULBS (Hidden Info -> 4s Delay) --- */
         let bulbState={map:{},switches:{},over:false,entered:false,time:0};
         const bulbNames=['A','B','C','D'];
         
         function bulbInit(){
-            // 1. Reset Logic State
+            // 1. Reset Data
             bulbState.map={1:null,2:null,3:null,4:null};
             let s=['A','B','C','D'].sort(()=>Math.random()-0.5);
             [1,2,3,4].forEach((n,i)=>bulbState.map[n]=s[i]);
             bulbState.switches={A:{on:false,heat:0},B:{on:false,heat:0},C:{on:false,heat:0},D:{on:false,heat:0}};
             bulbState.over=false;bulbState.entered=false;bulbState.time=0;
             
-            // 2. Reset UI Elements
+            // 2. Reset UI
             document.getElementById('bulb-phase-1').classList.remove('hidden');
             document.getElementById('bulb-phase-2').classList.add('hidden');
             document.getElementById('bulb-final-msg').innerText="";
             document.getElementById('bulb-timer').innerText="00m";
             updateStatus('bulb-status', "Configure switches before entering.");
             
-            // 3. CRITICAL FIX: Wipe the container to remove old buttons instantly
+            // 3. FORCE RE-RENDER (Clear container)
             const container = document.getElementById('bulb-switches-ui');
             if(container) container.innerHTML = ''; 
             
-            // 4. Rebuild buttons from scratch (all OFF)
+            // 4. Rebuild
             bulbRenderSwitches();
         }
         
@@ -611,7 +612,7 @@
         function bulbRenderSwitches(){
             const c=document.getElementById('bulb-switches-ui');
             if(!c) return;
-            c.innerHTML=''; // Clear again to be safe
+            c.innerHTML='';
             bulbNames.forEach(id=>{
                 const s=bulbState.switches[id];
                 const bg=s.on?"bg-emerald-900/50 border-emerald-500":"bg-slate-900 border-slate-700";
@@ -633,7 +634,22 @@
                 g.innerHTML+=`<div class="flex items-center justify-between bg-slate-800 p-2 rounded border border-slate-600"><span class="font-bold text-slate-400 mr-2">B${n}:</span><select id="bulb-guess-${n}" class="bg-slate-900 text-white p-1 rounded w-full"><option value="">?</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>`
             })
         }
-        function bulbCheck(){let c=0;[1,2,3,4].forEach(n=>{if(document.getElementById(`bulb-guess-${n}`).value===bulbState.map[n])c++});const m=document.getElementById('bulb-final-msg');if(c===4){m.className="text-emerald-400 mt-4 text-center font-bold text-xl";m.innerText="VICTORY!";sendData('4 Switches', 'Win', '-', true); markComplete('bulbs', true);}else{m.className="text-rose-400 mt-4 text-center font-bold";m.innerText=`Incorrect. ${c}/4 right.`;sendData('4 Switches', 'Fail', c+'/4', false);}}
+        function bulbCheck(){
+            let c=0;
+            [1,2,3,4].forEach(n=>{if(document.getElementById(`bulb-guess-${n}`).value===bulbState.map[n])c++});
+            const m=document.getElementById('bulb-final-msg');
+            if(c===4){
+                const isOptimal = (bulbState.time <= 20); // NEW CONSTRAINT
+                m.className="text-emerald-400 mt-4 text-center font-bold text-xl";
+                m.innerText= isOptimal ? "PERFECT! Logic Master." : "Correct, but too much waiting.";
+                sendData('4 Switches', 'Win', `Waited ${bulbState.time}m`, isOptimal); 
+                markComplete('bulbs', isOptimal);
+            } else {
+                m.className="text-rose-400 mt-4 text-center font-bold";
+                m.innerText=`Incorrect. ${c}/4 right.`;
+                sendData('4 Switches', 'Fail', c+'/4', false);
+            }
+        }
         function bulbGiveUp(){ 
             if(!bulbState.entered) bulbEnterRoom(); 
             const m = document.getElementById('bulb-final-msg'); 
@@ -760,21 +776,15 @@
         }
 
         function getSpiderNodePos(id) {
-            // Canvas: 650w x 550h, Vertex Right
-            const cx = 600; 
-            const cy = 275; 
-            
+            const cx = 600; const cy = 275; 
             if (id === 0) return { x: cx, y: cy };
-
             const val = id - 1;
             const ray = Math.floor(val / 4); 
             const ring = val % 4; 
-
             const dist = 100 + (ring * 120); 
             const baseAngle = Math.PI; 
             const angleStep = 0.28; 
             const angle = baseAngle + ((ray - 2) * angleStep);
-            
             return { x: cx + (dist * Math.cos(angle)), y: cy + (dist * Math.sin(angle)) };
         }
 
@@ -826,7 +836,6 @@
             const neighbors = getSpiderNeighbors(spiderState.spider);
             let bestMove = -1;
             let maxDist = -1;
-            
             neighbors.forEach(n => {
                 const pPos = getSpiderNodePos(spiderState.player);
                 const nPos = getSpiderNodePos(n);
@@ -859,7 +868,7 @@
             document.getElementById('spider-status').className = "text-rose-400 font-bold";
             playSound(150, 'sawtooth');
             sendData('Spider', 'Fail', '-', false);
-            setTimeout(spiderInit, 3000); // Auto reset 3s
+            setTimeout(spiderInit, 3000); 
         }
 
         function spiderGiveUp() {

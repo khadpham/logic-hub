@@ -74,7 +74,7 @@
     <header class="bg-slate-900 border-b border-slate-700 shadow-lg z-10">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2 cursor-pointer" onclick="switchTab('about')">
                     <span class="text-2xl">🧠</span>
                     <h1 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 hidden sm:block">Dan's Logic Hub</h1>
                 </div>
@@ -92,6 +92,7 @@
                     
                     <!-- TIMER & LOGIN -->
                     <div class="flex items-center space-x-3">
+                        <!-- Timer Toggle: Hidden by default, reveals on click -->
                         <div id="global-timer" onclick="toggleTimer()" class="cursor-pointer text-slate-500 font-mono font-bold text-sm bg-slate-800 px-3 py-1 rounded border border-slate-600 hover:text-white hover:border-slate-500 transition-all select-none" title="Click to show/hide time">
                             ⏱️ Time
                         </div>
@@ -101,7 +102,8 @@
             </div>
             <!-- Mobile Nav -->
             <div class="md:hidden flex overflow-x-auto space-x-1 px-2 pb-2">
-                <button onclick="switchTab('jugs')" class="tab-btn active px-3 py-2 text-xs font-bold text-blue-400">3</button>
+                <button onclick="switchTab('about')" class="tab-btn active px-3 py-2 text-xs font-bold">About</button>
+                <button onclick="switchTab('jugs')" class="tab-btn px-3 py-2 text-xs font-bold text-blue-400">3</button>
                 <button onclick="switchTab('bulbs')" class="tab-btn px-3 py-2 text-xs font-bold">4</button>
                 <button onclick="switchTab('cat')" class="tab-btn px-3 py-2 text-xs font-bold">5</button>
                 <button onclick="switchTab('river')" class="tab-btn px-3 py-2 text-xs font-bold text-emerald-400">5p</button>
@@ -117,8 +119,36 @@
     <main class="flex-1 overflow-y-auto bg-slate-900 p-4 sm:p-6">
         <div class="max-w-5xl mx-auto">
 
+            <!-- 0. ABOUT (WELCOME) -->
+            <div id="game-about" class="game-section">
+                <div class="bg-slate-800 rounded-2xl p-8 border border-slate-700 shadow-xl text-center">
+                    <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 mb-4">Welcome to Logic Training</h1>
+                    <p class="text-slate-300 text-lg mb-8 max-w-2xl mx-auto">This hub is designed to challenge your problem-solving skills. These puzzles require more than just guessing—they require <strong>systematic thinking</strong>.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-left">
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
+                            <span class="text-2xl mb-2 block">🧠</span>
+                            <h3 class="font-bold text-white">Pure Logic</h3>
+                            <p class="text-slate-400 text-sm">No tricks. Every puzzle has a mathematically optimal solution.</p>
+                        </div>
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
+                            <span class="text-2xl mb-2 block">📉</span>
+                            <h3 class="font-bold text-white">Trial & Error</h3>
+                            <p class="text-slate-400 text-sm">Mistakes are part of the fun. Learn from them to find the right path.</p>
+                        </div>
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
+                            <span class="text-2xl mb-2 block">⏱️</span>
+                            <h3 class="font-bold text-white">High Score</h3>
+                            <p class="text-slate-400 text-sm">Solving isn't enough. Can you solve it in the minimum number of steps?</p>
+                        </div>
+                    </div>
+
+                    <button onclick="switchTab('jugs')" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xl rounded-xl shadow-lg transition transform hover:scale-105">Start Training</button>
+                </div>
+            </div>
+
             <!-- 1. 3 JUGS -->
-            <div id="game-jugs" class="game-section">
+            <div id="game-jugs" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
                         <div>
@@ -128,6 +158,7 @@
                         <div class="flex space-x-2">
                             <button onclick="jugInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button>
                             <button onclick="openModal('modal-jugs')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
+                            <button onclick="openModal('modal-math-jugs')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button>
                         </div>
                     </div>
                     <div class="flex flex-wrap justify-center items-end gap-12 mb-8 pt-8">
@@ -135,7 +166,8 @@
                         <div class="text-center"><div class="text-slate-400 font-bold mb-2">5L Jug</div><div id="jug-1" onclick="jugClick(1)" class="jug-container h-36 w-20 bg-slate-800 border-slate-500 relative hover:border-slate-300"><div id="water-1" class="jug-water h-0"></div><span id="label-1" class="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md z-10">0 / 5L</span></div></div>
                         <div class="text-center"><div class="text-slate-400 font-bold mb-2">3L Jug</div><div id="jug-2" onclick="jugClick(2)" class="jug-container h-24 w-16 bg-slate-800 border-slate-500 relative hover:border-slate-300"><div id="water-2" class="jug-water h-0"></div><span id="label-2" class="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md z-10">0 / 3L</span></div></div>
                     </div>
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center"><p id="jug-status" class="text-slate-300 font-mono text-lg">Select a jug to pour from.</p><div class="text-right"><p class="text-xs text-slate-500 uppercase tracking-wide">Moves</p><p id="jug-moves" class="text-2xl font-bold text-indigo-400">0</p></div></div>
+                    <div class="flex justify-center mt-4"><button onclick="jugGiveUp()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl border border-slate-600">🏳️ Give Up</button></div>
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center mt-4"><p id="jug-status" class="text-slate-300 font-mono text-lg">Select a jug to pour from.</p><div class="text-right"><p class="text-xs text-slate-500 uppercase tracking-wide">Moves</p><p id="jug-moves" class="text-2xl font-bold text-indigo-400">0</p></div></div>
                 </div>
             </div>
 
@@ -150,6 +182,7 @@
                         <div class="flex space-x-2">
                             <button onclick="bulbInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button>
                             <button onclick="openModal('modal-bulbs')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
+                            <button onclick="openModal('modal-math-bulbs')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button>
                         </div>
                     </div>
                     <div id="bulb-phase-1" class="mb-8">
@@ -157,7 +190,11 @@
                             <div class="flex justify-between items-center mb-6"><div class="text-slate-400 font-mono text-sm uppercase">Timer: <span id="bulb-timer" class="text-2xl text-white font-bold ml-2">00m</span></div><button onclick="bulbWait()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg border border-slate-500 flex items-center transition transform hover:scale-105"><span>⏱️ Wait 10 Minutes</span></button></div>
                             <div class="grid grid-cols-4 gap-8" id="bulb-switches-ui"></div>
                         </div>
-                        <button onclick="bulbEnterRoom()" class="w-full py-4 bg-red-600 hover:bg-red-500 text-white font-bold text-xl rounded-xl shadow-lg transition">ENTER ROOM (Irreversible)</button>
+                        <div class="flex items-center justify-between mb-4">
+                            <p id="bulb-status" class="text-slate-300 font-bold text-sm ml-4">Configure switches before entering.</p>
+                            <button onclick="bulbEnterRoom()" class="w-1/2 py-4 bg-red-600 hover:bg-red-500 text-white font-bold text-xl rounded-xl shadow-lg transition">ENTER ROOM (Irreversible)</button>
+                        </div>
+                        <div class="flex justify-center"><button onclick="bulbGiveUp()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl border border-slate-600">🏳️ Give Up</button></div>
                     </div>
                     <div id="bulb-phase-2" class="hidden">
                         <h3 class="text-2xl font-bold text-emerald-400 mb-4 text-center">🚪 Inside the Room</h3>
@@ -178,6 +215,7 @@
                         <div class="flex space-x-2">
                             <button onclick="catInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button>
                             <button onclick="openModal('modal-cat')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
+                            <button onclick="openModal('modal-math-cat')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button>
                         </div>
                     </div>
                     <div class="flex justify-between items-center mb-6 bg-slate-900 p-4 rounded-xl border border-slate-700"><h3 class="text-2xl font-bold text-indigo-400" id="cat-day-display">Day 1</h3><p class="text-xl font-bold text-emerald-400" id="cat-possibilities">5 Spots</p></div>
@@ -198,6 +236,7 @@
                         <div class="flex space-x-2">
                             <button onclick="riverInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button>
                             <button onclick="openModal('modal-river')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
+                            <button onclick="openModal('modal-math-river')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button>
                         </div>
                     </div>
 
@@ -228,6 +267,7 @@
                         <div class="flex space-x-2">
                             <button onclick="spiderInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button>
                             <button onclick="openModal('modal-spider')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
+                            <button onclick="openModal('modal-math-spider')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button>
                         </div>
                     </div>
                     <div class="flex justify-center mb-6 relative">
@@ -237,6 +277,8 @@
                         <p id="spider-status" class="text-slate-300 font-mono text-lg">Your Turn. Click a connected node.</p>
                         <div class="text-right"><p class="text-xs text-slate-500 uppercase tracking-wide">Moves Left</p><p id="spider-moves" class="text-3xl font-black text-indigo-400">15</p></div>
                     </div>
+                    <div class="flex justify-center mt-4"><button onclick="spiderGiveUp()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl border border-slate-600">🏳️ Give Up</button></div>
+                    <div id="spider-solution" class="hidden mt-4 bg-slate-900 p-4 rounded-xl border border-amber-500 text-slate-300 text-sm text-center"></div>
                 </div>
             </div>
 
@@ -251,6 +293,7 @@
                         <div class="flex space-x-2">
                             <button onclick="graphInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button>
                             <button onclick="openModal('modal-graph')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
+                            <button onclick="openModal('modal-math-graph')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button>
                         </div>
                     </div>
                     <div class="flex justify-center mb-6 relative">
@@ -275,12 +318,12 @@
                             <h2 class="text-3xl font-bold text-white">The 12 Balls Puzzle</h2>
                             <p class="text-slate-300 mt-2 leading-relaxed max-w-2xl">You have 12 identical-looking balls. One is <strong>counterfeit</strong> (either heavier or lighter). You have a balance scale. You must identify the <strong class="text-emerald-400">specific ball number</strong> AND determine if it is <strong class="text-emerald-400">Heavy or Light</strong> using exactly <strong class="text-red-400">3 weighings</strong>. Guessing is not a strategy.</p>
                         </div>
-                        <div class="flex space-x-2"><button onclick="ballsInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-balls')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button></div>
+                        <div class="flex space-x-2"><button onclick="ballsInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-balls')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button><button onclick="openModal('modal-math-balls')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button></div>
                     </div>
                     <div class="bg-slate-900/50 rounded-xl p-6 mb-6 relative">
                         <div class="flex justify-center space-x-8 mb-4"><div class="w-1/2"><p class="text-center text-xs text-slate-500 font-bold mb-1">LEFT (<span id="balls-left-count">0</span>)</p><div id="balls-pan-left" class="pan"></div></div><div class="w-1/2"><p class="text-center text-xs text-slate-500 font-bold mb-1">RIGHT (<span id="balls-right-count">0</span>)</p><div id="balls-pan-right" class="pan"></div></div></div>
                         <div id="balls-result-box" class="scale-result bg-slate-700 text-center p-3 rounded-lg font-bold text-slate-200 mb-4 border border-slate-600"></div>
-                        <div class="flex justify-center space-x-4"><button id="balls-btn-weigh" onclick="ballsWeigh()" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition shadow-lg">WEIGH</button></div>
+                        <div class="flex justify-center space-x-4"><button id="balls-btn-weigh" onclick="ballsWeigh()" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition shadow-lg">WEIGH</button><button onclick="ballsGiveUp()" class="px-6 py-3 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-xl">Give Up</button></div>
                         <p id="balls-weighs-left" class="absolute top-4 right-4 text-xl font-bold text-indigo-400">Left: 3</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -298,7 +341,7 @@
                             <h2 class="text-3xl font-bold text-white">The 25 Horses Puzzle</h2>
                             <p class="text-slate-300 mt-2 leading-relaxed max-w-2xl">There are 25 horses. You need to identify the fastest, second fastest, and third fastest horses. You have a race track that can race up to 5 horses at a time. There is <strong class="text-red-400">NO timer or stopwatch</strong>; you only see the relative finishing order of each race (1st, 2nd, 3rd...). What is the minimum number of races required to identify the Top 3 with certainty?</p>
                         </div>
-                        <div class="flex space-x-2"><button onclick="horseInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-horses')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button></div>
+                        <div class="flex space-x-2"><button onclick="horseInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-horses')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button><button onclick="openModal('modal-math-horses')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button></div>
                     </div>
                     <div class="flex flex-col lg:flex-row gap-6">
                         <div class="lg:w-1/2 space-y-6">
@@ -321,6 +364,7 @@
                             <div class="p-4 bg-indigo-900/30 border border-indigo-700 rounded-xl">
                                 <div class="flex space-x-2 mb-2"><input type="number" id="h-pred-1" placeholder="#1" class="bg-slate-900 border border-slate-600 rounded p-2 w-full text-white text-center"><input type="number" id="h-pred-2" placeholder="#2" class="bg-slate-900 border border-slate-600 rounded p-2 w-full text-white text-center"><input type="number" id="h-pred-3" placeholder="#3" class="bg-slate-900 border border-slate-600 rounded p-2 w-full text-white text-center"></div>
                                 <button onclick="horseCheck()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg mb-2">Submit Top 3</button>
+                                <button onclick="horseGiveUp()" class="w-full py-2 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-lg">Give Up</button>
                                 <p id="horse-final-msg" class="text-center mt-2 font-bold text-sm"></p>
                             </div>
                         </div>
@@ -347,28 +391,85 @@
     </div>
 
     <!-- HINTS -->
-    <div id="modal-jugs" class="modal" onclick="closeModal('modal-jugs')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: 3 Jugs</h3><p class="text-slate-300">Focus on creating a 1-Litre difference. Can you get exactly 1L in a jug? If you have 5L and pour into a 3L jug, what is left?</p><button onclick="closeModal('modal-jugs')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+    <div id="modal-jugs" class="modal" onclick="closeModal('modal-jugs')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: 3 Jugs</h3><p class="text-slate-300">Focus on the difference between the jug capacities. How can you derive 1 Litre first?</p><button onclick="closeModal('modal-jugs')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
     <div id="modal-bulbs" class="modal" onclick="closeModal('modal-bulbs')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Quad-Bulb</h3><p class="text-slate-300">You need to identify 4 specific bulbs, but you only have 2 visual states (ON/OFF). What physical property changes over time?</p><button onclick="closeModal('modal-bulbs')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
     <div id="modal-cat" class="modal" onclick="closeModal('modal-cat')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Quantum Cat</h3><p class="text-slate-300">The cat alternates between Odd and Even boxes every night. How can you use this 'Parity' to trap it?</p><button onclick="closeModal('modal-cat')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
-    <div id="modal-balls" class="modal" onclick="closeModal('modal-balls')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: 12 Balls</h3><p class="text-slate-300">Start with a 4 vs 4 weighing. Think about how to split the remaining suspects to maximize information gain in the second step.</p><button onclick="closeModal('modal-balls')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
-    <div id="modal-horses" class="modal" onclick="closeModal('modal-horses')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: 25 Horses</h3><p class="text-slate-300">Start by racing 5 groups. Once you have the winners, think about which horses are strictly eliminated and which still have a chance.</p><button onclick="closeModal('modal-horses')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
-    <div id="modal-river" class="modal" onclick="closeModal('modal-river')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: River Crossing</h3><p class="text-slate-300">Strategy: The two slowest people (8s and 12s) are the bottleneck. They must cross together to save time.</p><button onclick="closeModal('modal-river')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
-    <div id="modal-graph" class="modal" onclick="closeModal('modal-graph')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Delivery</h3><p class="text-slate-300">Count the lines connected to each dot. An Eulerian path is the only possible approach.</p><button onclick="closeModal('modal-graph')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+    <div id="modal-balls" class="modal" onclick="closeModal('modal-balls')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: 12 Balls</h3><p class="text-slate-300">A balance scale gives you 3 outcomes (Left, Right, Balanced). To solve this in 3 weighings, you must maximise the information gained in step 1. What group size allows you to narrow down the suspects most efficiently?</p><button onclick="closeModal('modal-balls')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+    <div id="modal-horses" class="modal" onclick="closeModal('modal-horses')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: 25 Horses</h3><p class="text-slate-300">You have no stopwatch, only relative order. If Horse A beats B, and B beats C, then A > C. Use this transitive property to eliminate any horse that cannot mathematically be in the Top 3.</p><button onclick="closeModal('modal-horses')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+    <div id="modal-river" class="modal" onclick="closeModal('modal-river')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: River Crossing</h3><p class="text-slate-300">Don't let the fastest person do all the work. Think about how to move the two slowest people across together to save time.</p><button onclick="closeModal('modal-river')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+    <div id="modal-graph" class="modal" onclick="closeModal('modal-graph')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Delivery</h3><p class="text-slate-300">Count the lines connected to each dot. Does every dot have an even number of lines?</p><button onclick="closeModal('modal-graph')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
     <div id="modal-spider" class="modal" onclick="closeModal('modal-spider')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: The Spider</h3><p class="text-slate-300">Think about how to trap a target in a grid. Reduce their available moves by occupying key intersections.</p><button onclick="closeModal('modal-spider')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
+
+    <!-- LOGIC PRINCIPLES (NEW) -->
+    <div id="modal-math-jugs" class="modal" onclick="closeModal('modal-math-jugs')">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-indigo-400 mb-2">The Logic Principle: Diophantine Equations</h3>
+            <p class="text-slate-300 text-sm">This puzzle is a visual representation of the linear Diophantine equation: <strong>Ax + By = C</strong>. <br><br>Here, <strong>5x + 3y = 4</strong>. Since 5 and 3 are coprime (their greatest common divisor is 1), any integer amount can be measured. We solve for integer steps of pouring (x) and emptying (y) to reach the remainder 4.</p>
+            <button onclick="closeModal('modal-math-jugs')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button>
+        </div>
+    </div>
+    <div id="modal-math-cat" class="modal" onclick="closeModal('modal-math-cat')">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-indigo-400 mb-2">The Logic Principle: Parity Arguments</h3>
+            <p class="text-slate-300 text-sm">The boxes form a <strong>Bipartite Graph</strong>. The cat moves between two disjoint sets (Odd numbers and Even numbers) at each step. By checking boxes in a specific sequence (2,3,4...), we force the cat into a subset where its position contradicts its parity (it must be Even when we check Odd), eventually leaving it no valid node to occupy.</p>
+            <button onclick="closeModal('modal-math-cat')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button>
+        </div>
+    </div>
+    <div id="modal-math-graph" class="modal" onclick="closeModal('modal-math-graph')">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-indigo-400 mb-2">The Logic Principle: Eulerian Paths</h3>
+            <p class="text-slate-300 text-sm">A graph can be traversed in a single continuous line (Eulerian Path) if and only if it has <strong>exactly zero or two nodes of odd degree</strong>. <br><br>If it has zero odd nodes, you can start anywhere. If it has two, you <strong>must</strong> start at one odd node and will inevitably end at the other. This graph has two odd nodes (Degree 3). Starting anywhere else makes the solution mathematically impossible.</p>
+            <button onclick="closeModal('modal-math-graph')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button>
+        </div>
+    </div>
+    <div id="modal-math-balls" class="modal" onclick="closeModal('modal-math-balls')">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-indigo-400 mb-2">The Logic Principle: Information Theory</h3>
+            <p class="text-slate-300 text-sm">Each weighing has 3 possible outcomes: Left Heavy, Right Heavy, or Balanced. This is a <strong>Ternary Search</strong> tree. <br><br>With 3 weighings, the maximum distinct outcomes are 3^3 = 27. We have 12 balls, each could be Heavy or Light (24 possibilities). Since 24 < 27, it is theoretically solvable. An "Adaptive Strategy" is required where each step divides the remaining possibility space by 3.</p>
+            <button onclick="closeModal('modal-math-balls')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button>
+        </div>
+    </div>
+    <div id="modal-math-horses" class="modal" onclick="closeModal('modal-math-horses')">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-indigo-400 mb-2">The Logic Principle: Sorting Complexity</h3>
+            <p class="text-slate-300 text-sm">This is a problem of finding the top <em>k</em> elements in an unsorted set with limited comparison capacity (5 items max). It relates to <strong>Parallel Sorting Algorithms</strong>. <br><br>By racing groups, we create a partial ordering (a Directed Acyclic Graph). We then use transitivity (If A>B and B>C, then A>C) to "prune" branches of the tree that cannot possibly contain the top 3 candidates, reducing the search space dramatically.</p>
+            <button onclick="closeModal('modal-math-horses')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button>
+        </div>
+    </div>
+    <div id="modal-math-river" class="modal" onclick="closeModal('modal-math-river')">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-indigo-400 mb-2">The Logic Principle: Critical Path Analysis</h3>
+            <p class="text-slate-300 text-sm">This is a classic <strong>Scheduling Problem</strong>. We want to minimize the total cost (time) of a series of dependent tasks. <br><br>The cost is determined by the maximum value in any "batch" (boat load). The optimal strategy exploits this max function by grouping the two largest values (8 and 12) into a single trip, effectively "hiding" the smaller cost inside the larger one.</p>
+            <button onclick="closeModal('modal-math-river')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button>
+        </div>
+    </div>
+    <div id="modal-math-spider" class="modal" onclick="closeModal('modal-math-spider')">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-indigo-400 mb-2">The Logic Principle: Pursuit-Evasion Games</h3>
+            <p class="text-slate-300 text-sm">This is a discrete game on a graph. The "Hunter" wins by reducing the "Prey's" available territory. <br><br>The graph has a central node with high <strong>Betweenness Centrality</strong> (Node O). By occupying this node, the Hunter minimizes the Maximum Distance to any other node, effectively partitioning the graph and trapping the Prey in a smaller subgraph.</p>
+            <button onclick="closeModal('modal-math-spider')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button>
+        </div>
+    </div>
+    <div id="modal-math-bulbs" class="modal" onclick="closeModal('modal-math-bulbs')">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-indigo-400 mb-2">The Logic Principle: Lateral Variables</h3>
+            <p class="text-slate-300 text-sm">Standard binary logic (1/0) offers 2 bits of information (ON/OFF). This is insufficient to identify 4 distinct items (requires 2 bits -> 4 states). <br><br>We solve this by introducing a new dimension: <strong>State Decay</strong> (Thermodynamics). By letting a bulb heat up and then turning it off, we create a "third state" (OFF but HOT), and a "fourth state" (OFF but WARM), successfully mapping 4 unique identifiers.</p>
+            <button onclick="closeModal('modal-math-bulbs')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button>
+        </div>
+    </div>
 
     <script>
         // --- SYSTEM: UTILS & DATA ---
         let currentUser = localStorage.getItem('logic_user') || null;
-        // Constant API URL
         const apiUrl = "https://script.google.com/macros/s/AKfycbxlaaj_TLDH0LyWWm1BAVQ9vdlL8fPo1AvBQu3a707Z2WNnZnkdaMKJPzZk5VwN6rQ/exec";
         let timerInterval = null;
         let startTime = 0;
-        let timerVisible = false; // Default Hidden
+        let timerVisible = false; 
 
         document.addEventListener('DOMContentLoaded', () => {
             updateAuthUI();
             jugInit(); bulbInit(); catInit(); riverInit(); spiderInit(); graphInit(); ballsInit(); horseInit();
-            switchTab('jugs'); // Default
+            switchTab('about'); // Default
         });
 
         function updateTimerDisplay() {
@@ -414,7 +515,14 @@
             fetch(apiUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } })
             .then(() => console.log("Data Sent")).catch(e => console.error("Log Error", e));
         }
-        function switchTab(id){ document.querySelectorAll('.game-section').forEach(e=>e.classList.add('hidden')); document.getElementById(`game-${id}`).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active')); document.getElementById(`tab-${id}`).classList.add('active'); startTimer(); }
+        function switchTab(id){ 
+            document.querySelectorAll('.game-section').forEach(e=>e.classList.add('hidden')); 
+            document.getElementById(`game-${id}`).classList.remove('hidden'); 
+            document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active')); 
+            const btn = document.getElementById(`tab-${id}`);
+            if(btn) btn.classList.add('active');
+            if(id !== 'about') startTimer(); // Don't timer the about page
+        }
         function openModal(id){document.getElementById(id).style.display='flex'} function closeModal(id){document.getElementById(id).style.display='none'}
         function playSound(f,t='sine'){const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator();const g=c.createGain();o.connect(g);g.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.1);o.start();o.stop(c.currentTime+0.1)}
 
@@ -434,6 +542,7 @@
         function jugPour(f,t){ const amt=Math.min(jugState.jugs[f], jugState.caps[t]-jugState.jugs[t]); if(amt>0){ jugState.jugs[f]-=amt; jugState.jugs[t]+=amt; jugState.moves++; document.getElementById('jug-moves').innerText=jugState.moves; playSound(400,'sine'); document.getElementById('jug-status').innerText=`Poured ${amt}L.`; jugCheck(); } else updateStatus('jug-status', "Cannot pour (Source empty or Dest full).", true); }
         function jugRender(){ jugState.jugs.forEach((v,i)=>{ const el=document.getElementById(`water-${i}`); el.style.height=`${(v/jugState.caps[i])*100}%`; document.getElementById(`label-${i}`).innerText=`${v} / ${jugState.caps[i]}L`; const c=document.getElementById(`jug-${i}`); if(jugState.selected===i)c.classList.add('jug-selected'); else c.classList.remove('jug-selected'); }); }
         function jugCheck(){ if(jugState.jugs.includes(4)){ jugState.solved=true; const msg=jugState.moves===6?"PERFECT! 6 Moves (Optimised).":`SUCCESS! Solved in ${jugState.moves} moves.`; document.getElementById('jug-status').innerText=msg; document.getElementById('jug-status').className="text-emerald-400 font-bold text-xl animate-bounce"; playSound(600); sendData('3 Jugs', 'Win', jugState.moves, jugState.moves===6); } }
+        function jugGiveUp(){ jugInit(); updateStatus('jug-status', "Hint: Focus on the difference (5-3=2). Try to make 2L first."); sendData('3 Jugs', 'GiveUp', '-', false); }
 
         /* --- GAME 2: BULBS --- */
         let bulbState={map:{},switches:{},over:false,entered:false,time:0};const bulbNames=['A','B','C','D'];function bulbInit(){bulbState.map={1:null,2:null,3:null,4:null};let s=['A','B','C','D'].sort(()=>Math.random()-0.5);[1,2,3,4].forEach((n,i)=>bulbState.map[n]=s[i]);bulbState.switches={A:{on:false,heat:0},B:{on:false,heat:0},C:{on:false,heat:0},D:{on:false,heat:0}};bulbState.over=false;bulbState.entered=false;bulbState.time=0;document.getElementById('bulb-phase-1').classList.remove('hidden');document.getElementById('bulb-phase-2').classList.add('hidden');document.getElementById('bulb-final-msg').innerText="";document.getElementById('bulb-timer').innerText="00m";updateStatus('bulb-status', "Configure switches before entering.");bulbRenderSwitches();startTimer();}function bulbToggle(id){const s=bulbState.switches[id];s.on=!s.on;bulbRenderSwitches();playSound(300,'square')}
@@ -444,9 +553,28 @@
             bulbState.entered=true;document.getElementById('bulb-phase-1').classList.add('hidden');document.getElementById('bulb-phase-2').classList.remove('hidden');const r=document.getElementById('bulb-results');const g=document.getElementById('bulb-guesses');r.innerHTML='';g.innerHTML='';[1,2,3,4].forEach(n=>{const sid=bulbState.map[n];const s=bulbState.switches[sid];let cls="bulb-off",txt="OFF",tCls="heat-low",tTxt="COLD";if(s.on){cls="bulb-on";txt="ON"}if(s.heat>=15){tCls="heat-high";tTxt="HOT"}else if(s.heat>0){tCls="heat-med";tTxt="WARM"}r.innerHTML+=`<div class="bg-slate-800 p-4 rounded-xl border border-slate-600 flex flex-col items-center ${cls} ${tCls} transition-all"><span class="text-xl font-bold mb-2">Bulb ${n}</span><span class="text-2xl font-black mb-1">${txt}</span><span class="text-xs font-bold opacity-75">${tTxt}</span></div>`;g.innerHTML+=`<div class="flex items-center justify-between bg-slate-800 p-2 rounded border border-slate-600"><span class="font-bold text-slate-400 mr-2">B${n}:</span><select id="bulb-guess-${n}" class="bg-slate-900 text-white p-1 rounded w-full"><option value="">?</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>`})
         }
         function bulbCheck(){let c=0;[1,2,3,4].forEach(n=>{if(document.getElementById(`bulb-guess-${n}`).value===bulbState.map[n])c++});const m=document.getElementById('bulb-final-msg');if(c===4){m.className="text-emerald-400 mt-4 text-center font-bold text-xl";m.innerText="VICTORY!";sendData('4 Switches', 'Win', '-', true);}else{m.className="text-rose-400 mt-4 text-center font-bold";m.innerText=`Incorrect. ${c}/4 right.`;sendData('4 Switches', 'Fail', c+'/4', false);}}
+        function bulbGiveUp(){
+             // If not entered room, enter first to show logic
+             if(!bulbState.entered) bulbEnterRoom();
+             const m = document.getElementById('bulb-final-msg');
+             // Socratic Hint: Question rather than answer
+             m.innerText = "GAVE UP. Hint: What physical change happens to a bulb if it is left ON for 10 minutes vs 1 minute?";
+             m.className = "text-slate-400 font-mono text-center mt-4 font-bold";
+             sendData('4 Switches', 'GiveUp', '-', false);
+        }
 
         /* --- GAME 3: CAT --- */
-        const catState={day:1,pos:new Set([1,2,3,4,5]),history:[],over:false};function catInit(){catState.day=1;catState.pos=new Set([1,2,3,4,5]);catState.history=[new Set([1,2,3,4,5])];catState.over=false;document.getElementById('cat-logs').innerHTML='';catRender();startTimer();}function catRender(){document.getElementById('cat-day-display').innerText=`Day ${catState.day}`;document.getElementById('cat-possibilities').innerText=`${catState.pos.size} Spots`;const c=document.getElementById('cat-boxes');c.innerHTML='';for(let i=1;i<=5;i++){const b=document.createElement('button');b.className=`box-btn h-24 bg-slate-800 rounded-xl border-2 border-slate-600 flex items-center justify-center text-3xl font-black text-slate-600 group hover:border-indigo-500 hover:text-indigo-400 quantum-active`;b.innerText=i;b.onclick=()=>catCheck(i);if(catState.over)b.disabled=true;c.appendChild(b)}}function catCheck(id){if(catState.over)return;let caught=false;if(catState.pos.has(id)){if(catState.pos.size===1)caught=true;else catState.pos.delete(id)}const l=document.getElementById('cat-logs');const e=document.createElement('div');e.className=`p-3 mb-2 border-l-4 rounded bg-slate-800 ${caught?'border-emerald-500':'border-rose-500'}`;e.innerHTML=`<div class="flex justify-between text-sm text-slate-300"><span>Day ${catState.day}</span><span class="${caught?'text-emerald-400':'text-rose-400'} font-bold">${caught?'CAUGHT':'MISSED'}</span></div><div class="text-xs text-slate-500">Checked Box ${id}.</div>`;l.prepend(e);if(caught){catState.over=true;document.getElementById('cat-boxes').children[id-1].classList.add('bg-emerald-900','border-emerald-500','text-emerald-400');playSound(600);catRevealPath(id);sendData('5 Boxes', 'Win', `Day ${catState.day}`, catState.day <= 6);}else{playSound(150,'sawtooth');const next=new Set();catState.pos.forEach(p=>{if(p>1)next.add(p-1);if(p<5)next.add(p+1)});catState.pos=next;catState.history.push(new Set(next));catState.day++;catRender()}}function catGiveUp(){if(catState.over)return;catState.over=true;const arr=Array.from(catState.pos);const final=arr.length?arr[Math.floor(Math.random()*arr.length)]:1;catRevealPath(final);document.getElementById('cat-boxes').children[final-1].classList.add('bg-amber-900','border-amber-500','text-amber-400');sendData('5 Boxes', 'GiveUp', `Day ${catState.day}`, false);}function catRevealPath(end){let p=[end],c=end;for(let d=catState.history.length-2;d>=0;d--){const prev=catState.history[d];const cands=[];if(prev.has(c-1))cands.push(c-1);if(prev.has(c+1))cands.push(c+1);c=cands[Math.floor(Math.random()*cands.length)];p.unshift(c)}const d=document.createElement('div');d.className="mt-4 p-3 bg-slate-700 rounded border border-slate-600";d.innerHTML=`<div class="text-xs text-indigo-300 font-bold uppercase mb-2">Quantum Path</div><div class="flex flex-wrap gap-2 text-sm font-mono text-white">${p.join(' → ')}</div>`;document.getElementById('cat-logs').prepend(d)}
+        const catState={day:1,pos:new Set([1,2,3,4,5]),history:[],over:false};function catInit(){catState.day=1;catState.pos=new Set([1,2,3,4,5]);catState.history=[new Set([1,2,3,4,5])];catState.over=false;document.getElementById('cat-logs').innerHTML='';catRender();startTimer();}function catRender(){document.getElementById('cat-day-display').innerText=`Day ${catState.day}`;document.getElementById('cat-possibilities').innerText=`${catState.pos.size} Spots`;const c=document.getElementById('cat-boxes');c.innerHTML='';for(let i=1;i<=5;i++){const b=document.createElement('button');b.className=`box-btn h-24 bg-slate-800 rounded-xl border-2 border-slate-600 flex items-center justify-center text-3xl font-black text-slate-600 group hover:border-indigo-500 hover:text-indigo-400 quantum-active`;b.innerText=i;b.onclick=()=>catCheck(i);if(catState.over)b.disabled=true;c.appendChild(b)}}function catCheck(id){if(catState.over)return;let caught=false;if(catState.pos.has(id)){if(catState.pos.size===1)caught=true;else catState.pos.delete(id)}const l=document.getElementById('cat-logs');const e=document.createElement('div');e.className=`p-3 mb-2 border-l-4 rounded bg-slate-800 ${caught?'border-emerald-500':'border-rose-500'}`;e.innerHTML=`<div class="flex justify-between text-sm text-slate-300"><span>Day ${catState.day}</span><span class="${caught?'text-emerald-400':'text-rose-400'} font-bold">${caught?'CAUGHT':'MISSED'}</span></div><div class="text-xs text-slate-500">Checked Box ${id}.</div>`;l.prepend(e);if(caught){catState.over=true;document.getElementById('cat-boxes').children[id-1].classList.add('bg-emerald-900','border-emerald-500','text-emerald-400');playSound(600);catRevealPath(id);sendData('5 Boxes', 'Win', `Day ${catState.day}`, catState.day <= 6);}else{playSound(150,'sawtooth');const next=new Set();catState.pos.forEach(p=>{if(p>1)next.add(p-1);if(p<5)next.add(p+1)});catState.pos=next;catState.history.push(new Set(next));catState.day++;catRender()}}
+        function catGiveUp(){
+            if(catState.over)return;catState.over=true;const arr=Array.from(catState.pos);const final=arr.length?arr[Math.floor(Math.random()*arr.length)]:1;catRevealPath(final);document.getElementById('cat-boxes').children[final-1].classList.add('bg-amber-900','border-amber-500','text-amber-400');
+            const l=document.getElementById('cat-logs');
+            const e=document.createElement('div');
+            e.className="mt-4 p-3 bg-slate-700 rounded border border-slate-600 font-bold text-amber-400";
+            e.innerText="GAVE UP. Hint: The cat moves 1 step. Think about Odd vs Even numbers. If you check all the Even boxes on days 2, 3, and 4, where must the cat be?";
+            l.prepend(e);
+            sendData('5 Boxes', 'GiveUp', `Day ${catState.day}`, false);
+        }
+        function catRevealPath(end){let p=[end],c=end;for(let d=catState.history.length-2;d>=0;d--){const prev=catState.history[d];const cands=[];if(prev.has(c-1))cands.push(c-1);if(prev.has(c+1))cands.push(c+1);c=cands[Math.floor(Math.random()*cands.length)];p.unshift(c)}const d=document.createElement('div');d.className="mt-4 p-3 bg-slate-700 rounded border border-slate-600";d.innerHTML=`<div class="text-xs text-indigo-300 font-bold uppercase mb-2">Quantum Path</div><div class="flex flex-wrap gap-2 text-sm font-mono text-white">${p.join(' → ')}</div>`;document.getElementById('cat-logs').prepend(d)}
 
         /* --- GAME 4: RIVER --- */
         let riverState = { left:[1,3,6,8,12], right:[], boat:[], side:'left', time:0, solved:false, fail:false };
@@ -492,7 +620,8 @@
             riverState.fail = true; 
             const sol = document.getElementById('river-solution'); 
             sol.classList.remove('hidden'); 
-            sol.innerHTML = `<strong class="text-amber-400 block mb-2">Strategy:</strong> The two slowest people (8s and 12s) are the bottleneck. They must cross <strong>together</strong> to save time.`; 
+            // Socratic Hint: Question the return trip
+            sol.innerHTML = `<strong class="text-amber-400 block mb-2">Strategy:</strong> The two slowest people (8s and 12s) are the bottleneck. They must cross <strong>together</strong> to save time. How can you send them together without needing one of them to bring the boat back?`; 
             playSound(150,'sawtooth'); 
             sendData('River', 'GiveUp', '-', false); 
         }
@@ -527,10 +656,13 @@
         }
 
         function spiderInit() {
+            // Player (Blue - Charlotte): Ray z (2), Outer (Ring 3) -> ID 12
+            // Prey (Pink - Shelob): Ray x (0), Outer (Ring 3) -> ID 4
             spiderState = { player: 12, spider: 4, moves: 15, over: false }; 
             document.getElementById('spider-status').innerText = "Your Turn. Click a connected node.";
             document.getElementById('spider-status').className = "text-slate-300 font-mono text-lg";
             document.getElementById('spider-moves').innerText = "15";
+            document.getElementById('spider-solution').classList.add('hidden');
             spiderRender();
             startTimer();
         }
@@ -612,6 +744,16 @@
             document.getElementById('spider-status').className = "text-rose-400 font-bold";
             playSound(150, 'sawtooth');
             sendData('Spider', 'Fail', '-', false);
+        }
+        function spiderGiveUp() {
+            spiderState.over = true;
+            document.getElementById('spider-status').innerText = "GAVE UP.";
+             const sol = document.getElementById('spider-solution'); 
+            sol.classList.remove('hidden'); 
+            // Socratic Hint: Question about the center
+            sol.innerHTML = `<strong class="text-amber-400 block mb-2">Strategy:</strong> This web converges at a single point. If you chase along the rim, the distance is long. What happens if you occupy the central intersection (O)?`; 
+            playSound(150,'sawtooth');
+            sendData('Spider', 'GiveUp', '-', false);
         }
 
         function spiderRender() {
@@ -764,7 +906,8 @@
             sendData('Delivery', 'GiveUp', '-', false);
             const sol = document.getElementById('graph-solution');
             sol.classList.remove('hidden');
-            sol.innerHTML = `<strong class="text-amber-400">Hint:</strong> Count the lines connected to each dot. An Eulerian path is the only possible approach.`; 
+            // Socratic Hint: Question about entry/exit
+            sol.innerHTML = `<strong class="text-amber-400">Hint:</strong> To walk every street exactly once, you must enter and leave every dot. Which dots allow you to start but not return?`; 
             graphRender();
         }
         document.getElementById('graph-canvas').addEventListener('mousedown', graphClick);
@@ -802,7 +945,15 @@
             }
 
             setTimeout(()=>{b.className=`scale-result p-3 rounded-lg font-bold border-2 ${cls}`;b.innerText=res.toUpperCase();playSound(res==="Balanced"?400:200,res==="Balanced"?'sine':'sawtooth');ballsLog(li,ri,res)},800);setTimeout(()=>{ballsState.available.push(...ballsState.left,...ballsState.right);ballsState.left=[];ballsState.right=[];ballsState.weighing=false;ballsRender();b.className="scale-result bg-slate-700 text-center p-3 rounded-lg font-bold text-slate-200 mb-4 border border-slate-600";b.innerText="Place balls to weigh."},3500)}function ballsLog(l,r,res){const d=document.createElement('div');d.className="p-3 mb-2 rounded bg-slate-800 border-l-4 "+(res.includes("Balanced")?"border-emerald-500":"border-rose-500");d.innerHTML=`<div class="flex justify-between font-bold text-xs text-slate-400"><span>Weighing ${3-ballsState.limit}</span><span>${res}</span></div><div class="text-sm text-slate-200 mt-1">L:[${l}] vs R:[${r}]</div>`;document.getElementById('balls-logs').prepend(d)}function ballsCheck(){const i=parseInt(document.getElementById('balls-guess-id').value);const s=document.getElementById('balls-guess-status').value;if(!i||!s)return updateStatus('balls-result-box', "Pick Ball & Status", true);ballsState.over=true;ballsRender();const w=(i===ballsState.cf.id&&s===ballsState.cf.status);const b=document.getElementById('balls-result-box');b.className=w?"scale-result bg-emerald-600 text-white p-4 rounded-xl font-bold text-xl":"scale-result bg-red-600 text-white p-4 rounded-xl font-bold text-xl";b.innerHTML=w?"VICTORY!":"WRONG.";playSound(w?600:100,w?'sine':'sawtooth');sendData('12 Balls', w?'Win':'Fail', '-', true);}
-        function ballsGiveUp(){ballsState.over=true;ballsRender();const b=document.getElementById('balls-result-box');b.className="scale-result bg-slate-600 text-white p-4 rounded-xl font-bold";b.innerHTML=`Gave Up. Counterfeit: Ball ${ballsState.cf.id} (${ballsState.cf.status})`;sendData('12 Balls', 'GiveUp', '-', false);}
+        function ballsGiveUp(){
+            ballsState.over=true;
+            ballsRender();
+            const b=document.getElementById('balls-result-box');
+            b.className="scale-result bg-slate-600 text-white p-4 rounded-xl font-bold";
+            // Socratic Hint: Question about grouping
+            b.innerHTML=`Gave Up. <br>If your first weighing tips, you have a group of potentially Heavy balls and a group of potentially Light balls. In your second weighing, try keeping some on the scale, swapping some sides, and removing others. This 'mixing' isolates the fault.`;
+            sendData('12 Balls', 'GiveUp', '-', false);
+        }
 
         /* --- GAME 7: HORSES (CLICK MOVE) --- */
         let horseState={pool:[],track:[],races:0,speeds:{}};function horseInit(){horseState.pool=Array.from({length:25},(_,i)=>i+1);horseState.track=[];horseState.races=0;const s=Array.from({length:25},(_,i)=>i+1);for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]]}horseState.speeds={};for(let i=1;i<=25;i++)horseState.speeds[i]=s[i-1];document.getElementById('horse-logs').innerHTML='<p class="text-slate-600 italic text-center mt-10">No races yet.</p>';document.getElementById('horse-race-count').innerText='Races: 0';document.getElementById('horse-final-msg').innerText='';['h-pred-1','h-pred-2','h-pred-3'].forEach(id=>document.getElementById(id).value='');updateStatus('horse-status', "Ready");horseRenderGridStructure();horseRender();startTimer();}function horseRenderGridStructure(){const g=document.getElementById('horse-grid');g.innerHTML='';['A','B','C','D','E'].forEach(row=>{let html=`<div class="grid grid-cols-6 gap-1"><div class="flex items-center justify-center font-bold text-slate-500 text-xs">${row}</div>`;for(let i=0;i<5;i++)html+=`<div id="grid-${row}-${i}" class="grid-slot" ondrop="horseDrop(event, 'grid-${row}-${i}')" ondragover="allowDrop(event)"></div>`;html+='</div>';g.innerHTML+=html})}function allowDrop(ev){ev.preventDefault()}function horseDrag(ev,id){ev.dataTransfer.setData("text",id)}function horseDrop(ev,targetId){ev.preventDefault();const id=parseInt(ev.dataTransfer.getData("text"));if(!id)return;const poolIdx=horseState.pool.indexOf(id);if(poolIdx>-1)horseState.pool.splice(poolIdx,1);const trackIdx=horseState.track.indexOf(id);if(trackIdx>-1)horseState.track.splice(trackIdx,1);document.querySelectorAll('.horse-in-grid').forEach(el=>{if(parseInt(el.innerText)===id)el.remove()});if(targetId==='pool')horseState.pool.push(id);else if(targetId==='track'){if(horseState.track.length<5)horseState.track.push(id);else horseState.pool.push(id)}else if(targetId.startsWith('grid-')){const slot=document.getElementById(targetId);if(slot.children.length>0)horseState.pool.push(parseInt(slot.children[0].innerText));horseRender();const hDiv=document.createElement('div');hDiv.className="horse horse-in-grid";hDiv.draggable=true;hDiv.innerText=id;hDiv.ondragstart=(e)=>horseDrag(e,id);hDiv.onclick=()=>horseReturnFromGrid(id);slot.innerHTML='';slot.appendChild(hDiv);return}horseRender()}
@@ -832,7 +983,8 @@
             all.sort((a,b)=>a.s-b.s);
             const msg=document.getElementById('horse-final-msg');
             msg.className="text-slate-400 mt-2";
-            msg.innerText = `GAVE UP. Top 3: #${all[0].id}, #${all[1].id}, #${all[2].id}.`;
+            // Socratic Hint: Question about establishing a baseline
+            msg.innerHTML = `GAVE UP. <br>After you identify the overall fastest, only a few competitors still have any logical path to being second or third. Use the partial ordering created earlier to rule out anyone already proven slower by transitivity. The only ones worth comparing further are those who either nearly beat the winner or led groups that were never fully dominated. Let those remaining contenders settle the next two spots.`;
             playSound(150,'sawtooth');
             sendData('25 Horses', 'GiveUp', '-', false);
         }
@@ -841,7 +993,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateAuthUI();
             jugInit(); bulbInit(); catInit(); riverInit(); spiderInit(); graphInit(); ballsInit(); horseInit();
-            switchTab('jugs'); // Default
+            switchTab('about'); // Default
         });
     </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dan's Logic Hub</title>
+    <title>Dan's Logic Hub v1.0.13</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -12,57 +12,8 @@
         /* --- UTILS --- */
         .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
         .modal-content { background-color: #1e293b; padding: 2rem; border-radius: 1rem; max-width: 700px; width: 95%; max-height: 90vh; overflow-y: auto; border: 1px solid #334155; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-        .tab-btn { transition: all 0.2s; opacity: 0.5; border-bottom: 4px solid transparent; }
-        .tab-btn:hover { opacity: 0.8; background-color: rgba(255,255,255,0.05); }
-        .tab-btn.active { opacity: 1; border-bottom: 4px solid #6366f1; background-color: rgba(99, 102, 241, 0.1); color: #fff; }
         
-        /* Status Animations */
-        @keyframes flashRed { 0%, 100% { color: #94a3b8; } 50% { color: #f43f5e; } }
-        .status-error { animation: flashRed 1s ease-in-out; font-weight: bold; color: #f43f5e !important; }
-
-        /* --- PUZZLE STYLES --- */
-        .jug-container { position: relative; width: 100px; background: #334155; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border: 4px solid #94a3b8; border-top: none; margin: 0 auto; overflow: hidden; transition: all 0.3s; cursor: pointer; }
-        .jug-water { position: absolute; bottom: 0; left: 0; width: 100%; background-color: #3b82f6; transition: height 0.5s ease-in-out; opacity: 0.8; }
-        .jug-selected { border-color: #fbbf24; box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
-
-        .bulb-on { background-color: #fcd34d; color: #854d0e; box-shadow: 0 0 20px #fcd34d; border-color: #fbbf24; }
-        .bulb-off { background-color: #1e293b; color: #64748b; border-color: #475569; }
-        .heat-high { border: 3px solid #ea580c; box-shadow: 0 0 15px rgba(234, 88, 12, 0.5); }
-        .heat-med { border: 3px solid #fbbf24; }
-        .heat-low { border: 1px solid #475569; }
-
-        .horse { width: 40px; height: 40px; border-radius: 8px; background-color: #be185d; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: grab; transition: all 0.2s; user-select: none; border: 2px solid #fbcfe8; z-index: 10; }
-        .horse:active { cursor: grabbing; transform: scale(1.1); }
-        .horse:hover { transform: scale(1.1) rotate(3deg); background-color: #9d174d; }
-        .track-slot { width: 50px; height: 60px; border: 2px dashed #64748b; border-radius: 8px; display: flex; align-items: center; justify-content: center; background-color: #334155; transition: background-color 0.2s; }
-        .grid-slot { width: 45px; height: 45px; border: 1px solid #475569; border-radius: 6px; display: flex; align-items: center; justify-content: center; background-color: #1e293b; }
-        
-        .ball { width: 40px; height: 40px; border-radius: 50%; background-color: #4f46e5; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; cursor: pointer; transition: transform 0.1s; }
-        .pan { min-height: 100px; border: 2px dashed #475569; border-radius: 8px; background-color: #1e293b; display: flex; flex-wrap: wrap; gap: 5px; padding: 10px; transition: all 0.3s; }
-        .scale-result { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); transform-origin: center; }
-        .left-heavy { transform: rotate(-5deg); border-color: #ef4444; } 
-        .right-heavy { transform: rotate(5deg); border-color: #ef4444; }
-        
-        .box-btn { transition: all 0.2s; cursor: pointer; }
-        .box-btn:hover:not(:disabled) { transform: translateY(-3px); border-color: #818cf8; }
-        .quantum-active { animation: pulse-glow 3s infinite; }
-        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 10px rgba(99, 102, 241, 0.1); } 50% { box-shadow: 0 0 25px rgba(99, 102, 241, 0.3); } }
-
-        /* --- RIVER STYLES --- */
-        .person { width: 50px; height: 60px; border-radius: 8px; background-color: #059669; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border: 2px solid #34d399; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .person:hover { transform: translateY(-3px); box-shadow: 0 6px 8px rgba(0,0,0,0.4); }
-        .river-container { position: relative; height: 220px; background: repeating-linear-gradient(45deg, #1e3a8a, #1e3a8a 10px, #172554 10px, #172554 20px); border-radius: 12px; border: 2px solid #3b82f6; overflow: hidden; display: flex; justify-content: space-between; }
-        .bank { width: 35%; background-color: #334155; border-right: 4px solid #475569; z-index: 5; display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 10px; padding: 15px; align-items: center; justify-items: center; }
-        .bank.right { border-right: none; border-left: 4px solid #475569; }
-        .boat { width: 140px; height: 70px; background-color: #7c2d12; border-radius: 0 0 50px 50px; border: 3px solid #b45309; position: absolute; bottom: 20px; transition: left 0.8s ease-in-out; display: flex; justify-content: center; items-start; gap: 10px; padding-top: 8px; z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .boat::after { content: "BOAT"; font-size: 10px; color: #fdba74; position: absolute; bottom: 5px; }
-        .shake-fail { animation: shake 0.4s ease-in-out; border: 2px solid #f43f5e; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-
-        /* --- GRAPH STYLES --- */
-        #graph-canvas, #spider-canvas { background-color: #1e293b; border-radius: 12px; border: 2px solid #475569; cursor: crosshair; display: block; margin: 0 auto; }
-        
-        /* Sidebar & Nav */
+        /* Sidebar */
         .nav-item { padding: 12px 16px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; border-left: 3px solid transparent; color: #94a3b8; font-weight: 600; font-size: 0.9rem; }
         .nav-item:hover { background-color: rgba(255,255,255,0.03); color: #e2e8f0; }
         .nav-item.active { background-color: rgba(99, 102, 241, 0.1); border-left: 3px solid #6366f1; color: #fff; }
@@ -73,6 +24,44 @@
         .mobile-tab.active { border-bottom: 2px solid #6366f1; color: #fff; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* --- GAME ASSETS --- */
+        .jug-container { position: relative; width: 100px; background: #334155; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border: 4px solid #94a3b8; border-top: none; margin: 0 auto; overflow: hidden; transition: all 0.3s; cursor: pointer; }
+        .jug-water { position: absolute; bottom: 0; left: 0; width: 100%; background-color: #3b82f6; transition: height 0.5s ease-in-out; opacity: 0.8; }
+        .jug-selected { border-color: #fbbf24; box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
+
+        .bulb-on { background-color: #fcd34d; color: #854d0e; box-shadow: 0 0 20px #fcd34d; border-color: #fbbf24; }
+        .bulb-off { background-color: #1e293b; color: #64748b; border-color: #475569; }
+        .heat-high { border: 3px solid #ea580c; box-shadow: 0 0 15px rgba(234, 88, 12, 0.5); }
+        .heat-med { border: 3px solid #fbbf24; }
+        .heat-low { border: 1px solid #475569; }
+
+        .person { width: 50px; height: 60px; border-radius: 8px; background-color: #059669; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border: 2px solid #34d399; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .person:hover { transform: translateY(-3px); box-shadow: 0 6px 8px rgba(0,0,0,0.4); }
+        .river-container { position: relative; height: 220px; background: repeating-linear-gradient(45deg, #1e3a8a, #1e3a8a 10px, #172554 10px, #172554 20px); border-radius: 12px; border: 2px solid #3b82f6; overflow: hidden; display: flex; justify-content: space-between; }
+        .bank { width: 35%; background-color: #334155; border-right: 4px solid #475569; z-index: 5; display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 10px; padding: 15px; align-items: center; justify-items: center; }
+        .bank.right { border-right: none; border-left: 4px solid #475569; }
+        .boat { width: 140px; height: 70px; background-color: #7c2d12; border-radius: 0 0 50px 50px; border: 3px solid #b45309; position: absolute; bottom: 20px; transition: left 0.8s ease-in-out; display: flex; justify-content: center; items-start; gap: 10px; padding-top: 8px; z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .boat::after { content: "BOAT"; font-size: 10px; color: #fdba74; position: absolute; bottom: 5px; }
+        .shake-fail { animation: shake 0.4s ease-in-out; border: 2px solid #f43f5e; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+        .horse { width: 40px; height: 40px; border-radius: 8px; background-color: #be185d; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: grab; transition: all 0.2s; user-select: none; border: 2px solid #fbcfe8; z-index: 10; }
+        .horse:active { cursor: grabbing; transform: scale(1.1); }
+        .track-slot { width: 50px; height: 60px; border: 2px dashed #64748b; border-radius: 8px; display: flex; align-items: center; justify-content: center; background-color: #334155; }
+        .grid-slot { width: 45px; height: 45px; border: 1px solid #475569; border-radius: 6px; display: flex; align-items: center; justify-content: center; background-color: #1e293b; }
+        .ball { width: 40px; height: 40px; border-radius: 50%; background-color: #4f46e5; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; cursor: pointer; transition: transform 0.1s; }
+        .pan { min-height: 100px; border: 2px dashed #475569; border-radius: 8px; background-color: #1e293b; display: flex; flex-wrap: wrap; gap: 5px; padding: 10px; transition: all 0.3s; }
+        .scale-result { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); transform-origin: center; }
+        .left-heavy { transform: rotate(-5deg); border-color: #ef4444; } .right-heavy { transform: rotate(5deg); border-color: #ef4444; }
+        
+        .box-btn { transition: all 0.2s; cursor: pointer; }
+        .box-btn:hover:not(:disabled) { transform: translateY(-3px); border-color: #818cf8; }
+        .quantum-active { animation: pulse-glow 3s infinite; }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 10px rgba(99, 102, 241, 0.1); } 50% { box-shadow: 0 0 25px rgba(99, 102, 241, 0.3); } }
+        
+        #graph-canvas, #spider-canvas { background-color: #1e293b; border-radius: 12px; border: 2px solid #475569; cursor: crosshair; display: block; margin: 0 auto; }
+        .status-error { animation: flashRed 1s ease-in-out; font-weight: bold; color: #f43f5e !important; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row h-screen overflow-hidden bg-slate-900 text-slate-200">
@@ -83,18 +72,14 @@
                 <span class="text-2xl">🧠</span>
                 <h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Dan's Logic Hub</h1>
             </div>
-            <div class="text-xs text-slate-500 uppercase tracking-widest font-bold">v1.0.5</div>
+            <div class="text-xs text-slate-500 uppercase tracking-widest font-bold">v1.0.13</div>
         </div>
-
-        <nav class="flex-1 overflow-y-auto py-4" id="desktop-nav">
-            </nav>
-
+        <nav class="flex-1 overflow-y-auto py-4" id="desktop-nav"></nav>
         <div class="p-4 border-t border-slate-700 bg-slate-900/50">
             <div class="flex justify-between items-center mb-3">
                 <div id="global-timer-desktop" onclick="toggleTimer()" class="cursor-pointer text-slate-500 font-mono font-bold text-sm bg-slate-800 px-2 py-1 rounded border border-slate-600 hover:text-white hover:border-slate-500 transition-all select-none w-20 text-center" title="Click to show/hide time">⏱️ Time</div>
                 <div id="user-status-desktop" class="text-xs font-bold text-slate-400 cursor-pointer hover:text-white" onclick="openModal('modal-login')">Login</div>
             </div>
-            <p class="text-slate-600 text-xs italic text-center">"Together Sharpening our Minds"</p>
         </div>
     </aside>
 
@@ -109,8 +94,7 @@
                 <button id="user-status-mobile" onclick="openModal('modal-login')" class="text-slate-400 hover:text-white">👤</button>
             </div>
         </div>
-        <nav class="flex overflow-x-auto px-2 pb-0 space-x-2 no-scrollbar bg-slate-900" id="mobile-nav">
-            </nav>
+        <nav class="flex overflow-x-auto px-2 pb-0 space-x-2 no-scrollbar bg-slate-900" id="mobile-nav"></nav>
     </div>
 
     <main class="flex-1 overflow-y-auto p-4 md:p-8 relative bg-slate-900 w-full">
@@ -119,25 +103,11 @@
                 <div class="bg-slate-800 rounded-2xl p-8 border border-slate-700 shadow-xl text-center">
                     <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 mb-4">Welcome to Logic Training</h1>
                     <p class="text-slate-300 text-lg mb-8 max-w-2xl mx-auto">This hub is designed to challenge your problem-solving skills. These puzzles require more than just guessing—they require <strong>systematic thinking</strong>.</p>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-left">
-                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
-                            <span class="text-2xl mb-2 block">🧠</span>
-                            <h3 class="font-bold text-white">Pure Logic</h3>
-                            <p class="text-slate-400 text-sm">No tricks. Every puzzle has a mathematically optimal solution.</p>
-                        </div>
-                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
-                            <span class="text-2xl mb-2 block">📉</span>
-                            <h3 class="font-bold text-white">Trial & Error</h3>
-                            <p class="text-slate-400 text-sm">Mistakes are part of the fun. Learn from them to find the right path.</p>
-                        </div>
-                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-700">
-                            <span class="text-2xl mb-2 block">⏱️</span>
-                            <h3 class="font-bold text-white">High Score</h3>
-                            <p class="text-slate-400 text-sm">Solving isn't enough. Can you solve it in the minimum number of steps?</p>
-                        </div>
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-700"><span class="text-2xl mb-2 block">🧠</span><h3 class="font-bold text-white">Pure Logic</h3><p class="text-slate-400 text-sm">No tricks. Every puzzle has a mathematically optimal solution.</p></div>
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-700"><span class="text-2xl mb-2 block">📉</span><h3 class="font-bold text-white">Trial & Error</h3><p class="text-slate-400 text-sm">Mistakes are part of the fun. Learn from them to find the right path.</p></div>
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-700"><span class="text-2xl mb-2 block">⏱️</span><h3 class="font-bold text-white">High Score</h3><p class="text-slate-400 text-sm">Solving isn't enough. Can you solve it in the minimum number of steps?</p></div>
                     </div>
-
                     <button onclick="switchTab('jugs')" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xl rounded-xl shadow-lg transition transform hover:scale-105">Start Training</button>
                 </div>
             </div>
@@ -145,49 +115,32 @@
             <div id="game-jugs" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
-                        <div>
-                            <h2 class="text-3xl font-bold text-white">The Water Jug Riddle</h2>
-                            <p class="text-slate-300 mt-2 leading-relaxed max-w-2xl">You have three jugs with capacities of 8L, 5L, and 3L. The 8L jug starts completely full. The others are empty. You can pour water from one jug to another until the source is empty OR the destination is full. Measure exactly <strong class="text-blue-400">4 Litres</strong> in one of the jugs.</p>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button onclick="jugInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button>
-                            <button onclick="openModal('modal-jugs')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
-                            <button onclick="openModal('modal-math-jugs')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button>
-                        </div>
+                        <div><h2 class="flex items-center text-3xl font-bold text-white mb-2"><span class="text-4xl mr-3">💧</span><span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">The Water Jugs</span></h2><p class="text-slate-300 mt-2">Measure exactly <strong class="text-blue-400">4 Litres</strong> using 8L, 5L, and 3L jugs.</p></div>
+                        <div class="flex space-x-2"><button onclick="jugInit()" class="px-3 py-1 bg-indigo-600 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-jugs')" class="px-3 py-1 bg-amber-600 text-white rounded font-bold text-sm">Hint</button><button onclick="openModal('modal-math-jugs')" class="px-3 py-1 bg-slate-700 text-slate-300 rounded font-bold text-sm">📖</button></div>
                     </div>
                     <div class="flex flex-wrap justify-center items-end gap-12 mb-8 pt-8">
                         <div class="text-center"><div class="text-slate-400 font-bold mb-2">8L Jug</div><div id="jug-0" onclick="jugClick(0)" class="jug-container h-48 w-24 bg-slate-800 border-slate-500 relative hover:border-slate-300"><div id="water-0" class="jug-water h-0"></div><span id="label-0" class="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md z-10">8 / 8L</span></div></div>
                         <div class="text-center"><div class="text-slate-400 font-bold mb-2">5L Jug</div><div id="jug-1" onclick="jugClick(1)" class="jug-container h-36 w-20 bg-slate-800 border-slate-500 relative hover:border-slate-300"><div id="water-1" class="jug-water h-0"></div><span id="label-1" class="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md z-10">0 / 5L</span></div></div>
                         <div class="text-center"><div class="text-slate-400 font-bold mb-2">3L Jug</div><div id="jug-2" onclick="jugClick(2)" class="jug-container h-24 w-16 bg-slate-800 border-slate-500 relative hover:border-slate-300"><div id="water-2" class="jug-water h-0"></div><span id="label-2" class="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md z-10">0 / 3L</span></div></div>
                     </div>
-                    <div class="flex justify-center mt-4"><button onclick="jugGiveUp()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl border border-slate-600">🏳️ Give Up</button></div>
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center mt-4"><p id="jug-status" class="text-slate-300 font-mono text-lg">Select a jug to pour from.</p><div class="text-right"><p class="text-xs text-slate-500 uppercase tracking-wide">Moves</p><p id="jug-moves" class="text-2xl font-bold text-indigo-400">0</p></div></div>
+                    <div class="flex justify-center mt-4"><button onclick="jugGiveUp()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl">🏳️ Give Up</button></div>
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center mt-4"><p id="jug-status" class="text-slate-300 font-mono text-lg">Select a jug to pour from.</p><div class="text-right"><p class="text-xs text-slate-500 uppercase">Moves</p><p id="jug-moves" class="text-2xl font-bold text-indigo-400">0</p></div></div>
                 </div>
             </div>
 
             <div id="game-bulbs" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
-                        <div>
-                            <h2 class="text-3xl font-bold text-white">The Quad-Bulb Riddle</h2>
-                            <p class="text-slate-300 mt-2 leading-relaxed max-w-2xl">There are 4 switches outside a closed room. Inside, there are 4 light bulbs. Each switch controls exactly one bulb. You can toggle the switches as much as you want while the door is closed. You can enter the room exactly <strong class="text-red-400">ONCE</strong>. When you enter, you must identify which switch controls which bulb. How can you distinguish them?</p>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button onclick="bulbInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button>
-                            <button onclick="openModal('modal-bulbs')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
-                            <button onclick="openModal('modal-math-bulbs')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button>
-                        </div>
+                        <div><h2 class="flex items-center text-3xl font-bold text-white mb-2"><span class="text-4xl mr-3">💡</span><span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-300">The Quantum Bulbs</span></h2><p class="text-slate-300 mt-2">Map 4 switches to 4 bulbs. Enter room exactly <strong class="text-red-400">ONCE</strong>.</p></div>
+                        <div class="flex space-x-2"><button onclick="bulbInit()" class="px-3 py-1 bg-indigo-600 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-bulbs')" class="px-3 py-1 bg-amber-600 text-white rounded font-bold text-sm">Hint</button><button onclick="openModal('modal-math-bulbs')" class="px-3 py-1 bg-slate-700 text-slate-300 rounded font-bold text-sm">📖</button></div>
                     </div>
                     <div id="bulb-phase-1" class="mb-8">
                         <div class="bg-slate-900 p-6 rounded-xl border border-slate-700 mb-6">
-                            <div class="flex justify-between items-center mb-6"><div class="text-slate-400 font-mono text-sm uppercase">Timer: <span id="bulb-timer" class="text-2xl text-white font-bold ml-2">00m</span></div><button onclick="bulbWait()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg border border-slate-500 flex items-center transition transform hover:scale-105"><span>⏱️ Wait 10 Minutes</span></button></div>
-                            <div class="grid grid-cols-4 gap-8" id="bulb-switches-ui"></div>
+                            <div class="flex justify-between items-center mb-6"><div class="text-slate-400 font-mono text-sm uppercase">Timer: <span id="bulb-timer" class="text-2xl text-white font-bold ml-2">00m</span></div><button onclick="bulbWait()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg border border-slate-500 flex items-center"><span>⏱️ Wait 10 Minutes</span></button></div>
+                            <div class="grid grid-cols-4 gap-8 min-h-[120px]" id="bulb-switches-ui"></div>
                         </div>
-                        <div class="flex items-center justify-between mb-4">
-                            <p id="bulb-status" class="text-slate-300 font-bold text-sm ml-4">Configure switches before entering.</p>
-                            <button onclick="bulbEnterRoom()" class="w-1/2 py-4 bg-red-600 hover:bg-red-500 text-white font-bold text-xl rounded-xl shadow-lg transition">ENTER ROOM (Irreversible)</button>
-                        </div>
-                        <div class="flex justify-center"><button onclick="bulbGiveUp()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl border border-slate-600">🏳️ Give Up</button></div>
+                        <button onclick="bulbEnterRoom()" class="w-full py-4 bg-red-600 hover:bg-red-500 text-white font-bold text-xl rounded-xl shadow-lg transition mb-4">ENTER ROOM (Irreversible)</button>
+                        <div class="flex justify-center"><button onclick="bulbGiveUp()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl">🏳️ Give Up</button></div>
                     </div>
                     <div id="bulb-phase-2" class="hidden">
                         <h3 class="text-2xl font-bold text-emerald-400 mb-4 text-center">🚪 Inside the Room</h3>
@@ -200,19 +153,12 @@
             <div id="game-cat" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
-                        <div>
-                            <h2 class="text-3xl font-bold text-white">The Invincible Cat</h2>
-                            <p class="text-slate-300 mt-2 leading-relaxed max-w-2xl">A cat is hiding in one of five boxes that are lined up in a row. The boxes are numbered 1 to 5. Each night the cat hides in an <strong class="text-emerald-400">adjacent box</strong>, exactly one number away. Each morning you can open a single box to try to find the cat. Can you win this game of hide and seek? What is your strategy for finding the cat?</p>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button onclick="catInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button>
-                            <button onclick="openModal('modal-cat')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
-                            <button onclick="openModal('modal-math-cat')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button>
-                        </div>
+                        <div><h2 class="flex items-center text-3xl font-bold text-white mb-2"><span class="text-4xl mr-3">📦</span><span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-300">Schrödinger's Cat</span></h2><p class="text-slate-300 mt-2">Find the cat in 5 boxes. It moves to an adjacent box every night.</p></div>
+                        <div class="flex space-x-2"><button onclick="catInit()" class="px-3 py-1 bg-indigo-600 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-cat')" class="px-3 py-1 bg-amber-600 text-white rounded font-bold text-sm">Hint</button><button onclick="openModal('modal-math-cat')" class="px-3 py-1 bg-slate-700 text-slate-300 rounded font-bold text-sm">📖</button></div>
                     </div>
                     <div class="flex justify-between items-center mb-6 bg-slate-900 p-4 rounded-xl border border-slate-700"><h3 class="text-2xl font-bold text-indigo-400" id="cat-day-display">Day 1</h3><p class="text-xl font-bold text-emerald-400" id="cat-possibilities">5 Spots</p></div>
                     <div class="grid grid-cols-5 gap-4 mb-8" id="cat-boxes"></div>
-                    <div class="flex justify-center mb-8"><button id="cat-btn-giveup" onclick="catGiveUp()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl border border-slate-600">🏳️ Give Up & Reveal Path</button></div>
+                    <div class="flex justify-center mb-8"><button id="cat-btn-giveup" onclick="catGiveUp()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl">🏳️ Give Up</button></div>
                     <div class="bg-slate-900 rounded-xl border border-slate-700 p-4 h-64 overflow-y-auto" id="cat-logs"></div>
                 </div>
             </div>
@@ -220,17 +166,9 @@
             <div id="game-river" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
-                        <div>
-                            <h2 class="text-3xl font-bold text-white">The River Crossing Riddle</h2>
-                            <p class="text-slate-300 mt-2 leading-relaxed max-w-2xl">5 people must cross a river. The boat holds max 2 people. Crossing times: <strong>1s, 3s, 6s, 8s, 12s</strong>. The boat speed is determined by the slowest person on board. The boat needs a driver to return. Can you get everyone across in <strong class="text-emerald-400">30 seconds or less</strong>?</p>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button onclick="riverInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button>
-                            <button onclick="openModal('modal-river')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
-                            <button onclick="openModal('modal-math-river')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button>
-                        </div>
+                        <div><h2 class="flex items-center text-3xl font-bold text-white mb-2"><span class="text-4xl mr-3">🚣</span><span class="bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-emerald-300">The River Crossing</span></h2><p class="text-slate-300 mt-2">Get everyone across in <strong class="text-emerald-400">26s</strong> (Optimal). Boat max 2.</p></div>
+                        <div class="flex space-x-2"><button onclick="riverInit()" class="px-3 py-1 bg-indigo-600 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-river')" class="px-3 py-1 bg-amber-600 text-white rounded font-bold text-sm">Hint</button><button onclick="openModal('modal-math-river')" class="px-3 py-1 bg-slate-700 text-slate-300 rounded font-bold text-sm">📖</button></div>
                     </div>
-
                     <div id="river-game-area" class="bg-slate-900 p-6 rounded-xl border border-slate-700 mb-6 relative">
                         <div class="river-container relative">
                             <div id="river-bank-left" class="bank left-0"></div>
@@ -238,11 +176,11 @@
                             <div id="river-boat" class="boat" style="left: 35%;"></div>
                         </div>
                         <div class="flex justify-center mt-6 space-x-4">
-                            <button onclick="riverGo()" id="river-btn-go" class="px-8 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xl rounded-xl shadow-lg transition transform hover:scale-105">ROW BOAT</button>
+                            <button onclick="riverGo()" id="river-btn-go" class="px-8 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xl rounded-xl shadow-lg">ROW BOAT</button>
                             <button onclick="riverGiveUp()" id="river-btn-giveup" class="px-6 py-3 bg-slate-600 hover:bg-slate-500 text-white font-bold text-lg rounded-xl">Give Up</button>
                         </div>
                     </div>
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center"><p id="river-status" class="text-slate-300 font-mono text-lg">Load 1 or 2 people onto the boat.</p><div class="text-right"><p class="text-xs text-slate-500 uppercase tracking-wide">Time Elapsed</p><p id="river-time" class="text-3xl font-black text-emerald-400">0s</p></div></div>
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center"><p id="river-status" class="text-slate-300 font-mono text-lg">Load 1 or 2 people onto the boat.</p><div class="text-right"><p class="text-xs text-slate-500 uppercase">Time</p><p id="river-time" class="text-3xl font-black text-emerald-400">0s</p></div></div>
                     <div id="river-solution" class="hidden mt-4 bg-slate-900 p-4 rounded-xl border border-amber-500 text-slate-300 text-sm"></div>
                 </div>
             </div>
@@ -250,24 +188,14 @@
             <div id="game-spider" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
-                        <div>
-                            <h2 class="text-3xl font-bold text-white">The Spider and the Fly</h2>
-                            <p class="text-slate-300 mt-2 leading-relaxed max-w-2xl">Help the hungry <strong class="text-blue-400">Blue Spider</strong> catch the <strong class="text-pink-400">Pink Fly</strong>.<br><strong>Rules:</strong> The Spider and Fly take turns moving <strong>1 step</strong> to an adjacent dot.<br>You control the Spider. The Fly tries to escape.<br><strong>Goal:</strong> Catch the Fly in <strong>15 moves</strong> or less.</p>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button onclick="spiderInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button>
-                            <button onclick="openModal('modal-spider')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
-                            <button onclick="openModal('modal-math-spider')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button>
-                        </div>
+                        <div><h2 class="flex items-center text-3xl font-bold text-white mb-2"><span class="text-4xl mr-3">🕸️</span><span class="bg-clip-text text-transparent bg-gradient-to-r from-slate-200 to-slate-400">The Spider's Web</span></h2><p class="text-slate-300 mt-2">Catch the Fly (Pink) in 15 moves.</p></div>
+                        <div class="flex space-x-2"><button onclick="spiderInit()" class="px-3 py-1 bg-indigo-600 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-spider')" class="px-3 py-1 bg-amber-600 text-white rounded font-bold text-sm">Hint</button><button onclick="openModal('modal-math-spider')" class="px-3 py-1 bg-slate-700 text-slate-300 rounded font-bold text-sm">📖</button></div>
                     </div>
                     <div class="flex justify-center mb-6 relative">
                         <canvas id="spider-canvas" width="650" height="550"></canvas>
                     </div>
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
-                        <p id="spider-status" class="text-slate-300 font-mono text-lg">Your Turn. Click a connected node.</p>
-                        <div class="text-right"><p class="text-xs text-slate-500 uppercase tracking-wide">Moves Left</p><p id="spider-moves" class="text-3xl font-black text-indigo-400">15</p></div>
-                    </div>
-                    <div class="flex justify-center mt-4"><button onclick="spiderGiveUp()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl border border-slate-600">🏳️ Give Up</button></div>
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center"><p id="spider-status" class="text-slate-300 font-mono text-lg">Your Turn.</p><div class="text-right"><p class="text-xs text-slate-500 uppercase">Moves</p><p id="spider-moves" class="text-3xl font-black text-indigo-400">15</p></div></div>
+                    <div class="flex justify-center mt-4"><button onclick="spiderGiveUp()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl">🏳️ Give Up</button></div>
                     <div id="spider-solution" class="hidden mt-4 bg-slate-900 p-4 rounded-xl border border-amber-500 text-slate-300 text-sm text-center"></div>
                 </div>
             </div>
@@ -275,26 +203,14 @@
             <div id="game-graph" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
-                        <div>
-                            <h2 class="text-3xl font-bold text-white">The Delivery Route</h2>
-                            <p class="text-slate-300 mt-2 leading-relaxed max-w-2xl">You are a delivery driver. You must drive through <strong class="text-indigo-400">every single street (line)</strong> exactly once to minimise fuel consumption. You can start at any intersection (dot). Click dots to move. You can <strong class="text-indigo-400">UNDO</strong> your last move by clicking the previous node. If you get stuck, you lose.</p>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button onclick="graphInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button>
-                            <button onclick="openModal('modal-graph')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button>
-                            <button onclick="openModal('modal-math-graph')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button>
-                        </div>
+                        <div><h2 class="flex items-center text-3xl font-bold text-white mb-2"><span class="text-4xl mr-3">🚚</span><span class="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-amber-300">The Delivery Route</span></h2><p class="text-slate-300 mt-2">Drive every street exactly once. 0 Backtracks for Gold.</p></div>
+                        <div class="flex space-x-2"><button onclick="graphInit()" class="px-3 py-1 bg-indigo-600 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-graph')" class="px-3 py-1 bg-amber-600 text-white rounded font-bold text-sm">Hint</button><button onclick="openModal('modal-math-graph')" class="px-3 py-1 bg-slate-700 text-slate-300 rounded font-bold text-sm">📖</button></div>
                     </div>
                     <div class="flex justify-center mb-6 relative">
                         <canvas id="graph-canvas" width="550" height="450"></canvas>
                     </div>
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
-                        <p id="graph-status" class="text-slate-300 font-mono text-lg">Click a starting node (Yellow).</p>
-                        <div class="text-right"><p class="text-xs text-slate-500 uppercase tracking-wide">Streets Left</p><p id="graph-left" class="text-3xl font-black text-indigo-400">13</p></div>
-                    </div>
-                    <div class="flex justify-center mt-4">
-                        <button onclick="graphGiveUp()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl border border-slate-600">🏳️ Give Up</button>
-                    </div>
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center"><p id="graph-status" class="text-slate-300 font-mono text-lg">Start at Yellow.</p><div class="text-right"><p class="text-xs text-slate-500 uppercase">Streets</p><p id="graph-left" class="text-3xl font-black text-indigo-400">13</p></div></div>
+                    <div class="flex justify-center mt-4"><button onclick="graphGiveUp()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl">🏳️ Give Up</button></div>
                     <div id="graph-solution" class="hidden mt-4 bg-slate-900 p-4 rounded-xl border border-amber-500 text-slate-300 text-sm text-center"></div>
                 </div>
             </div>
@@ -302,20 +218,17 @@
             <div id="game-balls" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
-                        <div>
-                            <h2 class="text-3xl font-bold text-white">The 12 Balls Puzzle</h2>
-                            <p class="text-slate-300 mt-2 leading-relaxed max-w-2xl">You have 12 identical-looking balls. One is <strong>counterfeit</strong> (either heavier or lighter). You have a balance scale. You must identify the <strong class="text-emerald-400">specific ball number</strong> AND determine if it is <strong class="text-emerald-400">Heavy or Light</strong> using exactly <strong class="text-red-400">3 weighings</strong>. Guessing is not a strategy.</p>
-                        </div>
-                        <div class="flex space-x-2"><button onclick="ballsInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-balls')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button><button onclick="openModal('modal-math-balls')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button></div>
+                        <div><h2 class="flex items-center text-3xl font-bold text-white mb-2"><span class="text-4xl mr-3">⚖️</span><span class="bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-rose-300">The Counterfeit 12</span></h2><p class="text-slate-300 mt-2">Find the fake ball in 3 weighings.</p></div>
+                        <div class="flex space-x-2"><button onclick="ballsInit()" class="px-3 py-1 bg-indigo-600 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-balls')" class="px-3 py-1 bg-amber-600 text-white rounded font-bold text-sm">Hint</button><button onclick="openModal('modal-math-balls')" class="px-3 py-1 bg-slate-700 text-slate-300 rounded font-bold text-sm">📖</button></div>
                     </div>
                     <div class="bg-slate-900/50 rounded-xl p-6 mb-6 relative">
                         <div class="flex justify-center space-x-8 mb-4"><div class="w-1/2"><p class="text-center text-xs text-slate-500 font-bold mb-1">LEFT (<span id="balls-left-count">0</span>)</p><div id="balls-pan-left" class="pan"></div></div><div class="w-1/2"><p class="text-center text-xs text-slate-500 font-bold mb-1">RIGHT (<span id="balls-right-count">0</span>)</p><div id="balls-pan-right" class="pan"></div></div></div>
                         <div id="balls-result-box" class="scale-result bg-slate-700 text-center p-3 rounded-lg font-bold text-slate-200 mb-4 border border-slate-600"></div>
-                        <div class="flex justify-center space-x-4"><button id="balls-btn-weigh" onclick="ballsWeigh()" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition shadow-lg">WEIGH</button><button onclick="ballsGiveUp()" class="px-6 py-3 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-xl">Give Up</button></div>
+                        <div class="flex justify-center space-x-4"><button id="balls-btn-weigh" onclick="ballsWeigh()" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl">WEIGH</button><button onclick="ballsGiveUp()" class="px-6 py-3 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-xl">Give Up</button></div>
                         <p id="balls-weighs-left" class="absolute top-4 right-4 text-xl font-bold text-indigo-400">Left: 3</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div><div id="balls-pool" class="flex flex-wrap gap-3 p-4 bg-slate-900 rounded-xl min-h-[100px]"></div><div class="mt-6 p-4 bg-emerald-900/20 border border-emerald-700/50 rounded-xl"><div class="flex space-x-2 mb-2"><select id="balls-guess-id" class="bg-slate-900 border border-slate-600 rounded p-2 text-white w-full"></select><select id="balls-guess-status" class="bg-slate-900 border border-slate-600 rounded p-2 text-white w-full"><option value="">Status</option><option value="Heavy">Heavy</option><option value="Light">Light</option></select></div><button onclick="ballsCheck()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition">Identify</button></div></div>
+                        <div><div id="balls-pool" class="flex flex-wrap gap-3 p-4 bg-slate-900 rounded-xl min-h-[100px]"></div><div class="mt-6 p-4 bg-emerald-900/20 border border-emerald-700/50 rounded-xl"><div class="flex space-x-2 mb-2"><select id="balls-guess-id" class="bg-slate-900 border border-slate-600 rounded p-2 text-white w-full"></select><select id="balls-guess-status" class="bg-slate-900 border border-slate-600 rounded p-2 text-white w-full"><option value="">Status</option><option value="Heavy">Heavy</option><option value="Light">Light</option></select></div><button onclick="ballsCheck()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg">Identify</button></div></div>
                         <div class="bg-slate-900 rounded-xl p-4 border border-slate-700 h-80 overflow-y-auto" id="balls-logs"></div>
                     </div>
                 </div>
@@ -324,28 +237,22 @@
             <div id="game-horses" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
-                        <div>
-                            <h2 class="text-3xl font-bold text-white">The 25 Horses Puzzle</h2>
-                            <p class="text-slate-300 mt-2 leading-relaxed max-w-2xl">There are 25 horses. You need to identify the fastest, second fastest, and third fastest horses. You have a race track that can race up to 5 horses at a time. There is <strong class="text-red-400">NO timer or stopwatch</strong>; you only see the relative finishing order of each race (1st, 2nd, 3rd...). What is the minimum number of races required to identify the Top 3 with certainty?</p>
-                        </div>
-                        <div class="flex space-x-2"><button onclick="horseInit()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-horses')" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-bold text-sm">Hint</button><button onclick="openModal('modal-math-horses')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-bold text-sm">📖</button></div>
+                        <div><h2 class="flex items-center text-3xl font-bold text-white mb-2"><span class="text-4xl mr-3">🐎</span><span class="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-rose-300">The 25 Horses Race</span></h2><p class="text-slate-300 mt-2">Find Top 3 in minimum races. No Stopwatch.</p></div>
+                        <div class="flex space-x-2"><button onclick="horseInit()" class="px-3 py-1 bg-indigo-600 text-white rounded font-bold text-sm">Reset</button><button onclick="openModal('modal-horses')" class="px-3 py-1 bg-amber-600 text-white rounded font-bold text-sm">Hint</button><button onclick="openModal('modal-math-horses')" class="px-3 py-1 bg-slate-700 text-slate-300 rounded font-bold text-sm">📖</button></div>
                     </div>
                     <div class="flex flex-col lg:flex-row gap-6">
                         <div class="lg:w-1/2 space-y-6">
                             <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-700 relative">
-                                <div class="flex justify-between items-center mb-2"><h3 class="font-bold text-pink-400 uppercase tracking-wider text-sm">Race Track (Click horses to add)</h3><span id="horse-race-count" class="text-lg font-bold text-white bg-pink-600 px-3 py-1 rounded-lg">Races: 0</span></div>
+                                <div class="flex justify-between items-center mb-2"><h3 class="font-bold text-pink-400 uppercase tracking-wider text-sm">Race Track</h3><span id="horse-race-count" class="text-lg font-bold text-white bg-pink-600 px-3 py-1 rounded-lg">Races: 0</span></div>
                                 <div id="horse-track" class="flex justify-center space-x-4 mb-6 p-4 bg-slate-800 rounded-xl min-h-[80px]"></div>
-                                <button onclick="horseRace()" id="horse-btn-race" class="w-full py-3 bg-pink-600 hover:bg-pink-500 text-white font-bold text-xl rounded-xl shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed">RACE!</button>
+                                <button onclick="horseRace()" id="horse-btn-race" class="w-full py-3 bg-pink-600 hover:bg-pink-500 text-white font-bold text-xl rounded-xl shadow-lg">RACE!</button>
                             </div>
                             <div class="bg-slate-900 rounded-xl p-4 border border-slate-700"><h3 class="font-bold text-slate-400 mb-2 text-sm">Stable</h3><div id="horse-pool" class="flex flex-wrap gap-2 p-4 bg-slate-900 rounded-xl min-h-[150px]"></div></div>
                         </div>
                         <div class="lg:w-1/2 space-y-6">
-                            <div class="bg-slate-900 rounded-xl p-4 border border-slate-700"><h3 class="font-bold text-indigo-400 mb-2 text-sm uppercase tracking-wide">Strategy Board (Drag to Sort, Click to Return)</h3><div class="grid grid-cols-6 gap-1 mb-2 text-xs text-slate-500 text-center font-mono"><div>GRP</div><div>1st</div><div>2nd</div><div>3rd</div><div>4th</div><div>5th</div></div><div id="horse-grid" class="space-y-1"></div></div>
+                            <div class="bg-slate-900 rounded-xl p-4 border border-slate-700"><h3 class="font-bold text-indigo-400 mb-2 text-sm uppercase tracking-wide">Strategy Board</h3><div class="grid grid-cols-6 gap-1 mb-2 text-xs text-slate-500 text-center font-mono"><div>GRP</div><div>1st</div><div>2nd</div><div>3rd</div><div>4th</div><div>5th</div></div><div id="horse-grid" class="space-y-1"></div></div>
                             <div class="bg-slate-900 rounded-xl p-4 border border-slate-700 h-48 overflow-y-auto">
-                                <div class="flex justify-between items-center mb-2 sticky top-0 bg-slate-900 pb-1 border-b border-slate-700">
-                                    <h3 class="font-bold text-slate-300 text-sm">Race Logs</h3>
-                                    <span id="horse-status" class="text-xs font-bold text-slate-500">Ready</span>
-                                </div>
+                                <div class="flex justify-between items-center mb-2 sticky top-0 bg-slate-900 pb-1 border-b border-slate-700"><h3 class="font-bold text-slate-300 text-sm">Race Logs</h3><span id="horse-status" class="text-xs font-bold text-slate-500">Ready</span></div>
                                 <div id="horse-logs" class="space-y-2 text-sm"></div>
                             </div>
                             <div class="p-4 bg-indigo-900/30 border border-indigo-700 rounded-xl">
@@ -359,13 +266,8 @@
                 </div>
             </div>
 
-        </div>
     </main>
     
-    <footer class="bg-slate-900 border-t border-slate-700 py-4 text-center mt-auto">
-        <p class="text-slate-500 text-sm italic">"Together Sharpening our Minds"</p>
-    </footer>
-
     <div id="modal-login" class="modal" onclick="closeModal('modal-login')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h3 class="text-2xl font-bold text-white mb-4">Login</h3>
@@ -506,20 +408,20 @@
             closeModal('modal-login');
         }
 
-       // Data Logic
+        // Data Logic
         function sendData(game, result, details, optimal) {
-            // Calculate duration
+            // Calculate duration based on the global startTime
             const currentDuration = Math.floor((Date.now() - startTime) / 1000);
 
-            console.log(`Sending Data: Game=${game}, Metric=${details}, Time=${currentDuration}s`);
+            console.log(`Sending: ${game} | ${result} | Metric: ${details} | Time: ${currentDuration}s`);
             
             const payload = {
                 user: currentUser || "Guest",
-                game: game,                // MATCHES 'var puzzle = data.game'
-                result: result,
-                metric: details,           // MATCHES 'var metric = data.metric'
-                optimal: optimal,
-                duration: currentDuration  // MATCHES 'var duration = data.duration'
+                game: game,       
+                result: result,   
+                metric: details, 
+                optimal: optimal, 
+                duration: currentDuration 
             };
 
             fetch(apiUrl, {
@@ -528,15 +430,16 @@
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify(payload)
             }).then(() => {
-                console.log("Sent to Sheet.");
+                console.log("Data sent to Sheet.");
             }).catch(err => {
-                console.error("Failed:", err);
+                console.error("Failed to send data:", err);
             });
         }
+
         // --- PROGRESSION SYSTEM ---
         const puzzleNames = {
-            'jugs': '3 Jugs', 'bulbs': '4 Switches', 'cat': '5 Boxes', 'river': '5 People',
-            'spider': 'Spider', 'graph': '13 Streets', 'balls': '12 Balls', 'horses': '25 Horses'
+            'jugs': '💧 Jugs', 'bulbs': '💡 Switches', 'cat': '📦 Cat', 'river': '🚣 River',
+            'spider': '🕸️ Spider', 'graph': '🚚 Delivery', 'balls': '⚖️ Balls', 'horses': '🐎 Horses'
         };
 
         function renderSidebar() {
@@ -599,6 +502,40 @@
             if(mNav) mNav.classList.add('active');
 
             if (id !== 'about') startTimer();
+
+            // FIXED: Force Re-render on Tab Switch (Solves Empty Games)
+            // We use "Lazy Loading" logic: Check if state is ready, then force a re-paint.
+            if(id === 'spider') setTimeout(spiderRender, 50);
+            
+            // Graph: Check if initialized, otherwise Re-Render
+            if(id === 'graph') {
+                if(!graphState.current && graphState.clicks === 0) graphInit(); 
+                setTimeout(graphRender, 50);
+            }
+            
+            if(id === 'jugs') jugRender();
+            
+            // Balls: Check if pool is populated. If not, Force Init.
+            if(id === 'balls') {
+                if(ballsState.available.length === 0 && ballsState.left.length === 0 && ballsState.right.length === 0) ballsInit();
+                setTimeout(ballsRender, 50);
+            }
+
+            if(id === 'river') riverRender();
+            if(id === 'cat') catRender();
+            
+            // Horses: Check if pool is populated. If not, Force Init.
+            if(id === 'horses') {
+                if(horseState.pool.length === 0 && horseState.track.length === 0) horseInit();
+                setTimeout(horseRender, 50);
+            }
+
+            // Bulbs: Force UI Rebuild
+            if(id === 'bulbs') {
+                 // Ensure UI container is clear then rebuild
+                 const container = document.getElementById('bulb-switches-ui');
+                 if(container && container.innerHTML === '') bulbRenderSwitches();
+            }
         }
 
         function startTimer() { 
@@ -622,7 +559,7 @@
         function toggleTimer() { timerVisible = !timerVisible; updateTimerDisplay(); }
 
         // --- GAME LOGIC STARTS HERE ---
-		/* --- GAME 1: 3 JUGS --- */
+		/* --- GAME 1: 3 JUGS (Visible -> Immediate Reset) --- */
         let jugState = { jugs:[8,0,0], caps:[8,5,3], selected:null, solved:false, moves:0 };
         function jugInit(){ jugState.jugs=[8,0,0]; jugState.selected=null; jugState.solved=false; jugState.moves=0; document.getElementById('jug-status').innerText="Select a jug to pour from."; document.getElementById('jug-status').className="text-slate-300 font-mono text-lg"; document.getElementById('jug-moves').innerText="0"; jugRender(); }
         function jugClick(idx){ if(jugState.solved)return; if(jugState.selected===null){ if(jugState.jugs[idx]>0){ jugState.selected=idx; document.getElementById('jug-status').innerText=`Selected Jug ${jugState.caps[idx]}L. Click another to pour.`; } else updateStatus('jug-status', "Cannot select empty jug.", true); } else { if(jugState.selected===idx){ jugState.selected=null; document.getElementById('jug-status').innerText="Deselected."; } else { jugPour(jugState.selected, idx); jugState.selected=null; } } jugRender(); }
@@ -630,28 +567,38 @@
         function jugRender(){ jugState.jugs.forEach((v,i)=>{ const el=document.getElementById(`water-${i}`); el.style.height=`${(v/jugState.caps[i])*100}%`; document.getElementById(`label-${i}`).innerText=`${v} / ${jugState.caps[i]}L`; const c=document.getElementById(`jug-${i}`); if(jugState.selected===i)c.classList.add('jug-selected'); else c.classList.remove('jug-selected'); }); }
         function jugCheck(){ if(jugState.jugs.includes(4)){ jugState.solved=true; const msg=jugState.moves===6?"PERFECT! 6 Moves (Optimised).":`SUCCESS! Solved in ${jugState.moves} moves.`; document.getElementById('jug-status').innerText=msg; document.getElementById('jug-status').className="text-emerald-400 font-bold text-xl animate-bounce"; playSound(600); const isOptimal = (jugState.moves === 6); sendData('3 Jugs', 'Win', jugState.moves, isOptimal); markComplete('jugs', isOptimal); } }
         function jugGiveUp(){ 
-            // Immediate Reset
             jugInit(); 
-            updateStatus('jug-status', "GAVE UP. Game Reset. Hint: 5L - 3L = 2L."); 
+            updateStatus('jug-status', "GAVE UP. Resetting... Hint: 5L - 3L = 2L."); 
             sendData('3 Jugs', 'GiveUp', '-', false); 
         }
 
-        /* --- GAME 2: BULBS (Hidden Info -> 4s Delay) --- */
+        /* --- GAME 2: BULBS (Hidden -> 4s Delay + FORCED VISUAL RESET) --- */
         let bulbState={map:{},switches:{},over:false,entered:false,time:0};
         const bulbNames=['A','B','C','D'];
+        
         function bulbInit(){
+            // 1. Reset Logic State
             bulbState.map={1:null,2:null,3:null,4:null};
             let s=['A','B','C','D'].sort(()=>Math.random()-0.5);
             [1,2,3,4].forEach((n,i)=>bulbState.map[n]=s[i]);
             bulbState.switches={A:{on:false,heat:0},B:{on:false,heat:0},C:{on:false,heat:0},D:{on:false,heat:0}};
             bulbState.over=false;bulbState.entered=false;bulbState.time=0;
+            
+            // 2. Reset UI Elements
             document.getElementById('bulb-phase-1').classList.remove('hidden');
             document.getElementById('bulb-phase-2').classList.add('hidden');
             document.getElementById('bulb-final-msg').innerText="";
             document.getElementById('bulb-timer').innerText="00m";
             updateStatus('bulb-status', "Configure switches before entering.");
+            
+            // 3. CRITICAL FIX: Wipe the container to remove old buttons instantly
+            const container = document.getElementById('bulb-switches-ui');
+            if(container) container.innerHTML = ''; 
+            
+            // 4. Rebuild buttons from scratch (all OFF)
             bulbRenderSwitches();
         }
+        
         function bulbToggle(id){if(bulbState.over)return; const s=bulbState.switches[id];s.on=!s.on;bulbRenderSwitches();playSound(300,'square')}
         function bulbWait(){
             if(bulbState.over)return;
@@ -661,7 +608,16 @@
             const el=document.getElementById('bulb-switches-ui');
             el.style.opacity=0.5;setTimeout(()=>el.style.opacity=1,200)
         }
-        function bulbRenderSwitches(){const c=document.getElementById('bulb-switches-ui');c.innerHTML='';bulbNames.forEach(id=>{const s=bulbState.switches[id];const bg=s.on?"bg-emerald-900/50 border-emerald-500":"bg-slate-900 border-slate-700";const txt=s.on?"text-emerald-400":"text-slate-500";c.innerHTML+=`<div class="${bg} p-4 rounded-xl border flex flex-col items-center transition-colors duration-200"><span class="text-3xl font-bold text-slate-300 mb-2">${id}</span><button onclick="bulbToggle('${id}')" class="w-full py-2 rounded-lg font-bold text-white ${s.on?'bg-emerald-600':'bg-slate-600'}">${s.on?'ON':'OFF'}</button></div>`})}
+        function bulbRenderSwitches(){
+            const c=document.getElementById('bulb-switches-ui');
+            if(!c) return;
+            c.innerHTML=''; // Clear again to be safe
+            bulbNames.forEach(id=>{
+                const s=bulbState.switches[id];
+                const bg=s.on?"bg-emerald-900/50 border-emerald-500":"bg-slate-900 border-slate-700";
+                c.innerHTML+=`<div class="${bg} p-4 rounded-xl border flex flex-col items-center transition-colors duration-200"><span class="text-3xl font-bold text-slate-300 mb-2">${id}</span><button onclick="bulbToggle('${id}')" class="w-full py-2 rounded-lg font-bold text-white ${s.on?'bg-emerald-600':'bg-slate-600'}">${s.on?'ON':'OFF'}</button></div>`
+            });
+        }
         function bulbEnterRoom(){
             bulbState.entered=true;
             document.getElementById('bulb-phase-1').classList.add('hidden');
@@ -681,7 +637,6 @@
         function bulbGiveUp(){ 
             if(!bulbState.entered) bulbEnterRoom(); 
             const m = document.getElementById('bulb-final-msg'); 
-            // Show Answer
             let ans = ""; [1,2,3,4].forEach(n => ans += `B${n}=${bulbState.map[n]} `);
             m.innerText = `Answers: ${ans}`; 
             m.className = "text-amber-400 font-mono text-center mt-4 font-bold text-sm"; 
@@ -689,7 +644,7 @@
             setTimeout(() => { bulbInit(); }, 4000);
         }
 
-        /* --- GAME 3: CAT (Hidden Info -> 4s Delay) --- */
+        /* --- GAME 3: CAT (Hidden -> 4s Delay) --- */
         const catState={day:1,pos:new Set([1,2,3,4,5]),history:[],over:false};
         function catInit(){catState.day=1;catState.pos=new Set([1,2,3,4,5]);catState.history=[new Set([1,2,3,4,5])];catState.over=false;document.getElementById('cat-logs').innerHTML='';catRender();}
         function catRender(){document.getElementById('cat-day-display').innerText=`Day ${catState.day}`;document.getElementById('cat-possibilities').innerText=`${catState.pos.size} Spots`;const c=document.getElementById('cat-boxes');c.innerHTML='';for(let i=1;i<=5;i++){const b=document.createElement('button');b.className=`box-btn h-24 bg-slate-800 rounded-xl border-2 border-slate-600 flex items-center justify-center text-3xl font-black text-slate-600 group hover:border-indigo-500 hover:text-indigo-400 quantum-active`;b.innerText=i;b.onclick=()=>catCheck(i);if(catState.over)b.disabled=true;c.appendChild(b)}}
@@ -721,13 +676,13 @@
             document.getElementById('cat-boxes').children[final-1].classList.add('bg-amber-900','border-amber-500','text-amber-400'); 
             const l=document.getElementById('cat-logs'); 
             const e=document.createElement('div'); e.className="mt-4 p-3 bg-slate-700 rounded border border-slate-600 font-bold text-amber-400"; 
-            e.innerText="GAVE UP. Showing Answer..."; 
+            e.innerText="GAVE UP. Showing Path..."; 
             l.prepend(e); 
             sendData('5 Boxes', 'GiveUp', `Day ${catState.day}`, false); 
             setTimeout(() => { catInit(); }, 4000);
         }
 
-        /* --- GAME 4: RIVER (Immediate Reset) --- */
+        /* --- GAME 4: RIVER (Visible -> Immediate Reset) --- */
         let riverState = { left:[1,3,6,8,12], right:[], boat:[], side:'left', time:0, solved:false, fail:false };
         function riverInit(){ riverState = { left:[1,3,6,8,12], right:[], boat:[], side:'left', time:0, solved:false, fail:false }; document.getElementById('river-time').innerText = "0s"; document.getElementById('river-status').innerText = "Load 1 or 2 people onto the boat."; document.getElementById('river-status').className = "text-slate-300 font-mono text-lg"; document.getElementById('river-game-area').classList.remove('shake-fail'); document.getElementById('river-solution').classList.add('hidden'); riverRender(); }
         function riverClick(val, loc) { 
@@ -767,11 +722,11 @@
         }
         function riverRender(){ const l=document.getElementById('river-bank-left'); const r=document.getElementById('river-bank-right'); const b=document.getElementById('river-boat'); const draw = (arr, el, loc) => { el.innerHTML = arr.sort((a,b)=>a-b).map(p => `<div onclick="riverClick(${p}, '${loc}')" class="person"><span class="text-2xl">👤</span><span class="person-time">${p}s</span></div>`).join(''); }; draw(riverState.left, l, 'left'); draw(riverState.right, r, 'right'); draw(riverState.boat, b, 'boat'); b.style.left = riverState.side === 'left' ? '35%' : 'calc(100% - 35% - 140px)'; }
         function riverCheck(){ 
-            // WIN CONDITION: Left side is empty.
+            // WIN CONDITION: Left side is empty
             if(riverState.left.length === 0) { 
                 if(riverState.time <= 30) { 
                     riverState.solved = true; 
-                    // Optimal is 26s as requested
+                    // Optimal = 26s
                     const isOptimal = (riverState.time <= 26); 
                     const msg = document.getElementById('river-status'); 
                     msg.innerText = `VICTORY! Solved in ${riverState.time}s (Optimal is 26s).`; 
@@ -783,13 +738,12 @@
             } 
         }
         function riverGiveUp() { 
-            // Immediate Reset
             riverInit(); 
             updateStatus('river-status', "GAVE UP. Game Reset."); 
             sendData('River', 'GiveUp', '-', false); 
         }
 
-        /* --- GAME 5: SPIDER (Fitted Cone Layout) --- */
+        /* --- GAME 5: SPIDER (Fitted Cone, Immediate Reset) --- */
         let spiderState = { player: 12, spider: 4, moves: 15, over: false }; 
         
         function getSpiderNeighbors(id) {
@@ -798,36 +752,25 @@
             const val = id - 1;
             const ray = Math.floor(val / 4);
             const ring = val % 4; 
-            
-            // Grid Topology
-            if (ring > 0) n.push(id - 1); else n.push(0); // Inward
-            if (ring < 3) n.push(id + 1); // Outward
-            if (ray > 0) n.push(id - 4); // Lateral Up
-            if (ray < 4) n.push(id + 4); // Lateral Down
+            if (ring > 0) n.push(id - 1); else n.push(0); 
+            if (ring < 3) n.push(id + 1); 
+            if (ray > 0) n.push(id - 4); 
+            if (ray < 4) n.push(id + 4); 
             return n;
         }
 
         function getSpiderNodePos(id) {
-            // Canvas: 650w x 550h
-            // Vertex (0) at Right Middle
+            // Canvas: 650w x 550h, Vertex Right
             const cx = 600; 
             const cy = 275; 
             
             if (id === 0) return { x: cx, y: cy };
 
             const val = id - 1;
-            const ray = Math.floor(val / 4); // 0..4
-            const ring = val % 4;            // 0..3
+            const ray = Math.floor(val / 4); 
+            const ring = val % 4; 
 
-            // DISTANCE (Length of Cone):
-            // Max width available is ~600px. 
-            // 4 rings * 120px = 480px length. Leaves padding on left.
             const dist = 100 + (ring * 120); 
-
-            // ANGLE (Spread of Cone):
-            // We need to fit the vertical height (550px).
-            // Ray 2 is center (Math.PI).
-            // Reduced step to 0.25 radians to prevent vertical clipping.
             const baseAngle = Math.PI; 
             const angleStep = 0.28; 
             const angle = baseAngle + ((ray - 2) * angleStep);
@@ -853,7 +796,6 @@
             const y = (e.clientY - rect.top) * scaleY;
             
             let clicked = -1;
-            // Use calculated pos for hit detection to match drawing
             const centerPos = getSpiderNodePos(0);
             if(Math.sqrt((x-centerPos.x)**2 + (y-centerPos.y)**2) < 25) clicked = 0;
             else {
@@ -917,7 +859,7 @@
             document.getElementById('spider-status').className = "text-rose-400 font-bold";
             playSound(150, 'sawtooth');
             sendData('Spider', 'Fail', '-', false);
-            setTimeout(spiderInit, 3000);
+            setTimeout(spiderInit, 3000); // Auto reset 3s
         }
 
         function spiderGiveUp() {
@@ -929,56 +871,35 @@
 
         function spiderRender() {
             const cvs = document.getElementById('spider-canvas');
+            if(!cvs) return;
             const ctx = cvs.getContext('2d');
             ctx.clearRect(0, 0, cvs.width, cvs.height);
             ctx.lineWidth = 2;
             ctx.strokeStyle = '#475569';
             
-            // 1. Draw Rays
-            // Rays are defined by the outer nodes (Ring 3, indices: n*4 + 4)
-            // Indices: 4, 8, 12, 16, 20
             for (let r = 0; r < 5; r++) {
-                const s = getSpiderNodePos(0); 
-                const e = getSpiderNodePos((r * 4) + 4); 
+                const s = getSpiderNodePos(0); const e = getSpiderNodePos((r * 4) + 4); 
                 ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(e.x, e.y); ctx.stroke();
             }
-
-            // 2. Draw Lateral Arcs
             for(let i=1; i<=20; i++) {
                 const neighbors = getSpiderNeighbors(i);
                 const s = getSpiderNodePos(i);
                 neighbors.forEach(n => {
-                    // Lateral connection if diff is 4 (same ring, different ray)
                     if(Math.abs(n-i) === 4 && n > i) { 
                         const e = getSpiderNodePos(n);
                         ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(e.x, e.y); ctx.stroke();
                     }
                 });
             }
-
-            // 3. Draw Nodes
             const center = getSpiderNodePos(0);
             ctx.beginPath(); ctx.arc(center.x, center.y, 8, 0, 2 * Math.PI); ctx.fillStyle = '#e2e8f0'; ctx.fill();
-            
-            for (let i = 1; i <= 20; i++) { 
-                const p = getSpiderNodePos(i); 
-                ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 2 * Math.PI); ctx.fillStyle = '#94a3b8'; ctx.fill(); 
-            }
-            
-            // Player
+            for (let i = 1; i <= 20; i++) { const p = getSpiderNodePos(i); ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 2 * Math.PI); ctx.fillStyle = '#94a3b8'; ctx.fill(); }
             const pp = getSpiderNodePos(spiderState.player);
             ctx.beginPath(); ctx.arc(pp.x, pp.y, 14, 0, 2*Math.PI); ctx.fillStyle = '#3b82f6'; ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth=2; ctx.stroke();
-
-            // Prey
             const sp = getSpiderNodePos(spiderState.spider);
             ctx.beginPath(); ctx.arc(sp.x, sp.y, 14, 0, 2*Math.PI); ctx.fillStyle = '#f472b6'; ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth=2; ctx.stroke();
         }
-        
-        // Ensure event listener is fresh
-        const spCanvas = document.getElementById('spider-canvas');
-        const newCanvas = spCanvas.cloneNode(true);
-        spCanvas.parentNode.replaceChild(newCanvas, spCanvas);
-        newCanvas.addEventListener('mousedown', spiderClick);
+        document.getElementById('spider-canvas').addEventListener('mousedown', spiderClick);
 
         /* --- GAME 6: GRAPH DELIVERY (Optimal = 0 Backtrack, Immediate Reset) --- */
         let graphState={nodes:{},edges:[],current:null,visitedEdges:new Set(),over:false,path:[], clicks: 0, backtracks: 0};
@@ -986,16 +907,12 @@
             graphState.clicks = 0;
             graphState.backtracks = 0;
             graphState.nodes = { 
-                1: {x:275, y:50}, 
-                2: {x:175, y:130}, 3: {x:375, y:130}, 
-                4: {x:175, y:230}, 5: {x:375, y:230}, 
-                6: {x:175, y:330}, 7: {x:375, y:330}, 
-                8: {x:275, y:410}
+                1: {x:275, y:50}, 2: {x:175, y:130}, 3: {x:375, y:130}, 4: {x:175, y:230}, 
+                5: {x:375, y:230}, 6: {x:175, y:330}, 7: {x:375, y:330}, 8: {x:275, y:410}
             };
             graphState.edges = [
-                {u:1,v:2}, {u:1,v:3}, {u:2,v:3}, 
-                {u:2,v:4}, {u:2,v:5}, {u:3,v:4}, {u:3,v:5}, {u:4,v:5}, 
-                {u:4,v:6}, {u:5,v:7}, {u:6,v:7}, {u:6,v:8}, {u:7,v:8}
+                {u:1,v:2}, {u:1,v:3}, {u:2,v:3}, {u:2,v:4}, {u:2,v:5}, {u:3,v:4}, 
+                {u:3,v:5}, {u:4,v:5}, {u:4,v:6}, {u:5,v:7}, {u:6,v:7}, {u:6,v:8}, {u:7,v:8}
             ];
             graphState.current = null; graphState.visitedEdges = new Set(); graphState.over = false; graphState.path = [];
             document.getElementById('graph-status').innerText = "Click a starting node (Yellow).";
@@ -1020,7 +937,7 @@
                 } 
                 else if (graphState.path.length > 1 && clickedNode === graphState.path[graphState.path.length - 2]) {
                     graphState.clicks++;
-                    graphState.backtracks++; // Track backtracking
+                    graphState.backtracks++;
                     const u = Math.min(graphState.current, clickedNode);
                     const v = Math.max(graphState.current, clickedNode);
                     const edgeIdx = graphState.edges.findIndex(e => e.u===u && e.v===v);
@@ -1044,7 +961,6 @@
                         const left = 13 - graphState.visitedEdges.size; document.getElementById('graph-left').innerText = left;
                         if(left === 0) { 
                             graphState.over = true; 
-                            // Optimal: No backtracks
                             const isOptimal = (graphState.backtracks === 0);
                             document.getElementById('graph-status').innerText = isOptimal ? "PERFECT! 0 Backtracks." : "VICTORY! Route Found.";
                             document.getElementById('graph-status').className = "text-emerald-400 font-bold text-xl"; 
@@ -1062,7 +978,9 @@
             }
         }
         function graphRender() {
-            const cvs = document.getElementById('graph-canvas'); const ctx = cvs.getContext('2d'); ctx.clearRect(0,0,cvs.width,cvs.height);
+            const cvs = document.getElementById('graph-canvas'); 
+            if(!cvs) return;
+            const ctx = cvs.getContext('2d'); ctx.clearRect(0,0,cvs.width,cvs.height);
             ctx.lineWidth = 5;
             graphState.edges.forEach((e, i) => {
                 const n1 = graphState.nodes[e.u]; const n2 = graphState.nodes[e.v];
@@ -1086,7 +1004,7 @@
         }
         document.getElementById('graph-canvas').addEventListener('mousedown', graphClick);
 
-        /* --- GAME 7: 12 BALLS (Hidden Info -> 4s Delay) --- */
+        /* --- GAME 7: 12 BALLS (Hidden -> 4s Delay) --- */
         const ballsState={available:[],left:[],right:[],limit:3,cf:null,weighing:false,over:false};
         function ballsInit(){
             ballsState.available=Array.from({length:12},(_,i)=>({id:i+1}));
@@ -1106,7 +1024,10 @@
             idx=r.findIndex(b=>b.id===id);if(idx>-1){p.push(r.splice(idx,1)[0]);playSound(200);ballsRender();return}
         }
         function ballsRender(){
-            const d=(arr,el)=>{el.innerHTML=arr.sort((a,b)=>a.id-b.id).map(b=>`<div class="ball" onclick="ballsMove(${b.id})">${b.id}</div>`).join('')};
+            const d=(arr,el)=>{
+                if(!el) return;
+                el.innerHTML=arr.sort((a,b)=>a.id-b.id).map(b=>`<div class="ball" onclick="ballsMove(${b.id})">${b.id}</div>`).join('')
+            };
             d(ballsState.available,document.getElementById('balls-pool'));
             d(ballsState.left,document.getElementById('balls-pan-left'));
             d(ballsState.right,document.getElementById('balls-pan-right'));
@@ -1146,7 +1067,7 @@
             setTimeout(() => { ballsInit(); }, 4000);
         }
 
-        /* --- GAME 8: HORSES (Hidden Info -> 4s Delay) --- */
+        /* --- GAME 8: HORSES (Hidden -> 4s Delay) --- */
         let horseState={pool:[],track:[],races:0,speeds:{}};
         function horseInit(){
             horseState.pool=Array.from({length:25},(_,i)=>i+1);
@@ -1161,7 +1082,7 @@
             updateStatus('horse-status', "Ready");
             horseRenderGridStructure();horseRender();
         }
-        function horseRenderGridStructure(){const g=document.getElementById('horse-grid');g.innerHTML='';['A','B','C','D','E'].forEach(row=>{let html=`<div class="grid grid-cols-6 gap-1"><div class="flex items-center justify-center font-bold text-slate-500 text-xs">${row}</div>`;for(let i=0;i<5;i++)html+=`<div id="grid-${row}-${i}" class="grid-slot" ondrop="horseDrop(event, 'grid-${row}-${i}')" ondragover="allowDrop(event)"></div>`;html+='</div>';g.innerHTML+=html})}
+        function horseRenderGridStructure(){const g=document.getElementById('horse-grid');if(!g)return;g.innerHTML='';['A','B','C','D','E'].forEach(row=>{let html=`<div class="grid grid-cols-6 gap-1"><div class="flex items-center justify-center font-bold text-slate-500 text-xs">${row}</div>`;for(let i=0;i<5;i++)html+=`<div id="grid-${row}-${i}" class="grid-slot" ondrop="horseDrop(event, 'grid-${row}-${i}')" ondragover="allowDrop(event)"></div>`;html+='</div>';g.innerHTML+=html})}
         function allowDrop(ev){ev.preventDefault()}
         function horseDrag(ev,id){ev.dataTransfer.setData("text",id)}
         function horseDrop(ev,targetId){
@@ -1188,9 +1109,12 @@
             horseRender()
         }
         function horseRender(){
-            const pool=document.getElementById('horse-pool');pool.innerHTML='';
+            const pool=document.getElementById('horse-pool');
+            if(!pool) return;
+            pool.innerHTML='';
             horseState.pool.sort((a,b)=>a-b).forEach(h=>{pool.innerHTML+=`<div class="horse" draggable="true" ondragstart="horseDrag(event, ${h})" onclick="horseToggleTrack(${h})">${h}</div>`});
-            const track=document.getElementById('horse-track');track.innerHTML='';
+            const track=document.getElementById('horse-track');
+            track.innerHTML='';
             for(let i=0;i<5;i++){if(i<horseState.track.length){let h=horseState.track[i];track.innerHTML+=`<div class="track-slot filled"><div class="horse" draggable="true" ondragstart="horseDrag(event, ${h})" onclick="horseToggleTrack(${h})">${h}</div></div>`}else{track.innerHTML+=`<div class="track-slot"></div>`}}
             document.getElementById('horse-btn-race').disabled=horseState.track.length<2
         }

@@ -25,10 +25,6 @@
         .jug-water { position: absolute; bottom: 0; left: 0; width: 100%; background-color: #3b82f6; transition: height 0.5s ease-in-out; opacity: 0.8; }
         .jug-selected { border-color: #fbbf24; box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
 
-        .switch-toggle { width: 60px; height: 30px; background-color: #334155; border-radius: 30px; position: relative; cursor: pointer; transition: all 0.3s; }
-        .switch-toggle.on { background-color: #22c55e; }
-        .switch-knob { width: 26px; height: 26px; background-color: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .switch-toggle.on .switch-knob { transform: translateX(30px); }
         .bulb-on { background-color: #fcd34d; color: #854d0e; box-shadow: 0 0 20px #fcd34d; border-color: #fbbf24; }
         .bulb-off { background-color: #1e293b; color: #64748b; border-color: #475569; }
         .heat-high { border: 3px solid #ea580c; box-shadow: 0 0 15px rgba(234, 88, 12, 0.5); }
@@ -64,62 +60,61 @@
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
         /* --- GRAPH STYLES --- */
-        #graph-canvas { background-color: #1e293b; border-radius: 12px; border: 2px solid #475569; cursor: crosshair; display: block; margin: 0 auto; }
-        #spider-canvas { background-color: #1e293b; border-radius: 12px; border: 2px solid #475569; cursor: crosshair; display: block; margin: 0 auto; }
+        #graph-canvas, #spider-canvas { background-color: #1e293b; border-radius: 12px; border: 2px solid #475569; cursor: crosshair; display: block; margin: 0 auto; }
+        
+        /* Sidebar & Nav */
+        .nav-item { padding: 12px 16px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; border-left: 3px solid transparent; color: #94a3b8; font-weight: 600; font-size: 0.9rem; }
+        .nav-item:hover { background-color: rgba(255,255,255,0.03); color: #e2e8f0; }
+        .nav-item.active { background-color: rgba(99, 102, 241, 0.1); border-left: 3px solid #6366f1; color: #fff; }
+        .nav-icon { margin-left: auto; font-size: 1rem; }
+
+        /* Mobile Nav */
+        .mobile-tab { padding: 10px 16px; white-space: nowrap; font-weight: bold; font-size: 0.85rem; color: #94a3b8; border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 5px; }
+        .mobile-tab.active { border-bottom: 2px solid #6366f1; color: #fff; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden">
+<body class="flex flex-col md:flex-row h-screen overflow-hidden bg-slate-900 text-slate-200">
 
-    <!-- HEADER -->
-    <header class="bg-slate-900 border-b border-slate-700 shadow-lg z-10">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-2 cursor-pointer" onclick="switchTab('about')">
-                    <span class="text-2xl">🧠</span>
-                    <h1 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 hidden sm:block">Dan's Logic Hub</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                     <nav class="flex space-x-1 overflow-x-auto hidden md:flex">
-                        <button onclick="switchTab('jugs')" id="tab-jugs" class="tab-btn active px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide text-blue-400">3 Jugs</button>
-                        <button onclick="switchTab('bulbs')" id="tab-bulbs" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide">4 Switches</button>
-                        <button onclick="switchTab('cat')" id="tab-cat" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide">5 Boxes</button>
-                        <button onclick="switchTab('river')" id="tab-river" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide text-emerald-400">5 People</button>
-                        <button onclick="switchTab('spider')" id="tab-spider" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide text-rose-400">Spider</button>
-                        <button onclick="switchTab('graph')" id="tab-graph" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide text-purple-400">13 Streets</button>
-                        <button onclick="switchTab('balls')" id="tab-balls" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide">12 Balls</button>
-                        <button onclick="switchTab('horses')" id="tab-horses" class="tab-btn px-3 py-5 text-xs sm:text-sm font-bold uppercase tracking-wide text-pink-400">25 Horses</button>
-                    </nav>
-                    
-                    <!-- TIMER & LOGIN -->
-                    <div class="flex items-center space-x-3">
-                        <!-- Timer Toggle: Hidden by default, reveals on click -->
-                        <div id="global-timer" onclick="toggleTimer()" class="cursor-pointer text-slate-500 font-mono font-bold text-sm bg-slate-800 px-3 py-1 rounded border border-slate-600 hover:text-white hover:border-slate-500 transition-all select-none" title="Click to show/hide time">
-                            ⏱️ Time
-                        </div>
-                        <div id="user-status" class="text-sm font-bold text-slate-400 border-l border-slate-700 pl-4 cursor-pointer hover:text-white" onclick="openModal('modal-login')">Guest Mode</div>
-                    </div>
-                </div>
+    <aside class="hidden md:flex flex-col w-64 bg-slate-800 border-r border-slate-700 h-full shrink-0">
+        <div class="p-6 border-b border-slate-700 cursor-pointer" onclick="switchTab('about')">
+            <div class="flex items-center space-x-2 mb-1">
+                <span class="text-2xl">🧠</span>
+                <h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Dan's Logic Hub</h1>
             </div>
-            <!-- Mobile Nav -->
-            <div class="md:hidden flex overflow-x-auto space-x-1 px-2 pb-2">
-                <button onclick="switchTab('about')" class="tab-btn active px-3 py-2 text-xs font-bold">About</button>
-                <button onclick="switchTab('jugs')" class="tab-btn px-3 py-2 text-xs font-bold text-blue-400">3</button>
-                <button onclick="switchTab('bulbs')" class="tab-btn px-3 py-2 text-xs font-bold">4</button>
-                <button onclick="switchTab('cat')" class="tab-btn px-3 py-2 text-xs font-bold">5</button>
-                <button onclick="switchTab('river')" class="tab-btn px-3 py-2 text-xs font-bold text-emerald-400">5p</button>
-                <button onclick="switchTab('spider')" class="tab-btn px-3 py-2 text-xs font-bold text-rose-400">Spider</button>
-                <button onclick="switchTab('graph')" class="tab-btn px-3 py-2 text-xs font-bold text-purple-400">13s</button>
-                <button onclick="switchTab('balls')" class="tab-btn px-3 py-2 text-xs font-bold">12</button>
-                <button onclick="switchTab('horses')" class="tab-btn px-3 py-2 text-xs font-bold text-pink-400">25</button>
+            <div class="text-xs text-slate-500 uppercase tracking-widest font-bold">v1.0.5</div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4" id="desktop-nav">
+            </nav>
+
+        <div class="p-4 border-t border-slate-700 bg-slate-900/50">
+            <div class="flex justify-between items-center mb-3">
+                <div id="global-timer-desktop" onclick="toggleTimer()" class="cursor-pointer text-slate-500 font-mono font-bold text-sm bg-slate-800 px-2 py-1 rounded border border-slate-600 hover:text-white hover:border-slate-500 transition-all select-none w-20 text-center" title="Click to show/hide time">⏱️ Time</div>
+                <div id="user-status-desktop" class="text-xs font-bold text-slate-400 cursor-pointer hover:text-white" onclick="openModal('modal-login')">Login</div>
+            </div>
+            <p class="text-slate-600 text-xs italic text-center">"Together Sharpening our Minds"</p>
+        </div>
+    </aside>
+
+    <div class="md:hidden flex flex-col bg-slate-800 border-b border-slate-700 z-20">
+        <div class="flex justify-between items-center px-4 h-14">
+            <div class="flex items-center space-x-2" onclick="switchTab('about')">
+                <span class="text-xl">🧠</span>
+                <h1 class="font-bold text-white">Dan's Logic Hub</h1>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div id="global-timer-mobile" onclick="toggleTimer()" class="cursor-pointer text-slate-500 font-mono font-bold text-xs bg-slate-900 px-2 py-1 rounded border border-slate-600 w-16 text-center">⏱️</div>
+                <button id="user-status-mobile" onclick="openModal('modal-login')" class="text-slate-400 hover:text-white">👤</button>
             </div>
         </div>
-    </header>
+        <nav class="flex overflow-x-auto px-2 pb-0 space-x-2 no-scrollbar bg-slate-900" id="mobile-nav">
+            </nav>
+    </div>
 
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 overflow-y-auto bg-slate-900 p-4 sm:p-6">
-        <div class="max-w-5xl mx-auto">
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 relative bg-slate-900 w-full">
 
-            <!-- 0. ABOUT (WELCOME) -->
             <div id="game-about" class="game-section">
                 <div class="bg-slate-800 rounded-2xl p-8 border border-slate-700 shadow-xl text-center">
                     <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 mb-4">Welcome to Logic Training</h1>
@@ -147,7 +142,6 @@
                 </div>
             </div>
 
-            <!-- 1. 3 JUGS -->
             <div id="game-jugs" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
@@ -171,7 +165,6 @@
                 </div>
             </div>
 
-            <!-- 2. 4 SWITCHES -->
             <div id="game-bulbs" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
@@ -204,7 +197,6 @@
                 </div>
             </div>
 
-            <!-- 3. CAT -->
             <div id="game-cat" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
@@ -225,7 +217,6 @@
                 </div>
             </div>
 
-            <!-- 4. RIVER -->
             <div id="game-river" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
@@ -256,7 +247,6 @@
                 </div>
             </div>
 
-            <!-- 5. SPIDER (WEB) -->
             <div id="game-spider" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
@@ -282,7 +272,6 @@
                 </div>
             </div>
 
-            <!-- 6. DELIVERY (GRAPH) -->
             <div id="game-graph" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
@@ -310,7 +299,6 @@
                 </div>
             </div>
 
-            <!-- 7. 12 BALLS -->
             <div id="game-balls" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
@@ -333,7 +321,6 @@
                 </div>
             </div>
 
-            <!-- 7. 25 HORSES -->
             <div id="game-horses" class="game-section hidden">
                 <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
                     <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
@@ -375,12 +362,10 @@
         </div>
     </main>
     
-    <!-- FOOTER -->
     <footer class="bg-slate-900 border-t border-slate-700 py-4 text-center mt-auto">
         <p class="text-slate-500 text-sm italic">"Together Sharpening our Minds"</p>
     </footer>
 
-    <!-- MODALS & SETTINGS -->
     <div id="modal-login" class="modal" onclick="closeModal('modal-login')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h3 class="text-2xl font-bold text-white mb-4">Login</h3>
@@ -390,7 +375,6 @@
         </div>
     </div>
 
-    <!-- HINTS -->
     <div id="modal-jugs" class="modal" onclick="closeModal('modal-jugs')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: 3 Jugs</h3><p class="text-slate-300">Focus on the difference between the jug capacities. How can you derive 1 Litre first?</p><button onclick="closeModal('modal-jugs')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
     <div id="modal-bulbs" class="modal" onclick="closeModal('modal-bulbs')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Quad-Bulb</h3><p class="text-slate-300">You need to identify 4 specific bulbs, but you only have 2 visual states (ON/OFF). What physical property changes over time?</p><button onclick="closeModal('modal-bulbs')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
     <div id="modal-cat" class="modal" onclick="closeModal('modal-cat')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Quantum Cat</h3><p class="text-slate-300">The cat alternates between Odd and Even boxes every night. How can you use this 'Parity' to trap it?</p><button onclick="closeModal('modal-cat')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
@@ -400,7 +384,6 @@
     <div id="modal-graph" class="modal" onclick="closeModal('modal-graph')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: Delivery</h3><p class="text-slate-300">Count the lines connected to each dot. Does every dot have an even number of lines?</p><button onclick="closeModal('modal-graph')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
     <div id="modal-spider" class="modal" onclick="closeModal('modal-spider')"><div class="modal-content"><h3 class="text-xl font-bold text-amber-500 mb-2">Hint: The Spider</h3><p class="text-slate-300">Think about how to trap a target in a grid. Reduce their available moves by occupying key intersections.</p><button onclick="closeModal('modal-spider')" class="mt-4 w-full py-2 bg-slate-700 text-white rounded">Close</button></div></div>
 
-    <!-- LOGIC PRINCIPLES (NEW) -->
     <div id="modal-math-jugs" class="modal" onclick="closeModal('modal-math-jugs')">
         <div class="modal-content">
             <h3 class="text-xl font-bold text-indigo-400 mb-2">The Logic Principle: Diophantine Equations</h3>
@@ -466,119 +449,265 @@
         let startTime = 0;
         let timerVisible = false; 
 
-        document.addEventListener('DOMContentLoaded', () => {
-            updateAuthUI();
-            jugInit(); bulbInit(); catInit(); riverInit(); spiderInit(); graphInit(); ballsInit(); horseInit();
-            switchTab('about'); // Default
-        });
+        // Sound System
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq = 440, type = 'sine', duration = 0.1) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
 
+        // Modal Utilities
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        // Status Update Utility
+        function updateStatus(elementId, msg, isError = false) {
+            const el = document.getElementById(elementId);
+            el.innerText = msg;
+            if(isError) {
+                el.classList.add('status-error');
+                setTimeout(() => el.classList.remove('status-error'), 1000);
+            }
+        }
+
+        // Auth Logic
+        function updateAuthUI() {
+            const dBtn = document.getElementById('user-status-desktop');
+            const mBtn = document.getElementById('user-status-mobile');
+            const txt = currentUser ? currentUser : 'Login';
+            if(dBtn) dBtn.innerText = txt;
+            if(mBtn) mBtn.innerText = currentUser ? '👤' : '👤';
+        }
+
+        function handleLogin() {
+            const input = document.getElementById('login-id').value;
+            if(input) {
+                currentUser = input;
+                localStorage.setItem('logic_user', currentUser);
+                updateAuthUI();
+                closeModal('modal-login');
+                playSound(600, 'sine');
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('logic_user');
+            updateAuthUI();
+            closeModal('modal-login');
+        }
+
+        // Data Logic
+        function sendData(game, result, details, optimal) {
+            console.log(`Sending Data: ${game} | ${result} | ${details} | Optimal: ${optimal}`);
+        }
+
+        // --- PROGRESSION SYSTEM ---
+        const puzzleNames = {
+            'jugs': '3 Jugs', 'bulbs': '4 Switches', 'cat': '5 Boxes', 'river': '5 People',
+            'spider': 'Spider', 'graph': '13 Streets', 'balls': '12 Balls', 'horses': '25 Horses'
+        };
+
+        function renderSidebar() {
+            const dNav = document.getElementById('desktop-nav');
+            const mNav = document.getElementById('mobile-nav');
+            if(!dNav || !mNav) return;
+            
+            const progress = JSON.parse(localStorage.getItem('logic_progress') || '{}');
+            const items = ['jugs', 'bulbs', 'cat', 'river', 'spider', 'graph', 'balls', 'horses'];
+            
+            dNav.innerHTML = ''; mNav.innerHTML = '';
+            
+            items.forEach(id => {
+                const name = puzzleNames[id];
+                const p = progress[id] || {};
+                let icon = '';
+                if(p.optimal) icon = '🌟';
+                else if(p.complete) icon = '✅';
+                
+                // Desktop
+                const btn = document.createElement('div');
+                btn.id = `nav-${id}`; btn.className = 'nav-item';
+                btn.onclick = () => switchTab(id);
+                btn.innerHTML = `<span>${name}</span><span class="nav-icon">${icon}</span>`;
+                dNav.appendChild(btn);
+                
+                // Mobile
+                const mBtn = document.createElement('button');
+                mBtn.id = `mob-${id}`; mBtn.className = 'mobile-tab';
+                mBtn.onclick = () => switchTab(id);
+                mBtn.innerHTML = `${name} ${icon}`;
+                mNav.appendChild(mBtn);
+            });
+        }
+
+        function markComplete(id, isOptimal) {
+            let progress = JSON.parse(localStorage.getItem('logic_progress') || '{}');
+            const current = progress[id] || { complete: false, optimal: false };
+            
+            if (!current.complete) {
+                progress[id] = { complete: true, optimal: isOptimal };
+            } else if (isOptimal && !current.optimal) {
+                progress[id] = { complete: true, optimal: true };
+            }
+            localStorage.setItem('logic_progress', JSON.stringify(progress));
+            renderSidebar();
+        }
+
+        // --- SMART TIMER & TABS ---
+        function switchTab(id) {
+            document.querySelectorAll('.game-section').forEach(e => e.classList.add('hidden'));
+            document.getElementById(`game-${id}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+            const dNav = document.getElementById(`nav-${id}`);
+            if(dNav) dNav.classList.add('active');
+
+            document.querySelectorAll('.mobile-tab').forEach(e => e.classList.remove('active'));
+            const mNav = document.getElementById(`mob-${id}`);
+            if(mNav) mNav.classList.add('active');
+
+            if (id !== 'about') startTimer();
+        }
+
+        function startTimer() { 
+            startTime = Date.now(); 
+            if(timerInterval) clearInterval(timerInterval); 
+            timerInterval = setInterval(updateTimerDisplay, 1000); 
+            updateTimerDisplay(); 
+        }
+        
         function updateTimerDisplay() {
             const now = Date.now();
             const diff = Math.floor((now - startTime) / 1000);
             const m = Math.floor(diff / 60).toString().padStart(2, '0');
             const s = (diff % 60).toString().padStart(2, '0');
-            const el = document.getElementById('global-timer');
-            if(el) {
-                if(timerVisible) {
-                    el.innerText = `${m}:${s}`;
-                    el.classList.remove('text-slate-500', 'w-24');
-                    el.classList.add('text-emerald-400', 'w-24');
-                } else {
-                    el.innerText = "⏱️ Time";
-                    el.classList.add('text-slate-500', 'w-24');
-                    el.classList.remove('text-emerald-400');
-                }
-            }
+            const dTimer = document.getElementById('global-timer-desktop');
+            if(dTimer) dTimer.innerText = timerVisible ? `${m}:${s}` : "⏱️ Time";
+            const mTimer = document.getElementById('global-timer-mobile');
+            if(mTimer) mTimer.innerText = timerVisible ? `${m}:${s}` : "⏱️";
         }
         
         function toggleTimer() { timerVisible = !timerVisible; updateTimerDisplay(); }
-        function startTimer() { startTime = Date.now(); if(timerInterval) clearInterval(timerInterval); timerInterval = setInterval(updateTimerDisplay, 1000); updateTimerDisplay(); }
-        function stopTimer() { if(timerInterval) clearInterval(timerInterval); return Math.floor((Date.now() - startTime) / 1000); }
 
-        function updateAuthUI() {
-            const statusEl = document.getElementById('user-status');
-            if(currentUser) {
-                statusEl.innerText = `User: ${currentUser}`;
-                statusEl.className = "text-sm font-bold text-emerald-400 border-l border-slate-700 pl-4 cursor-pointer hover:text-white";
-            } else {
-                statusEl.innerText = "Login";
-                statusEl.className = "text-sm font-bold text-slate-400 border-l border-slate-700 pl-4 cursor-pointer hover:text-white";
-            }
-        }
-        function handleLogin() { const id = document.getElementById('login-id').value; if(id) { currentUser = id; localStorage.setItem('logic_user', id); updateAuthUI(); closeModal('modal-login'); } }
-        function handleLogout() { currentUser = null; localStorage.removeItem('logic_user'); updateAuthUI(); closeModal('modal-login'); }
-        
-        function sendData(puzzle, result, metric, optimal) {
-            const duration = stopTimer();
-            if(!currentUser || !apiUrl) return;
-            const data = { user: currentUser, puzzle: puzzle, result: result, metric: metric, optimal: optimal, duration_seconds: duration };
-            fetch(apiUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } })
-            .then(() => console.log("Data Sent")).catch(e => console.error("Log Error", e));
-        }
-        function switchTab(id){ 
-            document.querySelectorAll('.game-section').forEach(e=>e.classList.add('hidden')); 
-            document.getElementById(`game-${id}`).classList.remove('hidden'); 
-            document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active')); 
-            const btn = document.getElementById(`tab-${id}`);
-            if(btn) btn.classList.add('active');
-            if(id !== 'about') startTimer(); // Don't timer the about page
-        }
-        function openModal(id){document.getElementById(id).style.display='flex'} function closeModal(id){document.getElementById(id).style.display='none'}
-        function playSound(f,t='sine'){const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator();const g=c.createGain();o.connect(g);g.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.1);o.start();o.stop(c.currentTime+0.1)}
-
-        // Helper to update status without alert
-        function updateStatus(elementId, message, isError=false) {
-            const el = document.getElementById(elementId);
-            if(!el) return;
-            el.innerText = message;
-            el.className = isError ? "text-rose-500 font-bold text-lg status-error" : "text-slate-300 font-mono text-lg";
-            if(isError) { playSound(100, 'sawtooth'); setTimeout(() => { el.className = "text-slate-300 font-mono text-lg"; }, 2000); }
-        }
-
-        /* --- GAME 1: 3 JUGS --- */
+        // --- GAME LOGIC STARTS HERE ---
+		/* --- GAME 1: 3 JUGS --- */
         let jugState = { jugs:[8,0,0], caps:[8,5,3], selected:null, solved:false, moves:0 };
-        function jugInit(){ jugState.jugs=[8,0,0]; jugState.selected=null; jugState.solved=false; jugState.moves=0; document.getElementById('jug-status').innerText="Select a jug to pour from."; document.getElementById('jug-status').className="text-slate-300 font-mono text-lg"; document.getElementById('jug-moves').innerText="0"; jugRender(); startTimer(); }
+        function jugInit(){ jugState.jugs=[8,0,0]; jugState.selected=null; jugState.solved=false; jugState.moves=0; document.getElementById('jug-status').innerText="Select a jug to pour from."; document.getElementById('jug-status').className="text-slate-300 font-mono text-lg"; document.getElementById('jug-moves').innerText="0"; jugRender(); }
         function jugClick(idx){ if(jugState.solved)return; if(jugState.selected===null){ if(jugState.jugs[idx]>0){ jugState.selected=idx; document.getElementById('jug-status').innerText=`Selected Jug ${jugState.caps[idx]}L. Click another to pour.`; } else updateStatus('jug-status', "Cannot select empty jug.", true); } else { if(jugState.selected===idx){ jugState.selected=null; document.getElementById('jug-status').innerText="Deselected."; } else { jugPour(jugState.selected, idx); jugState.selected=null; } } jugRender(); }
         function jugPour(f,t){ const amt=Math.min(jugState.jugs[f], jugState.caps[t]-jugState.jugs[t]); if(amt>0){ jugState.jugs[f]-=amt; jugState.jugs[t]+=amt; jugState.moves++; document.getElementById('jug-moves').innerText=jugState.moves; playSound(400,'sine'); document.getElementById('jug-status').innerText=`Poured ${amt}L.`; jugCheck(); } else updateStatus('jug-status', "Cannot pour (Source empty or Dest full).", true); }
         function jugRender(){ jugState.jugs.forEach((v,i)=>{ const el=document.getElementById(`water-${i}`); el.style.height=`${(v/jugState.caps[i])*100}%`; document.getElementById(`label-${i}`).innerText=`${v} / ${jugState.caps[i]}L`; const c=document.getElementById(`jug-${i}`); if(jugState.selected===i)c.classList.add('jug-selected'); else c.classList.remove('jug-selected'); }); }
-        function jugCheck(){ if(jugState.jugs.includes(4)){ jugState.solved=true; const msg=jugState.moves===6?"PERFECT! 6 Moves (Optimised).":`SUCCESS! Solved in ${jugState.moves} moves.`; document.getElementById('jug-status').innerText=msg; document.getElementById('jug-status').className="text-emerald-400 font-bold text-xl animate-bounce"; playSound(600); sendData('3 Jugs', 'Win', jugState.moves, jugState.moves===6); } }
-        function jugGiveUp(){ jugInit(); updateStatus('jug-status', "Hint: Focus on the difference (5-3=2). Try to make 2L first."); sendData('3 Jugs', 'GiveUp', '-', false); }
+        function jugCheck(){ if(jugState.jugs.includes(4)){ jugState.solved=true; const msg=jugState.moves===6?"PERFECT! 6 Moves (Optimised).":`SUCCESS! Solved in ${jugState.moves} moves.`; document.getElementById('jug-status').innerText=msg; document.getElementById('jug-status').className="text-emerald-400 font-bold text-xl animate-bounce"; playSound(600); const isOptimal = (jugState.moves === 6); sendData('3 Jugs', 'Win', jugState.moves, isOptimal); markComplete('jugs', isOptimal); } }
+        function jugGiveUp(){ 
+            // Immediate Reset
+            jugInit(); 
+            updateStatus('jug-status', "GAVE UP. Game Reset. Hint: 5L - 3L = 2L."); 
+            sendData('3 Jugs', 'GiveUp', '-', false); 
+        }
 
-        /* --- GAME 2: BULBS --- */
-        let bulbState={map:{},switches:{},over:false,entered:false,time:0};const bulbNames=['A','B','C','D'];function bulbInit(){bulbState.map={1:null,2:null,3:null,4:null};let s=['A','B','C','D'].sort(()=>Math.random()-0.5);[1,2,3,4].forEach((n,i)=>bulbState.map[n]=s[i]);bulbState.switches={A:{on:false,heat:0},B:{on:false,heat:0},C:{on:false,heat:0},D:{on:false,heat:0}};bulbState.over=false;bulbState.entered=false;bulbState.time=0;document.getElementById('bulb-phase-1').classList.remove('hidden');document.getElementById('bulb-phase-2').classList.add('hidden');document.getElementById('bulb-final-msg').innerText="";document.getElementById('bulb-timer').innerText="00m";updateStatus('bulb-status', "Configure switches before entering.");bulbRenderSwitches();startTimer();}function bulbToggle(id){const s=bulbState.switches[id];s.on=!s.on;bulbRenderSwitches();playSound(300,'square')}
-        function bulbWait(){bulbState.time+=10;document.getElementById('bulb-timer').innerText=bulbState.time+"m";bulbNames.forEach(id=>{if(bulbState.switches[id].on)bulbState.switches[id].heat+=10});playSound(200,'sine');const el=document.getElementById('bulb-switches-ui');el.style.opacity=0.5;setTimeout(()=>el.style.opacity=1,200)}
+        /* --- GAME 2: BULBS (Hidden Info -> 4s Delay) --- */
+        let bulbState={map:{},switches:{},over:false,entered:false,time:0};
+        const bulbNames=['A','B','C','D'];
+        function bulbInit(){
+            bulbState.map={1:null,2:null,3:null,4:null};
+            let s=['A','B','C','D'].sort(()=>Math.random()-0.5);
+            [1,2,3,4].forEach((n,i)=>bulbState.map[n]=s[i]);
+            bulbState.switches={A:{on:false,heat:0},B:{on:false,heat:0},C:{on:false,heat:0},D:{on:false,heat:0}};
+            bulbState.over=false;bulbState.entered=false;bulbState.time=0;
+            document.getElementById('bulb-phase-1').classList.remove('hidden');
+            document.getElementById('bulb-phase-2').classList.add('hidden');
+            document.getElementById('bulb-final-msg').innerText="";
+            document.getElementById('bulb-timer').innerText="00m";
+            updateStatus('bulb-status', "Configure switches before entering.");
+            bulbRenderSwitches();
+        }
+        function bulbToggle(id){if(bulbState.over)return; const s=bulbState.switches[id];s.on=!s.on;bulbRenderSwitches();playSound(300,'square')}
+        function bulbWait(){
+            if(bulbState.over)return;
+            bulbState.time+=10;document.getElementById('bulb-timer').innerText=bulbState.time+"m";
+            bulbNames.forEach(id=>{if(bulbState.switches[id].on)bulbState.switches[id].heat+=10});
+            playSound(200,'sine');
+            const el=document.getElementById('bulb-switches-ui');
+            el.style.opacity=0.5;setTimeout(()=>el.style.opacity=1,200)
+        }
         function bulbRenderSwitches(){const c=document.getElementById('bulb-switches-ui');c.innerHTML='';bulbNames.forEach(id=>{const s=bulbState.switches[id];const bg=s.on?"bg-emerald-900/50 border-emerald-500":"bg-slate-900 border-slate-700";const txt=s.on?"text-emerald-400":"text-slate-500";c.innerHTML+=`<div class="${bg} p-4 rounded-xl border flex flex-col items-center transition-colors duration-200"><span class="text-3xl font-bold text-slate-300 mb-2">${id}</span><button onclick="bulbToggle('${id}')" class="w-full py-2 rounded-lg font-bold text-white ${s.on?'bg-emerald-600':'bg-slate-600'}">${s.on?'ON':'OFF'}</button></div>`})}
         function bulbEnterRoom(){
-            // Removed constraint check as requested - allow fail state
-            bulbState.entered=true;document.getElementById('bulb-phase-1').classList.add('hidden');document.getElementById('bulb-phase-2').classList.remove('hidden');const r=document.getElementById('bulb-results');const g=document.getElementById('bulb-guesses');r.innerHTML='';g.innerHTML='';[1,2,3,4].forEach(n=>{const sid=bulbState.map[n];const s=bulbState.switches[sid];let cls="bulb-off",txt="OFF",tCls="heat-low",tTxt="COLD";if(s.on){cls="bulb-on";txt="ON"}if(s.heat>=15){tCls="heat-high";tTxt="HOT"}else if(s.heat>0){tCls="heat-med";tTxt="WARM"}r.innerHTML+=`<div class="bg-slate-800 p-4 rounded-xl border border-slate-600 flex flex-col items-center ${cls} ${tCls} transition-all"><span class="text-xl font-bold mb-2">Bulb ${n}</span><span class="text-2xl font-black mb-1">${txt}</span><span class="text-xs font-bold opacity-75">${tTxt}</span></div>`;g.innerHTML+=`<div class="flex items-center justify-between bg-slate-800 p-2 rounded border border-slate-600"><span class="font-bold text-slate-400 mr-2">B${n}:</span><select id="bulb-guess-${n}" class="bg-slate-900 text-white p-1 rounded w-full"><option value="">?</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>`})
+            bulbState.entered=true;
+            document.getElementById('bulb-phase-1').classList.add('hidden');
+            document.getElementById('bulb-phase-2').classList.remove('hidden');
+            const r=document.getElementById('bulb-results');const g=document.getElementById('bulb-guesses');
+            r.innerHTML='';g.innerHTML='';
+            [1,2,3,4].forEach(n=>{
+                const sid=bulbState.map[n];const s=bulbState.switches[sid];
+                let cls="bulb-off",txt="OFF",tCls="heat-low",tTxt="COLD";
+                if(s.on){cls="bulb-on";txt="ON"}
+                if(s.heat>=15){tCls="heat-high";tTxt="HOT"}else if(s.heat>0){tCls="heat-med";tTxt="WARM"}
+                r.innerHTML+=`<div class="bg-slate-800 p-4 rounded-xl border border-slate-600 flex flex-col items-center ${cls} ${tCls} transition-all"><span class="text-xl font-bold mb-2">Bulb ${n}</span><span class="text-2xl font-black mb-1">${txt}</span><span class="text-xs font-bold opacity-75">${tTxt}</span></div>`;
+                g.innerHTML+=`<div class="flex items-center justify-between bg-slate-800 p-2 rounded border border-slate-600"><span class="font-bold text-slate-400 mr-2">B${n}:</span><select id="bulb-guess-${n}" class="bg-slate-900 text-white p-1 rounded w-full"><option value="">?</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>`
+            })
         }
-        function bulbCheck(){let c=0;[1,2,3,4].forEach(n=>{if(document.getElementById(`bulb-guess-${n}`).value===bulbState.map[n])c++});const m=document.getElementById('bulb-final-msg');if(c===4){m.className="text-emerald-400 mt-4 text-center font-bold text-xl";m.innerText="VICTORY!";sendData('4 Switches', 'Win', '-', true);}else{m.className="text-rose-400 mt-4 text-center font-bold";m.innerText=`Incorrect. ${c}/4 right.`;sendData('4 Switches', 'Fail', c+'/4', false);}}
-        function bulbGiveUp(){
-             // If not entered room, enter first to show logic
-             if(!bulbState.entered) bulbEnterRoom();
-             const m = document.getElementById('bulb-final-msg');
-             // Socratic Hint: Question rather than answer
-             m.innerText = "GAVE UP. Hint: What physical change happens to a bulb if it is left ON for 10 minutes vs 1 minute?";
-             m.className = "text-slate-400 font-mono text-center mt-4 font-bold";
-             sendData('4 Switches', 'GiveUp', '-', false);
+        function bulbCheck(){let c=0;[1,2,3,4].forEach(n=>{if(document.getElementById(`bulb-guess-${n}`).value===bulbState.map[n])c++});const m=document.getElementById('bulb-final-msg');if(c===4){m.className="text-emerald-400 mt-4 text-center font-bold text-xl";m.innerText="VICTORY!";sendData('4 Switches', 'Win', '-', true); markComplete('bulbs', true);}else{m.className="text-rose-400 mt-4 text-center font-bold";m.innerText=`Incorrect. ${c}/4 right.`;sendData('4 Switches', 'Fail', c+'/4', false);}}
+        function bulbGiveUp(){ 
+            if(!bulbState.entered) bulbEnterRoom(); 
+            const m = document.getElementById('bulb-final-msg'); 
+            // Show Answer
+            let ans = ""; [1,2,3,4].forEach(n => ans += `B${n}=${bulbState.map[n]} `);
+            m.innerText = `Answers: ${ans}`; 
+            m.className = "text-amber-400 font-mono text-center mt-4 font-bold text-sm"; 
+            sendData('4 Switches', 'GiveUp', '-', false); 
+            setTimeout(() => { bulbInit(); }, 4000);
         }
 
-        /* --- GAME 3: CAT --- */
-        const catState={day:1,pos:new Set([1,2,3,4,5]),history:[],over:false};function catInit(){catState.day=1;catState.pos=new Set([1,2,3,4,5]);catState.history=[new Set([1,2,3,4,5])];catState.over=false;document.getElementById('cat-logs').innerHTML='';catRender();startTimer();}function catRender(){document.getElementById('cat-day-display').innerText=`Day ${catState.day}`;document.getElementById('cat-possibilities').innerText=`${catState.pos.size} Spots`;const c=document.getElementById('cat-boxes');c.innerHTML='';for(let i=1;i<=5;i++){const b=document.createElement('button');b.className=`box-btn h-24 bg-slate-800 rounded-xl border-2 border-slate-600 flex items-center justify-center text-3xl font-black text-slate-600 group hover:border-indigo-500 hover:text-indigo-400 quantum-active`;b.innerText=i;b.onclick=()=>catCheck(i);if(catState.over)b.disabled=true;c.appendChild(b)}}function catCheck(id){if(catState.over)return;let caught=false;if(catState.pos.has(id)){if(catState.pos.size===1)caught=true;else catState.pos.delete(id)}const l=document.getElementById('cat-logs');const e=document.createElement('div');e.className=`p-3 mb-2 border-l-4 rounded bg-slate-800 ${caught?'border-emerald-500':'border-rose-500'}`;e.innerHTML=`<div class="flex justify-between text-sm text-slate-300"><span>Day ${catState.day}</span><span class="${caught?'text-emerald-400':'text-rose-400'} font-bold">${caught?'CAUGHT':'MISSED'}</span></div><div class="text-xs text-slate-500">Checked Box ${id}.</div>`;l.prepend(e);if(caught){catState.over=true;document.getElementById('cat-boxes').children[id-1].classList.add('bg-emerald-900','border-emerald-500','text-emerald-400');playSound(600);catRevealPath(id);sendData('5 Boxes', 'Win', `Day ${catState.day}`, catState.day <= 6);}else{playSound(150,'sawtooth');const next=new Set();catState.pos.forEach(p=>{if(p>1)next.add(p-1);if(p<5)next.add(p+1)});catState.pos=next;catState.history.push(new Set(next));catState.day++;catRender()}}
-        function catGiveUp(){
-            if(catState.over)return;catState.over=true;const arr=Array.from(catState.pos);const final=arr.length?arr[Math.floor(Math.random()*arr.length)]:1;catRevealPath(final);document.getElementById('cat-boxes').children[final-1].classList.add('bg-amber-900','border-amber-500','text-amber-400');
-            const l=document.getElementById('cat-logs');
-            const e=document.createElement('div');
-            e.className="mt-4 p-3 bg-slate-700 rounded border border-slate-600 font-bold text-amber-400";
-            e.innerText="GAVE UP. Hint: The cat moves 1 step. Think about Odd vs Even numbers. If you check all the Even boxes on days 2, 3, and 4, where must the cat be?";
+        /* --- GAME 3: CAT (Hidden Info -> 4s Delay) --- */
+        const catState={day:1,pos:new Set([1,2,3,4,5]),history:[],over:false};
+        function catInit(){catState.day=1;catState.pos=new Set([1,2,3,4,5]);catState.history=[new Set([1,2,3,4,5])];catState.over=false;document.getElementById('cat-logs').innerHTML='';catRender();}
+        function catRender(){document.getElementById('cat-day-display').innerText=`Day ${catState.day}`;document.getElementById('cat-possibilities').innerText=`${catState.pos.size} Spots`;const c=document.getElementById('cat-boxes');c.innerHTML='';for(let i=1;i<=5;i++){const b=document.createElement('button');b.className=`box-btn h-24 bg-slate-800 rounded-xl border-2 border-slate-600 flex items-center justify-center text-3xl font-black text-slate-600 group hover:border-indigo-500 hover:text-indigo-400 quantum-active`;b.innerText=i;b.onclick=()=>catCheck(i);if(catState.over)b.disabled=true;c.appendChild(b)}}
+        function catCheck(id){
+            if(catState.over)return;
+            let caught=false;
+            if(catState.pos.has(id)){ if(catState.pos.size===1)caught=true;else catState.pos.delete(id) }
+            const l=document.getElementById('cat-logs');const e=document.createElement('div');
+            e.className=`p-3 mb-2 border-l-4 rounded bg-slate-800 ${caught?'border-emerald-500':'border-rose-500'}`;
+            e.innerHTML=`<div class="flex justify-between text-sm text-slate-300"><span>Day ${catState.day}</span><span class="${caught?'text-emerald-400':'text-rose-400'} font-bold">${caught?'CAUGHT':'MISSED'}</span></div><div class="text-xs text-slate-500">Checked Box ${id}.</div>`;
             l.prepend(e);
-            sendData('5 Boxes', 'GiveUp', `Day ${catState.day}`, false);
+            if(caught){
+                catState.over=true;document.getElementById('cat-boxes').children[id-1].classList.add('bg-emerald-900','border-emerald-500','text-emerald-400');
+                playSound(600);catRevealPath(id);
+                const isOptimal = (catState.day <= 6); sendData('5 Boxes', 'Win', `Day ${catState.day}`, isOptimal); markComplete('cat', isOptimal);
+            }else{
+                playSound(150,'sawtooth');
+                const next=new Set();
+                catState.pos.forEach(p=>{if(p>1)next.add(p-1);if(p<5)next.add(p+1)});
+                catState.pos=next;catState.history.push(new Set(next));
+                catState.day++;catRender()
+            }
         }
         function catRevealPath(end){let p=[end],c=end;for(let d=catState.history.length-2;d>=0;d--){const prev=catState.history[d];const cands=[];if(prev.has(c-1))cands.push(c-1);if(prev.has(c+1))cands.push(c+1);c=cands[Math.floor(Math.random()*cands.length)];p.unshift(c)}const d=document.createElement('div');d.className="mt-4 p-3 bg-slate-700 rounded border border-slate-600";d.innerHTML=`<div class="text-xs text-indigo-300 font-bold uppercase mb-2">Quantum Path</div><div class="flex flex-wrap gap-2 text-sm font-mono text-white">${p.join(' → ')}</div>`;document.getElementById('cat-logs').prepend(d)}
+        function catGiveUp(){ 
+            if(catState.over)return; catState.over=true;
+            const arr=Array.from(catState.pos);const final=arr.length?arr[Math.floor(Math.random()*arr.length)]:1;
+            catRevealPath(final);
+            document.getElementById('cat-boxes').children[final-1].classList.add('bg-amber-900','border-amber-500','text-amber-400'); 
+            const l=document.getElementById('cat-logs'); 
+            const e=document.createElement('div'); e.className="mt-4 p-3 bg-slate-700 rounded border border-slate-600 font-bold text-amber-400"; 
+            e.innerText="GAVE UP. Showing Answer..."; 
+            l.prepend(e); 
+            sendData('5 Boxes', 'GiveUp', `Day ${catState.day}`, false); 
+            setTimeout(() => { catInit(); }, 4000);
+        }
 
-        /* --- GAME 4: RIVER --- */
+        /* --- GAME 4: RIVER (Immediate Reset) --- */
         let riverState = { left:[1,3,6,8,12], right:[], boat:[], side:'left', time:0, solved:false, fail:false };
-        function riverInit(){ riverState = { left:[1,3,6,8,12], right:[], boat:[], side:'left', time:0, solved:false, fail:false }; document.getElementById('river-time').innerText = "0s"; document.getElementById('river-status').innerText = "Load 1 or 2 people onto the boat."; document.getElementById('river-status').className = "text-slate-300 font-mono text-lg"; document.getElementById('river-game-area').classList.remove('shake-fail'); document.getElementById('river-solution').classList.add('hidden'); riverRender(); startTimer(); }
+        function riverInit(){ riverState = { left:[1,3,6,8,12], right:[], boat:[], side:'left', time:0, solved:false, fail:false }; document.getElementById('river-time').innerText = "0s"; document.getElementById('river-status').innerText = "Load 1 or 2 people onto the boat."; document.getElementById('river-status').className = "text-slate-300 font-mono text-lg"; document.getElementById('river-game-area').classList.remove('shake-fail'); document.getElementById('river-solution').classList.add('hidden'); riverRender(); }
         function riverClick(val, loc) { 
             if(riverState.solved || riverState.fail) return; 
             if(loc === 'boat') { 
@@ -615,71 +744,101 @@
             riverRender(); 
         }
         function riverRender(){ const l=document.getElementById('river-bank-left'); const r=document.getElementById('river-bank-right'); const b=document.getElementById('river-boat'); const draw = (arr, el, loc) => { el.innerHTML = arr.sort((a,b)=>a-b).map(p => `<div onclick="riverClick(${p}, '${loc}')" class="person"><span class="text-2xl">👤</span><span class="person-time">${p}s</span></div>`).join(''); }; draw(riverState.left, l, 'left'); draw(riverState.right, r, 'right'); draw(riverState.boat, b, 'boat'); b.style.left = riverState.side === 'left' ? '35%' : 'calc(100% - 35% - 140px)'; }
-        function riverCheck(){ if(riverState.right.length === 5 && riverState.boat.length === 0) { if(riverState.time <= 30) { riverState.solved = true; const msg = document.getElementById('river-status'); msg.innerText = `VICTORY! Solved in ${riverState.time}s (Optimal is 29s).`; msg.className = "text-emerald-400 font-bold text-xl animate-bounce"; playSound(600); sendData('River', 'Win', riverState.time, riverState.time<=29); } } }
+        function riverCheck(){ 
+            // WIN CONDITION: Left side is empty.
+            if(riverState.left.length === 0) { 
+                if(riverState.time <= 30) { 
+                    riverState.solved = true; 
+                    // Optimal is 26s as requested
+                    const isOptimal = (riverState.time <= 26); 
+                    const msg = document.getElementById('river-status'); 
+                    msg.innerText = `VICTORY! Solved in ${riverState.time}s (Optimal is 26s).`; 
+                    msg.className = "text-emerald-400 font-bold text-xl animate-bounce"; 
+                    playSound(600); 
+                    sendData('River', 'Win', riverState.time, isOptimal); 
+                    markComplete('river', isOptimal); 
+                } 
+            } 
+        }
         function riverGiveUp() { 
-            riverState.fail = true; 
-            const sol = document.getElementById('river-solution'); 
-            sol.classList.remove('hidden'); 
-            // Socratic Hint: Question the return trip
-            sol.innerHTML = `<strong class="text-amber-400 block mb-2">Strategy:</strong> The two slowest people (8s and 12s) are the bottleneck. They must cross <strong>together</strong> to save time. How can you send them together without needing one of them to bring the boat back?`; 
-            playSound(150,'sawtooth'); 
+            // Immediate Reset
+            riverInit(); 
+            updateStatus('river-status', "GAVE UP. Game Reset."); 
             sendData('River', 'GiveUp', '-', false); 
         }
 
-        /* --- GAME 5: SPIDER (CORRECTED TOPOLOGY: 21 NODES) --- */
+        /* --- GAME 5: SPIDER (Fitted Cone Layout) --- */
         let spiderState = { player: 12, spider: 4, moves: 15, over: false }; 
         
         function getSpiderNeighbors(id) {
             const n = [];
-            if (id === 0) { return [1, 5, 9, 13, 17]; }
+            if (id === 0) { return [1, 5, 9, 13, 17]; } 
             const val = id - 1;
             const ray = Math.floor(val / 4);
             const ring = val % 4; 
-            if (ring > 0) n.push(id - 1); else n.push(0);
-            if (ring < 3) n.push(id + 1);
-            if (ray > 0) n.push(id - 4);
-            if (ray < 4) n.push(id + 4);
+            
+            // Grid Topology
+            if (ring > 0) n.push(id - 1); else n.push(0); // Inward
+            if (ring < 3) n.push(id + 1); // Outward
+            if (ray > 0) n.push(id - 4); // Lateral Up
+            if (ray < 4) n.push(id + 4); // Lateral Down
             return n;
         }
 
         function getSpiderNodePos(id) {
-            const cx = 600; const cy = 275; 
+            // Canvas: 650w x 550h
+            // Vertex (0) at Right Middle
+            const cx = 600; 
+            const cy = 275; 
+            
             if (id === 0) return { x: cx, y: cy };
+
             const val = id - 1;
-            const ray = Math.floor(val / 4);
-            const ring = val % 4; 
-            const dist = 100 + (ring * 110);
-            const minAng = -Math.PI / 5;
-            const maxAng = Math.PI / 5;
-            const angle = minAng + (ray * ((maxAng - minAng) / 4));
-            return { x: cx - (dist * Math.cos(angle)), y: cy + (dist * Math.sin(angle)) };
+            const ray = Math.floor(val / 4); // 0..4
+            const ring = val % 4;            // 0..3
+
+            // DISTANCE (Length of Cone):
+            // Max width available is ~600px. 
+            // 4 rings * 120px = 480px length. Leaves padding on left.
+            const dist = 100 + (ring * 120); 
+
+            // ANGLE (Spread of Cone):
+            // We need to fit the vertical height (550px).
+            // Ray 2 is center (Math.PI).
+            // Reduced step to 0.25 radians to prevent vertical clipping.
+            const baseAngle = Math.PI; 
+            const angleStep = 0.28; 
+            const angle = baseAngle + ((ray - 2) * angleStep);
+            
+            return { x: cx + (dist * Math.cos(angle)), y: cy + (dist * Math.sin(angle)) };
         }
 
         function spiderInit() {
-            // Player (Blue - Charlotte): Ray z (2), Outer (Ring 3) -> ID 12
-            // Prey (Pink - Shelob): Ray x (0), Outer (Ring 3) -> ID 4
             spiderState = { player: 12, spider: 4, moves: 15, over: false }; 
             document.getElementById('spider-status').innerText = "Your Turn. Click a connected node.";
             document.getElementById('spider-status').className = "text-slate-300 font-mono text-lg";
             document.getElementById('spider-moves').innerText = "15";
             document.getElementById('spider-solution').classList.add('hidden');
             spiderRender();
-            startTimer();
         }
 
         function spiderClick(e) {
             if (spiderState.over) return;
             const rect = document.getElementById('spider-canvas').getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const scaleX = document.getElementById('spider-canvas').width / rect.width;
+            const scaleY = document.getElementById('spider-canvas').height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
             
             let clicked = -1;
-            if(Math.sqrt((x-600)**2 + (y-275)**2) < 20) clicked = 0;
+            // Use calculated pos for hit detection to match drawing
+            const centerPos = getSpiderNodePos(0);
+            if(Math.sqrt((x-centerPos.x)**2 + (y-centerPos.y)**2) < 25) clicked = 0;
             else {
                 for (let i = 1; i <= 20; i++) {
                     const pos = getSpiderNodePos(i);
                     const dist = Math.sqrt((x - pos.x)**2 + (y - pos.y)**2);
-                    if (dist < 20) clicked = i;
+                    if (dist < 25) clicked = i;
                 }
             }
 
@@ -703,27 +862,16 @@
             const neighbors = getSpiderNeighbors(spiderState.spider);
             let bestMove = -1;
             let maxDist = -1;
-
-            // Fleeing Logic: Maximize distance to Player
+            
             neighbors.forEach(n => {
-                const getC = (id) => { if(id===0) return {r:-1, c:-1}; return {r:Math.floor((id-1)/4), c:(id-1)%4}; };
-                const p = getC(spiderState.player);
-                const curr = getC(n);
-                let dist = 0;
-                if(curr.r === -1) dist = p.c + 1;
-                else if (p.r === -1) dist = curr.c + 1;
-                else {
-                    const direct = Math.abs(p.r - curr.r) + Math.abs(p.c - curr.c);
-                    const viaCenter = (p.c + 1) + (curr.c + 1);
-                    dist = Math.min(direct, viaCenter);
-                }
-                
-                if (dist > maxDist) { // FLEE
-                    maxDist = dist;
-                    bestMove = n;
+                const pPos = getSpiderNodePos(spiderState.player);
+                const nPos = getSpiderNodePos(n);
+                const dist = Math.sqrt((pPos.x - nPos.x)**2 + (pPos.y - nPos.y)**2);
+                if(n !== spiderState.player) {
+                    if (dist > maxDist) { maxDist = dist; bestMove = n; }
                 }
             });
-            
+            if(bestMove === -1) bestMove = neighbors[0]; 
             spiderState.spider = bestMove;
             playSound(100, 'triangle');
             if (spiderState.player === spiderState.spider) { spiderWin(); }
@@ -735,23 +883,24 @@
             document.getElementById('spider-status').innerText = "CAUGHT! You cornered the fly.";
             document.getElementById('spider-status').className = "text-emerald-400 font-bold text-xl";
             playSound(600);
-            sendData('Spider', 'Win', `${15-spiderState.moves} moves`, (15-spiderState.moves) <= 10);
+            const movesUsed = 15 - spiderState.moves;
+            const isOptimal = (movesUsed <= 10);
+            sendData('Spider', 'Win', `${movesUsed} moves`, isOptimal);
+            markComplete('spider', isOptimal);
         }
 
         function spiderFail() {
             spiderState.over = true;
-            document.getElementById('spider-status').innerText = "GAME OVER! Shelob caught you.";
+            document.getElementById('spider-status').innerText = "The Fly buzzed away! Better luck next time.";
             document.getElementById('spider-status').className = "text-rose-400 font-bold";
             playSound(150, 'sawtooth');
             sendData('Spider', 'Fail', '-', false);
+            setTimeout(spiderInit, 3000);
         }
+
         function spiderGiveUp() {
-            spiderState.over = true;
-            document.getElementById('spider-status').innerText = "GAVE UP.";
-             const sol = document.getElementById('spider-solution'); 
-            sol.classList.remove('hidden'); 
-            // Socratic Hint: Question about the center
-            sol.innerHTML = `<strong class="text-amber-400 block mb-2">Strategy:</strong> This web converges at a single point. If you chase along the rim, the distance is long. What happens if you occupy the central intersection (O)?`; 
+            spiderInit();
+            updateStatus('spider-status', "GAVE UP. Game Reset.");
             playSound(150,'sawtooth');
             sendData('Spider', 'GiveUp', '-', false);
         }
@@ -760,45 +909,60 @@
             const cvs = document.getElementById('spider-canvas');
             const ctx = cvs.getContext('2d');
             ctx.clearRect(0, 0, cvs.width, cvs.height);
-            ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
-            // Rays
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#475569';
+            
+            // 1. Draw Rays
+            // Rays are defined by the outer nodes (Ring 3, indices: n*4 + 4)
+            // Indices: 4, 8, 12, 16, 20
             for (let r = 0; r < 5; r++) {
-                ctx.beginPath();
-                const start = getSpiderNodePos(0); const end = getSpiderNodePos(r * 4 + 3 + 1);
-                ctx.moveTo(start.x, start.y); ctx.lineTo(end.x, end.y); ctx.stroke();
+                const s = getSpiderNodePos(0); 
+                const e = getSpiderNodePos((r * 4) + 4); 
+                ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(e.x, e.y); ctx.stroke();
             }
-            // Rings
-            for (let c = 0; c < 4; c++) {
-                ctx.beginPath();
-                for (let r = 0; r < 5; r++) {
-                    const p = getSpiderNodePos(r * 4 + c + 1);
-                    if (r === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
-                }
-                ctx.stroke();
+
+            // 2. Draw Lateral Arcs
+            for(let i=1; i<=20; i++) {
+                const neighbors = getSpiderNeighbors(i);
+                const s = getSpiderNodePos(i);
+                neighbors.forEach(n => {
+                    // Lateral connection if diff is 4 (same ring, different ray)
+                    if(Math.abs(n-i) === 4 && n > i) { 
+                        const e = getSpiderNodePos(n);
+                        ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(e.x, e.y); ctx.stroke();
+                    }
+                });
             }
-            // Nodes
+
+            // 3. Draw Nodes
             const center = getSpiderNodePos(0);
             ctx.beginPath(); ctx.arc(center.x, center.y, 8, 0, 2 * Math.PI); ctx.fillStyle = '#e2e8f0'; ctx.fill();
-            for (let i = 1; i <= 20; i++) { const p = getSpiderNodePos(i); ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 2 * Math.PI); ctx.fillStyle = '#94a3b8'; ctx.fill(); }
             
-            // Player (Blue - Charlotte) - ID 12
+            for (let i = 1; i <= 20; i++) { 
+                const p = getSpiderNodePos(i); 
+                ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 2 * Math.PI); ctx.fillStyle = '#94a3b8'; ctx.fill(); 
+            }
+            
+            // Player
             const pp = getSpiderNodePos(spiderState.player);
-            ctx.beginPath(); ctx.arc(pp.x, pp.y, 12, 0, 2*Math.PI); ctx.fillStyle = '#3b82f6'; ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth=2; ctx.stroke();
+            ctx.beginPath(); ctx.arc(pp.x, pp.y, 14, 0, 2*Math.PI); ctx.fillStyle = '#3b82f6'; ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth=2; ctx.stroke();
 
-            // Prey (Pink - Queen Shelob) - ID 4
+            // Prey
             const sp = getSpiderNodePos(spiderState.spider);
-            ctx.beginPath(); ctx.arc(sp.x, sp.y, 12, 0, 2*Math.PI); ctx.fillStyle = '#f472b6'; ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth=2; ctx.stroke();
+            ctx.beginPath(); ctx.arc(sp.x, sp.y, 14, 0, 2*Math.PI); ctx.fillStyle = '#f472b6'; ctx.fill(); ctx.strokeStyle = 'white'; ctx.lineWidth=2; ctx.stroke();
         }
-        document.getElementById('spider-canvas').addEventListener('mousedown', spiderClick);
+        
+        // Ensure event listener is fresh
+        const spCanvas = document.getElementById('spider-canvas');
+        const newCanvas = spCanvas.cloneNode(true);
+        spCanvas.parentNode.replaceChild(newCanvas, spCanvas);
+        newCanvas.addEventListener('mousedown', spiderClick);
 
-        /* --- GAME 6: GRAPH DELIVERY (UPDATED: THE ROYAL CRYSTAL) --- */
-        let graphState={nodes:{},edges:[],current:null,visitedEdges:new Set(),over:false,path:[]};
+        /* --- GAME 6: GRAPH DELIVERY (Optimal = 0 Backtrack, Immediate Reset) --- */
+        let graphState={nodes:{},edges:[],current:null,visitedEdges:new Set(),over:false,path:[], clicks: 0, backtracks: 0};
         function graphInit(){
-            // "The Royal Crystal" (8 Nodes, 13 Edges)
-            // Nodes: 1(Top), 2(TL), 3(TR), 4(ML), 5(MR), 6(BL), 7(BR), 8(Bot)
-            // Odd Degree Nodes: 6 (3 conn) and 7 (3 conn). Start there.
-            // All other nodes are Degree 2 or 4 (Even).
-            
+            graphState.clicks = 0;
+            graphState.backtracks = 0;
             graphState.nodes = { 
                 1: {x:275, y:50}, 
                 2: {x:175, y:130}, 3: {x:375, y:130}, 
@@ -806,30 +970,17 @@
                 6: {x:175, y:330}, 7: {x:375, y:330}, 
                 8: {x:275, y:410}
             };
-            
-            // Normalize Edges (u < v)
             graphState.edges = [
-                // Top Pyramid
                 {u:1,v:2}, {u:1,v:3}, {u:2,v:3}, 
-                // Mid Crosses
-                {u:2,v:4}, {u:2,v:5}, 
-                {u:3,v:4}, {u:3,v:5}, 
-                {u:4,v:5}, 
-                // Bottom Drops
-                {u:4,v:6}, {u:5,v:7}, 
-                // Bottom Base
-                {u:6,v:7}, 
-                // Bottom Tip
-                {u:6,v:8}, {u:7,v:8}
+                {u:2,v:4}, {u:2,v:5}, {u:3,v:4}, {u:3,v:5}, {u:4,v:5}, 
+                {u:4,v:6}, {u:5,v:7}, {u:6,v:7}, {u:6,v:8}, {u:7,v:8}
             ];
-            
             graphState.current = null; graphState.visitedEdges = new Set(); graphState.over = false; graphState.path = [];
             document.getElementById('graph-status').innerText = "Click a starting node (Yellow).";
             document.getElementById('graph-status').className = "text-slate-300 font-mono text-lg";
             document.getElementById('graph-left').innerText = "13";
             document.getElementById('graph-solution').classList.add('hidden');
             graphRender();
-            startTimer();
         }
         function graphClick(e) {
             const rect = document.getElementById('graph-canvas').getBoundingClientRect();
@@ -842,12 +993,12 @@
             for(let id in graphState.nodes) { const n = graphState.nodes[id]; if(Math.sqrt((x-n.x)**2 + (y-n.y)**2) < 30) clickedNode = parseInt(id); }
             
             if(clickedNode !== null) {
-                // START
                 if(graphState.current === null) {
                     graphState.current = clickedNode; graphState.path.push(clickedNode); playSound(200);
                 } 
-                // UNDO: Clicking the previous node
                 else if (graphState.path.length > 1 && clickedNode === graphState.path[graphState.path.length - 2]) {
+                    graphState.clicks++;
+                    graphState.backtracks++; // Track backtracking
                     const u = Math.min(graphState.current, clickedNode);
                     const v = Math.max(graphState.current, clickedNode);
                     const edgeIdx = graphState.edges.findIndex(e => e.u===u && e.v===v);
@@ -859,18 +1010,26 @@
                          const left = 13 - graphState.visitedEdges.size;
                          document.getElementById('graph-left').innerText = left;
                          document.getElementById('graph-status').innerText = "Backtracked.";
-                         document.getElementById('graph-status').className = "text-slate-300 font-mono text-lg";
                          playSound(150, 'sine');
                     }
                 }
-                // MOVE FORWARD
                 else if (!graphState.over) {
+                    graphState.clicks++;
                     const u = Math.min(graphState.current, clickedNode); const v = Math.max(graphState.current, clickedNode);
                     const edgeIdx = graphState.edges.findIndex(e => e.u===u && e.v===v);
                     if(edgeIdx > -1 && !graphState.visitedEdges.has(edgeIdx)) {
                         graphState.visitedEdges.add(edgeIdx); graphState.current = clickedNode; graphState.path.push(clickedNode); playSound(100, 'triangle');
                         const left = 13 - graphState.visitedEdges.size; document.getElementById('graph-left').innerText = left;
-                        if(left === 0) { graphState.over = true; document.getElementById('graph-status').innerText = "VICTORY! Route Optimised."; document.getElementById('graph-status').className = "text-emerald-400 font-bold text-xl"; playSound(600); sendData('Delivery', 'Win', '-', true); }
+                        if(left === 0) { 
+                            graphState.over = true; 
+                            // Optimal: No backtracks
+                            const isOptimal = (graphState.backtracks === 0);
+                            document.getElementById('graph-status').innerText = isOptimal ? "PERFECT! 0 Backtracks." : "VICTORY! Route Found.";
+                            document.getElementById('graph-status').className = "text-emerald-400 font-bold text-xl"; 
+                            playSound(600); 
+                            sendData('Delivery', 'Win', `${graphState.clicks} clicks`, isOptimal); 
+                            markComplete('graph', isOptimal); 
+                        }
                         else {
                             const hasMoves = graphState.edges.some((e, i) => !graphState.visitedEdges.has(i) && (e.u===graphState.current || e.v===graphState.current));
                             if(!hasMoves) { graphState.over = true; document.getElementById('graph-status').innerText = "STUCK! No unvisited streets."; document.getElementById('graph-status').className = "text-rose-400 font-bold"; playSound(150, 'sawtooth'); sendData('Delivery', 'Fail', `Left ${left}`, false); }
@@ -898,102 +1057,158 @@
             }
         }
         function graphGiveUp() {
-            if(graphState.over) return;
-            graphState.over = true;
-            document.getElementById('graph-status').innerText = "GAVE UP. Look closely at the node connections.";
-            document.getElementById('graph-status').className = "text-rose-400 font-bold";
+            graphInit();
+            updateStatus('graph-status', "GAVE UP. Game Reset.");
             playSound(150, 'sawtooth');
             sendData('Delivery', 'GiveUp', '-', false);
-            const sol = document.getElementById('graph-solution');
-            sol.classList.remove('hidden');
-            // Socratic Hint: Question about entry/exit
-            sol.innerHTML = `<strong class="text-amber-400">Hint:</strong> To walk every street exactly once, you must enter and leave every dot. Which dots allow you to start but not return?`; 
-            graphRender();
         }
         document.getElementById('graph-canvas').addEventListener('mousedown', graphClick);
 
-        /* --- GAME 6: BALLS --- */
-        // (Updated Logic: Remove equal weighing constraint)
-        const ballsState={available:[],left:[],right:[],limit:3,cf:null,weighing:false,over:false};function ballsInit(){ballsState.available=Array.from({length:12},(_,i)=>({id:i+1}));ballsState.left=[];ballsState.right=[];ballsState.limit=3;ballsState.weighing=false;ballsState.over=false;ballsState.cf={id:Math.floor(Math.random()*12)+1,status:Math.random()>0.5?'Heavy':'Light'};document.getElementById('balls-logs').innerHTML='';updateStatus('balls-result-box', "Place balls to weigh.");document.getElementById('balls-guess-id').innerHTML='<option value="">Ball #</option>'+Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join('');document.getElementById('balls-guess-status').value="";ballsRender();startTimer();}function ballsMove(id){if(ballsState.weighing||ballsState.over)return;let p=ballsState.available,l=ballsState.left,r=ballsState.right;let idx=p.findIndex(b=>b.id===id);if(idx>-1){l.push(p.splice(idx,1)[0]);playSound(200);ballsRender();return}idx=l.findIndex(b=>b.id===id);if(idx>-1){r.push(l.splice(idx,1)[0]);playSound(200);ballsRender();return}idx=r.findIndex(b=>b.id===id);if(idx>-1){p.push(r.splice(idx,1)[0]);playSound(200);ballsRender();return}}function ballsRender(){const d=(arr,el)=>{el.innerHTML=arr.sort((a,b)=>a.id-b.id).map(b=>`<div class="ball" onclick="ballsMove(${b.id})">${b.id}</div>`).join('')};d(ballsState.available,document.getElementById('balls-pool'));d(ballsState.left,document.getElementById('balls-pan-left'));d(ballsState.right,document.getElementById('balls-pan-right'));document.getElementById('balls-left-count').innerText=ballsState.left.length;document.getElementById('balls-right-count').innerText=ballsState.right.length;document.getElementById('balls-weighs-left').innerText=`Left: ${ballsState.limit}`;document.getElementById('balls-btn-weigh').disabled=ballsState.limit===0||(ballsState.left.length===0 && ballsState.right.length===0)||ballsState.weighing||ballsState.over}
+        /* --- GAME 7: 12 BALLS (Hidden Info -> 4s Delay) --- */
+        const ballsState={available:[],left:[],right:[],limit:3,cf:null,weighing:false,over:false};
+        function ballsInit(){
+            ballsState.available=Array.from({length:12},(_,i)=>({id:i+1}));
+            ballsState.left=[];ballsState.right=[];ballsState.limit=3;ballsState.weighing=false;ballsState.over=false;
+            ballsState.cf={id:Math.floor(Math.random()*12)+1,status:Math.random()>0.5?'Heavy':'Light'};
+            document.getElementById('balls-logs').innerHTML='';
+            updateStatus('balls-result-box', "Place balls to weigh.");
+            document.getElementById('balls-guess-id').innerHTML='<option value="">Ball #</option>'+Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join('');
+            document.getElementById('balls-guess-status').value="";
+            ballsRender();
+        }
+        function ballsMove(id){
+            if(ballsState.weighing||ballsState.over)return;
+            let p=ballsState.available,l=ballsState.left,r=ballsState.right;
+            let idx=p.findIndex(b=>b.id===id);if(idx>-1){l.push(p.splice(idx,1)[0]);playSound(200);ballsRender();return}
+            idx=l.findIndex(b=>b.id===id);if(idx>-1){r.push(l.splice(idx,1)[0]);playSound(200);ballsRender();return}
+            idx=r.findIndex(b=>b.id===id);if(idx>-1){p.push(r.splice(idx,1)[0]);playSound(200);ballsRender();return}
+        }
+        function ballsRender(){
+            const d=(arr,el)=>{el.innerHTML=arr.sort((a,b)=>a.id-b.id).map(b=>`<div class="ball" onclick="ballsMove(${b.id})">${b.id}</div>`).join('')};
+            d(ballsState.available,document.getElementById('balls-pool'));
+            d(ballsState.left,document.getElementById('balls-pan-left'));
+            d(ballsState.right,document.getElementById('balls-pan-right'));
+            document.getElementById('balls-left-count').innerText=ballsState.left.length;
+            document.getElementById('balls-right-count').innerText=ballsState.right.length;
+            document.getElementById('balls-weighs-left').innerText=`Left: ${ballsState.limit}`;
+            document.getElementById('balls-btn-weigh').disabled=ballsState.limit===0||(ballsState.left.length===0 && ballsState.right.length===0)||ballsState.weighing||ballsState.over
+        }
         function ballsWeigh(){
             if(ballsState.limit<=0)return;
-            ballsState.weighing=true;
-            ballsState.limit--;
-            ballsRender();
+            ballsState.weighing=true; ballsState.limit--; ballsRender();
             const b=document.getElementById('balls-result-box');
             b.className="scale-result bg-indigo-900 text-indigo-200 p-3 rounded-lg font-bold border border-indigo-500";
             b.innerText="Weighing...";
             let li=ballsState.left.map(x=>x.id),ri=ballsState.right.map(x=>x.id);
-            let res="Balanced";
-            let cls="";
-            
-            // Logic Update: Allow unequal, mass dominates
-            if (ballsState.left.length > ballsState.right.length) {
-                res = "Left Heavy (Mass)";
-                cls = "left-heavy bg-rose-900/50 text-rose-200 border-rose-500";
-            } else if (ballsState.right.length > ballsState.left.length) {
-                res = "Right Heavy (Mass)";
-                cls = "right-heavy bg-rose-900/50 text-rose-200 border-rose-500";
-            } else {
-                // Equal count, standard logic
+            let res="Balanced"; let cls="";
+            if (ballsState.left.length > ballsState.right.length) { res = "Left Heavy"; cls = "left-heavy bg-rose-900/50 text-rose-200 border-rose-500"; } 
+            else if (ballsState.right.length > ballsState.left.length) { res = "Right Heavy"; cls = "right-heavy bg-rose-900/50 text-rose-200 border-rose-500"; } 
+            else {
                 if(li.includes(ballsState.cf.id)) res=ballsState.cf.status==="Heavy"?"Left Heavy":"Right Heavy";
                 else if(ri.includes(ballsState.cf.id)) res=ballsState.cf.status==="Heavy"?"Right Heavy":"Left Heavy";
-                
                 if(res.includes("Left")) cls="left-heavy bg-rose-900/50 text-rose-200 border-rose-500";
                 else if(res.includes("Right")) cls="right-heavy bg-rose-900/50 text-rose-200 border-rose-500";
                 else cls="bg-emerald-900/50 text-emerald-200 border-emerald-500";
             }
-
-            setTimeout(()=>{b.className=`scale-result p-3 rounded-lg font-bold border-2 ${cls}`;b.innerText=res.toUpperCase();playSound(res==="Balanced"?400:200,res==="Balanced"?'sine':'sawtooth');ballsLog(li,ri,res)},800);setTimeout(()=>{ballsState.available.push(...ballsState.left,...ballsState.right);ballsState.left=[];ballsState.right=[];ballsState.weighing=false;ballsRender();b.className="scale-result bg-slate-700 text-center p-3 rounded-lg font-bold text-slate-200 mb-4 border border-slate-600";b.innerText="Place balls to weigh."},3500)}function ballsLog(l,r,res){const d=document.createElement('div');d.className="p-3 mb-2 rounded bg-slate-800 border-l-4 "+(res.includes("Balanced")?"border-emerald-500":"border-rose-500");d.innerHTML=`<div class="flex justify-between font-bold text-xs text-slate-400"><span>Weighing ${3-ballsState.limit}</span><span>${res}</span></div><div class="text-sm text-slate-200 mt-1">L:[${l}] vs R:[${r}]</div>`;document.getElementById('balls-logs').prepend(d)}function ballsCheck(){const i=parseInt(document.getElementById('balls-guess-id').value);const s=document.getElementById('balls-guess-status').value;if(!i||!s)return updateStatus('balls-result-box', "Pick Ball & Status", true);ballsState.over=true;ballsRender();const w=(i===ballsState.cf.id&&s===ballsState.cf.status);const b=document.getElementById('balls-result-box');b.className=w?"scale-result bg-emerald-600 text-white p-4 rounded-xl font-bold text-xl":"scale-result bg-red-600 text-white p-4 rounded-xl font-bold text-xl";b.innerHTML=w?"VICTORY!":"WRONG.";playSound(w?600:100,w?'sine':'sawtooth');sendData('12 Balls', w?'Win':'Fail', '-', true);}
-        function ballsGiveUp(){
-            ballsState.over=true;
-            ballsRender();
-            const b=document.getElementById('balls-result-box');
-            b.className="scale-result bg-slate-600 text-white p-4 rounded-xl font-bold";
-            // Socratic Hint: Question about grouping
-            b.innerHTML=`Gave Up. <br>If your first weighing tips, you have a group of potentially Heavy balls and a group of potentially Light balls. In your second weighing, try keeping some on the scale, swapping some sides, and removing others. This 'mixing' isolates the fault.`;
-            sendData('12 Balls', 'GiveUp', '-', false);
+            setTimeout(()=>{b.className=`scale-result p-3 rounded-lg font-bold border-2 ${cls}`;b.innerText=res.toUpperCase();playSound(res==="Balanced"?400:200,res==="Balanced"?'sine':'sawtooth');ballsLog(li,ri,res)},800);
+            setTimeout(()=>{ballsState.available.push(...ballsState.left,...ballsState.right);ballsState.left=[];ballsState.right=[];ballsState.weighing=false;ballsRender();b.className="scale-result bg-slate-700 text-center p-3 rounded-lg font-bold text-slate-200 mb-4 border border-slate-600";b.innerText="Place balls to weigh."},3500)
+        }
+        function ballsLog(l,r,res){const d=document.createElement('div');d.className="p-3 mb-2 rounded bg-slate-800 border-l-4 "+(res.includes("Balanced")?"border-emerald-500":"border-rose-500");d.innerHTML=`<div class="flex justify-between font-bold text-xs text-slate-400"><span>Weighing ${3-ballsState.limit}</span><span>${res}</span></div><div class="text-sm text-slate-200 mt-1">L:[${l}] vs R:[${r}]</div>`;document.getElementById('balls-logs').prepend(d)}
+        function ballsCheck(){const i=parseInt(document.getElementById('balls-guess-id').value);const s=document.getElementById('balls-guess-status').value;if(!i||!s)return updateStatus('balls-result-box', "Pick Ball & Status", true);ballsState.over=true;ballsRender();const w=(i===ballsState.cf.id&&s===ballsState.cf.status);const b=document.getElementById('balls-result-box');b.className=w?"scale-result bg-emerald-600 text-white p-4 rounded-xl font-bold text-xl":"scale-result bg-red-600 text-white p-4 rounded-xl font-bold text-xl";b.innerHTML=w?"VICTORY!":"WRONG.";playSound(w?600:100,w?'sine':'sawtooth');sendData('12 Balls', 'Win', '-', true); markComplete('balls', true);}
+        function ballsGiveUp(){ 
+            ballsState.over=true; ballsRender(); 
+            const b=document.getElementById('balls-result-box'); 
+            b.className="scale-result bg-slate-600 text-white p-4 rounded-xl font-bold"; 
+            b.innerHTML=`Answer: Ball ${ballsState.cf.id} is ${ballsState.cf.status}.`; 
+            sendData('12 Balls', 'GiveUp', '-', false); 
+            setTimeout(() => { ballsInit(); }, 4000);
         }
 
-        /* --- GAME 7: HORSES (CLICK MOVE) --- */
-        let horseState={pool:[],track:[],races:0,speeds:{}};function horseInit(){horseState.pool=Array.from({length:25},(_,i)=>i+1);horseState.track=[];horseState.races=0;const s=Array.from({length:25},(_,i)=>i+1);for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]]}horseState.speeds={};for(let i=1;i<=25;i++)horseState.speeds[i]=s[i-1];document.getElementById('horse-logs').innerHTML='<p class="text-slate-600 italic text-center mt-10">No races yet.</p>';document.getElementById('horse-race-count').innerText='Races: 0';document.getElementById('horse-final-msg').innerText='';['h-pred-1','h-pred-2','h-pred-3'].forEach(id=>document.getElementById(id).value='');updateStatus('horse-status', "Ready");horseRenderGridStructure();horseRender();startTimer();}function horseRenderGridStructure(){const g=document.getElementById('horse-grid');g.innerHTML='';['A','B','C','D','E'].forEach(row=>{let html=`<div class="grid grid-cols-6 gap-1"><div class="flex items-center justify-center font-bold text-slate-500 text-xs">${row}</div>`;for(let i=0;i<5;i++)html+=`<div id="grid-${row}-${i}" class="grid-slot" ondrop="horseDrop(event, 'grid-${row}-${i}')" ondragover="allowDrop(event)"></div>`;html+='</div>';g.innerHTML+=html})}function allowDrop(ev){ev.preventDefault()}function horseDrag(ev,id){ev.dataTransfer.setData("text",id)}function horseDrop(ev,targetId){ev.preventDefault();const id=parseInt(ev.dataTransfer.getData("text"));if(!id)return;const poolIdx=horseState.pool.indexOf(id);if(poolIdx>-1)horseState.pool.splice(poolIdx,1);const trackIdx=horseState.track.indexOf(id);if(trackIdx>-1)horseState.track.splice(trackIdx,1);document.querySelectorAll('.horse-in-grid').forEach(el=>{if(parseInt(el.innerText)===id)el.remove()});if(targetId==='pool')horseState.pool.push(id);else if(targetId==='track'){if(horseState.track.length<5)horseState.track.push(id);else horseState.pool.push(id)}else if(targetId.startsWith('grid-')){const slot=document.getElementById(targetId);if(slot.children.length>0)horseState.pool.push(parseInt(slot.children[0].innerText));horseRender();const hDiv=document.createElement('div');hDiv.className="horse horse-in-grid";hDiv.draggable=true;hDiv.innerText=id;hDiv.ondragstart=(e)=>horseDrag(e,id);hDiv.onclick=()=>horseReturnFromGrid(id);slot.innerHTML='';slot.appendChild(hDiv);return}horseRender()}
-        
-        function horseReturnFromGrid(id) {
-            document.querySelectorAll('.horse-in-grid').forEach(el => { if (parseInt(el.innerText) === id) el.remove(); });
-            horseState.pool.push(id);
-            playSound(200);
-            horseRender();
+        /* --- GAME 8: HORSES (Hidden Info -> 4s Delay) --- */
+        let horseState={pool:[],track:[],races:0,speeds:{}};
+        function horseInit(){
+            horseState.pool=Array.from({length:25},(_,i)=>i+1);
+            horseState.track=[];horseState.races=0;
+            const s=Array.from({length:25},(_,i)=>i+1);
+            for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]]}
+            horseState.speeds={};for(let i=1;i<=25;i++)horseState.speeds[i]=s[i-1];
+            document.getElementById('horse-logs').innerHTML='<p class="text-slate-600 italic text-center mt-10">No races yet.</p>';
+            document.getElementById('horse-race-count').innerText='Races: 0';
+            document.getElementById('horse-final-msg').innerText='';
+            ['h-pred-1','h-pred-2','h-pred-3'].forEach(id=>document.getElementById(id).value='');
+            updateStatus('horse-status', "Ready");
+            horseRenderGridStructure();horseRender();
         }
-        function horseToggleTrack(id){const poolIdx=horseState.pool.indexOf(id);if(poolIdx>-1){if(horseState.track.length<5){horseState.pool.splice(poolIdx,1);horseState.track.push(id);playSound(200)}else updateStatus('horse-status', "Track Full!", true)}else{const trackIdx=horseState.track.indexOf(id);if(trackIdx>-1){horseState.track.splice(trackIdx,1);horseState.pool.push(id);playSound(200)}}horseRender()}function horseRender(){const pool=document.getElementById('horse-pool');pool.innerHTML='';horseState.pool.sort((a,b)=>a-b).forEach(h=>{pool.innerHTML+=`<div class="horse" draggable="true" ondragstart="horseDrag(event, ${h})" onclick="horseToggleTrack(${h})">${h}</div>`});const track=document.getElementById('horse-track');track.innerHTML='';for(let i=0;i<5;i++){if(i<horseState.track.length){let h=horseState.track[i];track.innerHTML+=`<div class="track-slot filled"><div class="horse" draggable="true" ondragstart="horseDrag(event, ${h})" onclick="horseToggleTrack(${h})">${h}</div></div>`}else{track.innerHTML+=`<div class="track-slot"></div>`}}document.getElementById('horse-btn-race').disabled=horseState.track.length<2}function horseRace(){if(horseState.track.length<2)return;horseState.races++;document.getElementById('horse-race-count').innerText=`Races: ${horseState.races}`;const racers=[...horseState.track];racers.sort((a,b)=>horseState.speeds[a]-horseState.speeds[b]);const l=document.getElementById('horse-logs');l.innerHTML=`<div class="bg-slate-800 p-2 rounded mb-2 border-l-4 border-pink-500"><div class="text-pink-400 font-bold text-xs mb-1">Race #${horseState.races}</div><div class="flex flex-wrap gap-2 text-xs text-white">${racers.map((h,i)=>`<span class="${i===0?'text-emerald-400 font-bold':''}">${i+1}. #${h}</span>`).join('<span class="text-slate-500 mx-1">></span>')}</div></div>`+l.innerHTML;playSound(400,'triangle');horseState.pool.push(...horseState.track);horseState.track=[];horseRender()}
-        
+        function horseRenderGridStructure(){const g=document.getElementById('horse-grid');g.innerHTML='';['A','B','C','D','E'].forEach(row=>{let html=`<div class="grid grid-cols-6 gap-1"><div class="flex items-center justify-center font-bold text-slate-500 text-xs">${row}</div>`;for(let i=0;i<5;i++)html+=`<div id="grid-${row}-${i}" class="grid-slot" ondrop="horseDrop(event, 'grid-${row}-${i}')" ondragover="allowDrop(event)"></div>`;html+='</div>';g.innerHTML+=html})}
+        function allowDrop(ev){ev.preventDefault()}
+        function horseDrag(ev,id){ev.dataTransfer.setData("text",id)}
+        function horseDrop(ev,targetId){
+            ev.preventDefault();const id=parseInt(ev.dataTransfer.getData("text"));if(!id)return;
+            const poolIdx=horseState.pool.indexOf(id);if(poolIdx>-1)horseState.pool.splice(poolIdx,1);
+            const trackIdx=horseState.track.indexOf(id);if(trackIdx>-1)horseState.track.splice(trackIdx,1);
+            document.querySelectorAll('.horse-in-grid').forEach(el=>{if(parseInt(el.innerText)===id)el.remove()});
+            if(targetId==='pool')horseState.pool.push(id);
+            else if(targetId==='track'){if(horseState.track.length<5)horseState.track.push(id);else horseState.pool.push(id)}
+            else if(targetId.startsWith('grid-')){
+                const slot=document.getElementById(targetId);
+                if(slot.children.length>0)horseState.pool.push(parseInt(slot.children[0].innerText));
+                horseRender();
+                const hDiv=document.createElement('div');hDiv.className="horse horse-in-grid";hDiv.draggable=true;hDiv.innerText=id;hDiv.ondragstart=(e)=>horseDrag(e,id);hDiv.onclick=()=>horseReturnFromGrid(id);
+                slot.innerHTML='';slot.appendChild(hDiv);return
+            }
+            horseRender()
+        }
+        function horseReturnFromGrid(id) { document.querySelectorAll('.horse-in-grid').forEach(el => { if (parseInt(el.innerText) === id) el.remove(); }); horseState.pool.push(id); playSound(200); horseRender(); }
+        function horseToggleTrack(id){
+            const poolIdx=horseState.pool.indexOf(id);
+            if(poolIdx>-1){if(horseState.track.length<5){horseState.pool.splice(poolIdx,1);horseState.track.push(id);playSound(200)}else updateStatus('horse-status', "Track Full!", true)}
+            else{const trackIdx=horseState.track.indexOf(id);if(trackIdx>-1){horseState.track.splice(trackIdx,1);horseState.pool.push(id);playSound(200)}}
+            horseRender()
+        }
+        function horseRender(){
+            const pool=document.getElementById('horse-pool');pool.innerHTML='';
+            horseState.pool.sort((a,b)=>a-b).forEach(h=>{pool.innerHTML+=`<div class="horse" draggable="true" ondragstart="horseDrag(event, ${h})" onclick="horseToggleTrack(${h})">${h}</div>`});
+            const track=document.getElementById('horse-track');track.innerHTML='';
+            for(let i=0;i<5;i++){if(i<horseState.track.length){let h=horseState.track[i];track.innerHTML+=`<div class="track-slot filled"><div class="horse" draggable="true" ondragstart="horseDrag(event, ${h})" onclick="horseToggleTrack(${h})">${h}</div></div>`}else{track.innerHTML+=`<div class="track-slot"></div>`}}
+            document.getElementById('horse-btn-race').disabled=horseState.track.length<2
+        }
+        function horseRace(){
+            if(horseState.track.length<2)return;
+            horseState.races++;
+            document.getElementById('horse-race-count').innerText=`Races: ${horseState.races}`;
+            const racers=[...horseState.track];
+            racers.sort((a,b)=>horseState.speeds[a]-horseState.speeds[b]);
+            const l=document.getElementById('horse-logs');
+            l.innerHTML=`<div class="bg-slate-800 p-2 rounded mb-2 border-l-4 border-pink-500"><div class="text-pink-400 font-bold text-xs mb-1">Race #${horseState.races}</div><div class="flex flex-wrap gap-2 text-xs text-white">${racers.map((h,i)=>`<span class="${i===0?'text-emerald-400 font-bold':''}">${i+1}. #${h}</span>`).join('<span class="text-slate-500 mx-1">></span>')}</div></div>`+l.innerHTML;
+            playSound(400,'triangle');
+            horseState.pool.push(...horseState.track);horseState.track=[];horseRender()
+        }
         function horseCheck(){
-            const p1=parseInt(document.getElementById('h-pred-1').value),p2=parseInt(document.getElementById('h-pred-2').value),p3=parseInt(document.getElementById('h-pred-3').value);if(!p1||!p2||!p3)return updateStatus('horse-final-msg', "Enter top 3 predictions.", true);const all=[];for(let i=1;i<=25;i++)all.push({id:i,s:horseState.speeds[i]});all.sort((a,b)=>a.s-b.s);const msg=document.getElementById('horse-final-msg');
+            const p1=parseInt(document.getElementById('h-pred-1').value),p2=parseInt(document.getElementById('h-pred-2').value),p3=parseInt(document.getElementById('h-pred-3').value);
+            if(!p1||!p2||!p3)return updateStatus('horse-final-msg', "Enter top 3 predictions.", true);
+            const all=[];for(let i=1;i<=25;i++)all.push({id:i,s:horseState.speeds[i]});all.sort((a,b)=>a.s-b.s);
+            const msg=document.getElementById('horse-final-msg');
             if(p1===all[0].id&&p2===all[1].id&&p3===all[2].id){
-                if (horseState.races <= 7) {
-                    msg.className="text-emerald-400 mt-2";msg.innerText=`PERFECT! Top 3 found in ${horseState.races} races (Optimised).`;playSound(800);
-                    sendData('25 Horses', 'Win', horseState.races, true);
-                } else {
-                    msg.className="text-yellow-400 mt-2";msg.innerText=`Correct horses, but inefficient (${horseState.races} races). Can you do it in 7?`;playSound(600);
-                    sendData('25 Horses', 'Win', horseState.races, false);
-                }
+                if (horseState.races <= 7) { msg.className="text-emerald-400 mt-2";msg.innerText=`PERFECT! Top 3 found in ${horseState.races} races (Optimised).`;playSound(800); sendData('25 Horses', 'Win', horseState.races, true); markComplete('horses', true); } 
+                else { msg.className="text-yellow-400 mt-2";msg.innerText=`Correct horses, but inefficient (${horseState.races} races). Can you do it in 7?`;playSound(600); sendData('25 Horses', 'Win', horseState.races, false); markComplete('horses', false); }
             } else { msg.className="text-rose-400 mt-2";msg.innerText=`WRONG.`;playSound(150,'sawtooth'); sendData('25 Horses', 'Fail', '-', false);}
         }
         function horseGiveUp(){
-            const all=[]; for(let i=1;i<=25;i++)all.push({id:i,s:horseState.speeds[i]});
-            all.sort((a,b)=>a.s-b.s);
-            const msg=document.getElementById('horse-final-msg');
-            msg.className="text-slate-400 mt-2";
-            // Socratic Hint: Question about establishing a baseline
-            msg.innerHTML = `GAVE UP. <br>After you identify the overall fastest, only a few competitors still have any logical path to being second or third. Use the partial ordering created earlier to rule out anyone already proven slower by transitivity. The only ones worth comparing further are those who either nearly beat the winner or led groups that were never fully dominated. Let those remaining contenders settle the next two spots.`;
-            playSound(150,'sawtooth');
+            const all=[];for(let i=1;i<=25;i++)all.push({id:i,s:horseState.speeds[i]});all.sort((a,b)=>a.s-b.s);
+            const msg=document.getElementById('horse-final-msg'); 
+            msg.className="text-slate-400 mt-2"; 
+            msg.innerHTML = `Answer: Top 3 are #${all[0].id}, #${all[1].id}, #${all[2].id}.`; 
+            playSound(150,'sawtooth'); 
             sendData('25 Horses', 'GiveUp', '-', false);
+            setTimeout(() => { horseInit(); }, 4000);
         }
 
-        // --- START ---
+        // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
             updateAuthUI();
+            renderSidebar(); 
             jugInit(); bulbInit(); catInit(); riverInit(); spiderInit(); graphInit(); ballsInit(); horseInit();
-            switchTab('about'); // Default
+            switchTab('about'); 
         });
     </script>
 </body>
